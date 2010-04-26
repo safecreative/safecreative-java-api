@@ -42,7 +42,7 @@
         </developer>
         <developer>
             <id>dcastannon</id>
-            <name>David Castañon</name>
+            <name>David Castañón</name>
             <email>dcastannon@safecreative.org</email>
             <organization>Safe Creative</organization>
             <organizationUrl>http://www.safecreative.org</organizationUrl>
@@ -64,6 +64,7 @@
             </plugin>
         </plugins>
     </build>
+
     <reporting>
         <plugins>
             <plugin>
@@ -72,6 +73,7 @@
             </plugin>
         </plugins>
     </reporting>
+    
     <dependencies>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
