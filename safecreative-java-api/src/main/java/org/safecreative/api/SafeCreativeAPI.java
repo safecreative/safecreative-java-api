@@ -26,7 +26,6 @@ package org.safecreative.api;
 
 import org.safecreative.api.util.Digest;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,6 +46,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
+import org.safecreative.api.util.IOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -123,6 +123,7 @@ public class SafeCreativeAPI {
         return sharedKey;
     }
 
+    @SuppressWarnings("unchecked")
     public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level) {
         Map params = createParams();
         params.put("level", level.toString());
@@ -136,6 +137,7 @@ public class SafeCreativeAPI {
         return evalXml(getAuthKeyState(authKey), "/authkeystate/noncekey");
     }
 
+    @SuppressWarnings("unchecked")
     public String getAuthKeyState(String authKey) {
         Map params = createParams("component", "authkey.state", "authkey", authKey, "sharedkey", sharedKey);
         return callSigned(params, true, false);
@@ -217,7 +219,7 @@ public class SafeCreativeAPI {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            closeQuietly(os);
+           IOHelper.closeQuietly(os);
         }
     }
 
@@ -256,7 +258,7 @@ public class SafeCreativeAPI {
     }
     
 	public boolean isError(String result) {		
-		return StringUtils.isEmpty(result) || result.indexOf("error") != -1 || result.indexOf("exception") != -1 ;
+		return !StringUtils.isEmpty(result) && (result.indexOf("error") != -1 || result.indexOf("exception") != -1) ;
 	}
 
     public String getErrorCode(String response) {
@@ -296,29 +298,15 @@ public class SafeCreativeAPI {
                 out.write(charBuf, 0, len);
             }
         } finally {
-            closeQuietly(in);
-            closeQuietly(out);
+            IOHelper.closeQuietly(in);
+            IOHelper.closeQuietly(out);
         }
         return out.toString();
-    }
-
-    protected void closeQuietly(Closeable closeable) {
-        if (closeable == null) {
-            return;
-        }
-        try {
-            closeable.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private long getSystemTime() {
         return System.currentTimeMillis();
     }
-
-
-
 
 }
 
