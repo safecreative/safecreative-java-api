@@ -317,32 +317,7 @@ public class SafeCreativeAPI {
         return System.currentTimeMillis();
     }
 
-    public static void main(String[] args) throws Exception {
-        SafeCreativeAPI api = new SafeCreativeAPI("4m6i1c0ku6ybcfn0hpslqz360", "79w0qcegmkuqc74fzw02mjyxl");
-        log.info("ztime: {}", api.getZTime());
-        //Map params = api.createParams("component","authkey.create","sharedkey",api.getSharedKey());
-        //String result = api.callSigned(params,true,false);
-        String authKey = "6tgoq23jg7gyqvfnh7e9c9f5p";
-        String authKeyPrivate = "6ze311dcoi4dcw58riwu2zhz8";
 
-        /*
-        String manageUrl = api.getManageAuthkeyUrl(authKey, authKeyPrivate, AuthkeyLevel.MANAGE);
-        log.info("Result: {}", manageUrl);
-        Desktop.getDesktop().browse(new URI(manageUrl));
-         */
-        Map params = api.createParams("component", "authkey.state", "authkey", authKey, "sharedkey", api.getSharedKey());
-        String result = api.callSigned(params, true, false);
-        log.info("authkey.state: {}", result);
-
-        String nonceKey = api.getNonceKey(authKey);
-        log.info("nonceKey: {}", nonceKey);
-
-        params = api.createParams("component", "user.licenses", "authkey", authKey);
-        String licenses = api.callSigned(params, authKeyPrivate, true, false);
-        log.info("licenses: {}", licenses);
-
-
-    }
 
 
 }
