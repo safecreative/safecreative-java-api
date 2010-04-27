@@ -45,6 +45,7 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.util.Base64;
 import org.safecreative.api.util.IOHelper;
+import org.safecreative.api.wrapper.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,8 +181,8 @@ public class RegisterWork {
         return tags == null ? "" : tags;
     }
 
-    public void addLink(String name, String url, LinkType type) {
-        links.add(url + "|" + name + "|" + type.toString());
+    public void addLink(Link link) {
+        links.add(link.getUrl() + "|" + link.getName() + "|" + link.getType().name());
     }
 
     public void addRelations(String workCode, RelationType type) {

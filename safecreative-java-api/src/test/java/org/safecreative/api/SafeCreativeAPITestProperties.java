@@ -41,6 +41,7 @@ public class SafeCreativeAPITestProperties {
     private final static String SHARED_KEY      =  "sharedKey";
     private final static String PRIVATE_KEY     =  "privateKey";
     private final static String BASE_URL        =  "baseUrl";
+    private final static String BASE_SEARCH_URL =  "baseSearchUrl";
     
     private Properties properties;
 
@@ -63,6 +64,9 @@ public class SafeCreativeAPITestProperties {
         return getProperty(BASE_URL);
     }
 
+    public String getBaseSearchUrl() {
+        return getProperty(BASE_SEARCH_URL);
+    }
 
     private String getProperty(String name) {
         if(properties == null) {

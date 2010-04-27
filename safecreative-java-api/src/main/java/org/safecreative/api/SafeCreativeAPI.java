@@ -83,9 +83,7 @@ public class SafeCreativeAPI {
         COMPOSITION,DERIVATION,VERSION,RELATED
     }
 
-    public enum LinkType {
-        INFO,DOWNLOAD
-    }
+
 
 
     public SafeCreativeAPI(String sharedKey, String privateKey) {

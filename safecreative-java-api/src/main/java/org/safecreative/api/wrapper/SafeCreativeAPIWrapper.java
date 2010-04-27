@@ -1,39 +1,43 @@
 /*
- Copyright (c) 2010 Safe Creative (http://www.safecreative.org)
+Copyright (c) 2010 Safe Creative (http://www.safecreative.org)
 
- Permission is hereby granted, free of charge, to any person
- obtaining a copy of this software and associated documentation
- files (the "Software"), to deal in the Software without
- restriction, including without limitation the rights to use,
- copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following
- conditions:
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
 
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- OTHER DEALINGS IN THE SOFTWARE.
-*/
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+ */
 package org.safecreative.api.wrapper;
 
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
+import com.thoughtworks.xstream.converters.basic.DateConverter;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.SafeCreativeAPI;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
+import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Profile;
+import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,19 +48,18 @@ import org.slf4j.LoggerFactory;
  * @author jguillo@safecreative.org
  */
 public class SafeCreativeAPIWrapper {
-    public final static String DEFAULT_API_URL         = "https://api.safecreative.org";
-    public final static String DEFAULT_API_SEARCH_URL  = "http://api-search.safecreative.org";
+
+    public final static String DEFAULT_API_URL = "https://api.safecreative.org";
+    public final static String DEFAULT_API_SEARCH_URL = "http://api-search.safecreative.org";
 
     private static Logger log = LoggerFactory.getLogger(SafeCreativeAPIWrapper.class);
-
-    private final static String STATE_READY            = "ready";
-    private final static String ERROR_WORK_NOTFOUND    = "WorkNotFound";
-
+    private final static String STATE_READY = "ready";
+    private final static String ERROR_WORK_NOTFOUND = "WorkNotFound";
     private SafeCreativeAPI api;
     private String baseUrl;
     private String baseSearchUrl;
 
-    public SafeCreativeAPIWrapper(String sharedKey,String privateKey) {
+    public SafeCreativeAPIWrapper(String sharedKey, String privateKey) {
         this(new SafeCreativeAPI(sharedKey, privateKey));
     }
 
@@ -84,9 +87,8 @@ public class SafeCreativeAPIWrapper {
         return StringUtils.defaultIfEmpty(baseUrl, DEFAULT_API_URL);
     }
 
-
     public String getVersion() throws ApiException {
-        if(api.getBaseUrl() == null) {
+        if (api.getBaseUrl() == null) {
             api.setBaseUrl(getBaseUrl());
         }
         String result = callComponent("version");
@@ -132,6 +134,35 @@ public class SafeCreativeAPIWrapper {
         return auth;
     }
 
+    public UserLink linkUser(String mail, AuthkeyLevel level,
+            String firstName, String middleName, String lastName) throws ApiException {
+        return linkUser(mail, level, firstName, middleName, lastName, null, null, null, null, null, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public UserLink linkUser(String mail, AuthkeyLevel level,
+            String firstName, String middleName, String lastName,
+            String addressline1, String addressline2,
+            String addresszip, String addresscity, String addresscountry, String locale) throws ApiException {
+        setApiUrl();
+        Map params = api.createParams("component", "user.link", "sharedkey", api.getSharedKey());
+        params.put("mail", mail);
+        params.put("level", level.name());
+        params.put("firstname", firstName);
+        params.put("middlename", middleName);
+        params.put("lastname", lastName);
+        params.put("addressline1", addressline1);
+        params.put("addressline2", addressline2);
+        params.put("addresszip", addresszip);
+        params.put("addresscity", addresscity);
+        params.put("addresscountry", addresscountry);
+        params.put("locale", locale);
+        String result = api.callSigned(params, true, false);
+        checkError(result);
+        log.debug("user.link result:\n{}", result);
+        return readObject(UserLink.class, result);
+    }
+
     @SuppressWarnings("unchecked")
     public List<Profile> getProfiles(AuthKey authKey) throws ApiException {
         if (authKey == null) {
@@ -156,15 +187,16 @@ public class SafeCreativeAPIWrapper {
         setApiUrl();
         String result = null;
         try {
-            result = callComponent("work.get", "code",code);
-        }catch(ApiException ex) {
-            if(ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
-               return null;
+            result = callComponent("work.get", "code", code);
+        } catch (ApiException ex) {
+            if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
+                return null;
             }
             throw ex;
         }
-        //TODO fix!
-        Work work = readObject(Work.class, result);
+        XStream xs = new XStream();
+        xs.registerConverter(new WorkEntryConverter());
+        Work work = readObject(Work.class, result,xs);
         return work;
     }
 
@@ -180,8 +212,8 @@ public class SafeCreativeAPIWrapper {
         try {
             result = api.call(p);
         } catch (Exception ex) {
-            if(ex instanceof ApiException) {
-                throw (ApiException)ex;
+            if (ex instanceof ApiException) {
+                throw (ApiException) ex;
             }
             //Wrap
             Throwable cause = ex.getCause();
@@ -213,8 +245,8 @@ public class SafeCreativeAPIWrapper {
                 String errorMessage = api.getErrorMessage(response);
                 throw new ApiException(errorCode, errorMessage);
             } catch (Exception ex) {
-                if(ex instanceof ApiException) {
-                    throw (ApiException)ex;
+                if (ex instanceof ApiException) {
+                    throw (ApiException) ex;
                 }
                 throw new ApiException(ex);
             }
@@ -260,7 +292,23 @@ public class SafeCreativeAPIWrapper {
 
     @SuppressWarnings("unchecked")
     private <T> T readObject(Class<T> clazz, String response) {
+        return readObject(clazz, response,(Converter)null);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T readObject(Class<T> clazz, String response,Converter converter) {
         XStream xs = new XStream();
+        if(converter != null) {
+            xs.registerConverter(converter);
+        }
+        return readObject(clazz, response,xs);
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> T readObject(Class<T> clazz, String response,XStream xs) {
+        if(xs == null)  {
+            xs = new XStream();
+        }
         xs.alias(clazz.getSimpleName().toLowerCase(), clazz);
         T result = null;
         try {
