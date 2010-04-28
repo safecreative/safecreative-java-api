@@ -1,0 +1,27 @@
+Safe Creative API Examples
+############################
+
+.Prerequisites:
+################
+
+* Maven : http://maven.apache.org
+* Java v1.5+
+
+.Build 
+################
+
+1. Make executable the provided build script: chmod +x ../build.sh
+2. Execute it to obtain the api library packaged with dependencies and the api examples.
+
+.How to run the samples:
+################
+
+1. Get API keys from the arena (testing) server: http://arena.safecreative.org/new-api-key
+2. Make executable the run utility script: chmod +x run.sh
+3. Edit run.sh and paste the api keys
+4. Now you can use run.sh to execute some examples:
+
+	./run.sh profiles.ListProfiles
+	./run.sh work.RegisterFile profile-code path-to-some-file
+
+More examples to come.
