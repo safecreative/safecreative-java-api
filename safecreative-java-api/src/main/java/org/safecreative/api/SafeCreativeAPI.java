@@ -118,6 +118,10 @@ public class SafeCreativeAPI {
         return sharedKey;
     }
 
+    public static boolean isValidCode(String code) {
+        return StringUtils.isNotBlank(code) && StringUtils.isNumeric(code) && code.trim().length() == 13;
+    }
+
     @SuppressWarnings("unchecked")
     public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level) {
         Map params = createParams();

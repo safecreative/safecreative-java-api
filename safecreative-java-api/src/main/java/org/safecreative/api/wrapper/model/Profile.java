@@ -25,6 +25,7 @@
 package org.safecreative.api.wrapper.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.safecreative.api.SafeCreativeAPI;
 
 
 /**
@@ -34,10 +35,15 @@ import org.apache.commons.lang.StringUtils;
  * @author jguillo@safecreative.org
  */
 public class Profile implements Comparable {
+    
     private String code;
     private String name;
 
     public Profile() {
+    }
+
+    public Profile(String code) {
+        this.code = code;
     }
 
     public String getCode() {
@@ -56,6 +62,14 @@ public class Profile implements Comparable {
         this.name = name;
     }
 
+    public static Profile fromCode(String code) {
+        Profile result = null;
+        if(SafeCreativeAPI.isValidCode(code)) {
+            result = new Profile(code);
+        }
+        return result;
+    }
+
     @Override
     public int hashCode() {
         return code == null ? -1 : code.hashCode();
@@ -69,8 +83,6 @@ public class Profile implements Comparable {
         return hashCode() == obj.hashCode();
     }
 
-
-
     @Override
     public int compareTo(Object o) {
         if(o == null || !(o instanceof Profile)) {
@@ -83,8 +95,4 @@ public class Profile implements Comparable {
     public String toString() {
         return StringUtils.isBlank(name) ? "" : name;
     }
-
-
-
-    
 }
