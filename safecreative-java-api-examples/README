@@ -18,7 +18,7 @@ Safe Creative API Examples
 
 1. Get API keys from the arena (testing) server: http://arena.safecreative.org/new-api-key
 2. Make executable the run utility script: chmod +x run.sh
-3. Edit run.sh and paste the api keys
+3. Edit run.sh and paste the api keys. If use prebuilt libraries, edit also the api/examplesLib.
 4. Now you can use run.sh to execute some examples:
 
 	./run.sh profiles.ListProfiles
