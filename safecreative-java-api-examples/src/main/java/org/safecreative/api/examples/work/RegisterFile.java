@@ -35,6 +35,7 @@ public class RegisterFile {
             System.exit(1);
         }
         SafeCreativeAPIWrapper api = new SafeCreativeAPIWrapper(args[0], args[1]);
+        api.setBaseUrl(SafeCreativeAPIWrapper.ARENA_URL); //use arena test server
         Profile profile = Profile.fromCode(args[2]);
         if (profile == null) {
             System.err.println("Must use a valid profile code");

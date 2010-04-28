@@ -1,7 +1,7 @@
 #!/bin/bash
 #API Keys:
-sharedKey=7gi3unfhknsdy0gjaogsa7qbj
-privateKey=1drq9xl7y08p852pc9zxdw5ob
+sharedKey=<YOUR SHARED KEY>
+privateKey=<YOUR PRIVATE KEY>
 
 version=0.5.0
 apiLib=../safecreative-java-api/target/safecreative-java-api-$version-SNAPSHOT-jar-with-dependencies.jar

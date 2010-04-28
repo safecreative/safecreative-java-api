@@ -34,6 +34,7 @@ public class ListProfiles {
             System.exit(1);
         }
         SafeCreativeAPIWrapper api = new SafeCreativeAPIWrapper(args[0],args[1]);
+        api.setBaseUrl(SafeCreativeAPIWrapper.ARENA_URL); //use arena test server
         AuthKey authKey = api.createAuth(AuthkeyLevel.GET);
         System.out.println("Go to authorize url: "+authKey.getManageUrl()+" and press ENTER key to continue");
         System.in.read(); //Wait for key
