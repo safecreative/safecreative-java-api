@@ -173,7 +173,7 @@ public class SafeCreativeAPIWrapper {
         String result = api.callSigned(params, authKey.getPrivatekey(), true, false);
         checkError(result);
         List<Profile> profiles = readList(result, "profiles", "profile", Profile.class);
-        log.info("Profiles {}", profiles);
+        log.debug("Profiles {}", profiles);
         return profiles;
     }
 
