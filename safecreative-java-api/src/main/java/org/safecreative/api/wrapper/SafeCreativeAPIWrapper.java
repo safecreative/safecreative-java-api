@@ -59,6 +59,7 @@ public class SafeCreativeAPIWrapper {
 
     public final static String DEFAULT_API_URL = "https://api.safecreative.org";
     public final static String DEFAULT_API_SEARCH_URL = "http://api-search.safecreative.org";
+    public final static String ARENA_URL = "https://arena.safecreative.org";
 
     private static Logger log = LoggerFactory.getLogger(SafeCreativeAPIWrapper.class);
     private final static String STATE_READY = "ready";
