@@ -2,15 +2,73 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.safecreative.api</groupId>
-    <artifactId>safecreative-java-api-all</artifactId>
+    <artifactId>safecreative-java-api</artifactId>
     <packaging>pom</packaging>
     <version>0.5.0</version>
     <name>Safe Creative Java API Project</name>
     <description>Safe Creative Java API Project</description>
     <url>http://code.google.com/p/safecreative-java-api</url>
+    <organization>
+        <name>Safe Creative</name>
+        <url>http://www.safecreative.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GPLv3 License</name>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+    <mailingLists>
+        <mailingList>
+            <name>Safe Creative Java API Group</name>
+            <subscribe>safecreative-java-api+subscribe@googlegroups.com</subscribe>
+            <archive>http://groups.google.com/group/safecreative-java-api</archive>
+        </mailingList>
+    </mailingLists>
+    <issueManagement>
+        <system>code.google.com</system>
+        <url>http://code.google.com/p/safecreative-java-api/issues/list</url>
+    </issueManagement>
+    <scm>
+        <url>https://safecreative-java-api.googlecode.com/svn/trunk</url>
+        <connection>scm:svn:https://safecreative-java-api.googlecode.com/svn/trunk</connection>
+        <developerConnection>scm:svn:https://safecreative-java-api.googlecode.com/svn/trunk</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <id>mpolo</id>
+            <name>Manuel Polo</name>
+            <email>mpolo@safecreative.org</email>
+            <organization>Safe Creative</organization>
+            <organizationUrl>http://www.safecreative.org</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>jguillo</id>
+            <name>Jorge Guilló</name>
+            <email>jguillo@safecreative.org</email>
+            <organization>Safe Creative</organization>
+            <organizationUrl>http://www.safecreative.org</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>dcastannon</id>
+            <name>David Castañón</name>
+            <email>dcastannon@safecreative.org</email>
+            <organization>Safe Creative</organization>
+            <organizationUrl>http://www.safecreative.org</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
     <modules>
-		<module>safecreative-java-api</module>
-		<module>safecreative-java-api-examples</module>
+        <module>safecreative-java-api</module>
+        <module>safecreative-java-api-examples</module>
     </modules>
 </project>
 
