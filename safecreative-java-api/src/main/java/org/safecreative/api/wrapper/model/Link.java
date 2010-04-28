@@ -27,8 +27,10 @@ package org.safecreative.api.wrapper.model;
 import java.net.URL;
 
 /**
+ * Represents a URL link.
  *
- * @author mpolo
+ * @author mpolo@safecreative.org
+ * @author jguillo@safecreative.org
  */
 public class Link {
     public enum Type {
@@ -79,5 +81,9 @@ public class Link {
     public void setUrl(URL url) {
         this.url = url;
     }
-    
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[name:"+name+",type:"+type+",url:"+url+"]";
+    }
 }

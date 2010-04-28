@@ -32,9 +32,10 @@ import java.util.Map;
 
 
 /**
- * Represents an user account.
+ * Represents a license.
  *
  * @author mpolo@safecreative.org
+ * @author jguillo@safecreative.org
  */
 public class License {
     public enum Feature {
@@ -141,4 +142,8 @@ public class License {
         return getFeatures().get(feature);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",shortName:"+shortName+",url:"+url+"]";
+    }
 }

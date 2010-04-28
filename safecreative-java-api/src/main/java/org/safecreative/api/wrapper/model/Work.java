@@ -24,12 +24,14 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
- *
+ * Represents a work
+ * 
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
@@ -45,8 +47,10 @@ public class Work {
     private List<User> authors;
     private List<User> rightHolders;
     private License license;
-    private Type worktype;
-    private TypeGroup worktypegroup;
+    private URL humanUrl;
+    private URL apiUrl;
+    private Type type;
+    private TypeGroup typeGroup;
 
 
     public static class Type {
@@ -79,6 +83,12 @@ public class Work {
          */
         public void setName(String name) {
             this.name = name;
+        }
+
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName()+"[code:"+code+",name:"+name+"]";
         }
         
     }
@@ -242,33 +252,64 @@ public class Work {
     }
 
     /**
-     * @return the worktype
+     * @return the humanUrl
      */
-    public Type getWorktype() {
-        return worktype;
+    public URL getHumanUrl() {
+        return humanUrl;
     }
 
     /**
-     * @param worktype the worktype to set
+     * @param humanUrl the humanUrl to set
      */
-    public void setWorktype(Type worktype) {
-        this.worktype = worktype;
+    public void setHumanUrl(URL humanUrl) {
+        this.humanUrl = humanUrl;
     }
 
     /**
-     * @return the worktypegroup
+     * @return the apiUrl
      */
-    public TypeGroup getWorktypegroup() {
-        return worktypegroup;
+    public URL getApiUrl() {
+        return apiUrl;
     }
 
     /**
-     * @param worktypegroup the worktypegroup to set
+     * @param apiUrl the apiUrl to set
      */
-    public void setWorktypegroup(TypeGroup worktypegroup) {
-        this.worktypegroup = worktypegroup;
+    public void setApiUrl(URL apiUrl) {
+        this.apiUrl = apiUrl;
+    }
+    /**
+     * @return the type
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the typeGroup
+     */
+    public TypeGroup getTypeGroup() {
+        return typeGroup;
+    }
+
+    /**
+     * @param typeGroup the typeGroup to set
+     */
+    public void setTypeGroup(TypeGroup typeGroup) {
+        this.typeGroup = typeGroup;
     }
 
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
+    }
 }
 

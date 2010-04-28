@@ -25,6 +25,7 @@
 package org.safecreative.api.wrapper.model;
 
 /**
+ * Represents an authorization key state
  *
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org

@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 
 
 /**
+ * Represents a work registration profile.
  *
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org

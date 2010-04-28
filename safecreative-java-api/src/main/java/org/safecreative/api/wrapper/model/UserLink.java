@@ -28,8 +28,10 @@ package org.safecreative.api.wrapper.model;
 
 /**
  * Represents an user api account created by providing an email address.
+ *
  * @see SafeCreativeAPIWrapper.linkUser
  * @author mpolo@safecreative.org
+ * @author jguillo@safecreative.org
  */
 public class UserLink {
     private String code;
@@ -79,5 +81,9 @@ public class UserLink {
         this.authPrivateKey = authPrivateKey;
     }
 
-    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",authKey:"+authKey+"]";
+    }
+
 }

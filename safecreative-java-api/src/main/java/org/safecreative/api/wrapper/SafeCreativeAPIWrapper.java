@@ -27,7 +27,6 @@ package org.safecreative.api.wrapper;
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.basic.DateConverter;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SafeCreativeAPI main wrapper
+ *
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
@@ -193,11 +193,8 @@ public class SafeCreativeAPIWrapper {
                 return null;
             }
             throw ex;
-        }
-        XStream xs = new XStream();
-        xs.registerConverter(new WorkEntryConverter());
-        Work work = readObject(Work.class, result,xs);
-        return work;
+        }        
+        return readObject(Work.class, result,new WorkEntryConverter());
     }
 
     ////////////////////////////////////////////////////////////////////////////

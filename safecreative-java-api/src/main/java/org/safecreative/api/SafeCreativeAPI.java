@@ -83,9 +83,6 @@ public class SafeCreativeAPI {
         COMPOSITION,DERIVATION,VERSION,RELATED
     }
 
-
-
-
     public SafeCreativeAPI(String sharedKey, String privateKey) {
         this.sharedKey = sharedKey;
         this.privateKey = privateKey;

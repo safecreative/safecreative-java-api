@@ -32,6 +32,7 @@ import java.net.URL;
  * Represents an user account.
  *
  * @author mpolo@safecreative.org
+ * @author jguillo@safecreative.org
  */
 public class User {
     private String code;
@@ -80,5 +81,8 @@ public class User {
         this.url = url;
     }
     
-
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",name:"+name+",url:"+url+"]";
+    }
 }
