@@ -76,7 +76,7 @@ public class RegisterWork {
     private String compositionOf;
     //private Map<RelationType,List<String>> relations;
 
-    public RegisterWork(SafeCreativeAPI api) throws Exception {
+    public RegisterWork(SafeCreativeAPI api) {
         this.api = api;
         links = new ArrayList<String>();
     }

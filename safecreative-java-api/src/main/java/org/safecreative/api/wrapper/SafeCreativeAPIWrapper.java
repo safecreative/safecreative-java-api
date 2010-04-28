@@ -24,14 +24,22 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
+import org.safecreative.api.RegisterWork;
 import org.safecreative.api.SafeCreativeAPI;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
+import org.safecreative.api.UploadProgressListener;
+import org.safecreative.api.util.Digest;
 import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
@@ -58,6 +66,8 @@ public class SafeCreativeAPIWrapper {
     private SafeCreativeAPI api;
     private String baseUrl;
     private String baseSearchUrl;
+
+    private AuthKey authKey;
 
     public SafeCreativeAPIWrapper(String sharedKey, String privateKey) {
         this(new SafeCreativeAPI(sharedKey, privateKey));
@@ -86,6 +96,22 @@ public class SafeCreativeAPIWrapper {
     public String getBaseUrl() {
         return StringUtils.defaultIfEmpty(baseUrl, DEFAULT_API_URL);
     }
+
+    /**
+     * @return the authKey
+     */
+    public AuthKey getAuthKey() {
+        return authKey;
+    }
+
+    /**
+     * @param authKey the authKey to set
+     */
+    public void setAuthKey(AuthKey authKey) {
+        this.authKey = authKey;
+    }
+
+    
 
     public String getVersion() throws ApiException {
         if (api.getBaseUrl() == null) {
@@ -122,16 +148,16 @@ public class SafeCreativeAPIWrapper {
         Map params = api.createParams("component", "authkey.create", "sharedkey", api.getSharedKey());
         String result = api.callSigned(params, true, false);
         checkError(result);
-        String authKey = api.evalXml(result, "/authkeycreate/authkey");
-        String authPrivateKey = api.evalXml(result, "/authkeycreate/privatekey");
-        if (authKey == null || authPrivateKey == null) {
+        String auth = api.evalXml(result, "/authkeycreate/authkey");
+        String authPrivate = api.evalXml(result, "/authkeycreate/privatekey");
+        if (auth == null || authPrivate == null) {
             throw new ApiException("authkey.create error. Result: " + result);
         }
-        AuthKey auth = new AuthKey();
-        auth.setAuthkey(authKey);
-        auth.setPrivatekey(authPrivateKey);
-        auth.setManageUrl(api.getManageAuthkeyUrl(authKey, authPrivateKey, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));
-        return auth;
+        authKey = new AuthKey();
+        authKey.setAuthkey(auth);
+        authKey.setPrivatekey(authPrivate);
+        authKey.setManageUrl(api.getManageAuthkeyUrl(auth, authPrivate, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));
+        return authKey;
     }
 
     public UserLink linkUser(String mail, AuthkeyLevel level,
@@ -161,6 +187,10 @@ public class SafeCreativeAPIWrapper {
         checkError(result);
         log.debug("user.link result:\n{}", result);
         return readObject(UserLink.class, result);
+    }
+
+    public List<Profile> getProfiles() throws ApiException {
+        return getProfiles(authKey);
     }
 
     @SuppressWarnings("unchecked")
@@ -195,6 +225,35 @@ public class SafeCreativeAPIWrapper {
             throw ex;
         }        
         return readObject(Work.class, result,new WorkEntryConverter());
+    }
+
+    public String registerWork(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
+        setApiUrl();
+        byte[] digest;
+        log.debug("Calculating file {} {} checksum", file, Digest.SHA1);
+        try {
+            digest = Digest.getBytesDigest(new FileInputStream(file), Digest.SHA1);
+        } catch (Exception ex) {
+            throw new ApiException(ex);
+        }
+        String checkSum = Digest.toHex(digest);
+        log.info("File {} checksum: {}", file, checkSum);
+        RegisterWork registerWork = new RegisterWork(api);
+        registerWork.setProfile(profile.getCode());
+        registerWork.setUploadProgressListener(uploadProgressListener);
+        api.setAuthKey(authKey.getAuthkey());
+        api.setPrivateAuthKey(authKey.getPrivatekey());
+        String workCode = null;
+        try {
+            workCode = registerWork.registerWork(title, file.getName(), file, null);
+        } catch (Exception e) {
+            if (SafeCreativeAPI.NOT_AUTHORIZED_ERROR.equals(e.getMessage())) {
+                log.warn("Not authorized to update/register {}", e);
+                throw new ApiException(SafeCreativeAPI.NOT_AUTHORIZED_ERROR,e.getLocalizedMessage());
+            }
+            throw new ApiException(e);
+        }
+        return workCode;
     }
 
     ////////////////////////////////////////////////////////////////////////////
