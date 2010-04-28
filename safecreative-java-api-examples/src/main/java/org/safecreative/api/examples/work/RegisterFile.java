@@ -48,6 +48,7 @@ public class RegisterFile {
         AuthKey authKey = api.createAuth(AuthkeyLevel.ADD);
         System.out.println("Go to authorize url: " + authKey.getManageUrl() + " and press ENTER key to continue");
         System.in.read(); //Wait for key
-        api.registerWork(file.getName(), file, profile, null);
+        String workCode = api.registerWork(file.getName(), file, profile, null);
+        System.out.println(file + " registered with code "+workCode);
     }
 }
