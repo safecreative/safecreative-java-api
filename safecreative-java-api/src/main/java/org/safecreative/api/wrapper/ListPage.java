@@ -24,6 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import java.util.List;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class ListPage<T> {
+public class ListPage<T> implements Iterable<T>{
     private int recordTotal;
 	private int pageTotal;
 	private List<T> list;
@@ -94,5 +95,12 @@ public class ListPage<T> {
         return list;
     }
 
+    /**
+     * Implements Iterable<T>
+     * @return Iterator<T>
+     */
+    public Iterator<T> iterator() {
+        return getList().iterator();
+    }
 
 }

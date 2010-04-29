@@ -565,7 +565,7 @@ public class SafeCreativeAPIWrapper {
     String callComponent(String component, String... params) throws ApiException {
         Map<String, String> p = createParams(component);
         if (params != null && params.length > 0) {
-            p.putAll(api.createParams(params));
+            p.putAll(api.createParams((Object[])params));
         }
         String result = null;
         try {
