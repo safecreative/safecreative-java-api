@@ -24,35 +24,46 @@
 */
 package org.safecreative.api.wrapper.model;
 
-import java.net.URL;
-
-
-
 /**
- * Represents an user account.
+ * Defines common used entities with a code and a name value.
  *
  * @author mpolo@safecreative.org
- * @author jguillo@safecreative.org
  */
-public class User extends CodeableEntity {
-    private URL url;
+public abstract class CodeableEntity {
+
+    private String code;
+    private String name;
 
     /**
-     * @return the url
+     * @return the code
      */
-    public URL getUrl() {
-        return url;
+    public String getCode() {
+        return code;
     }
 
     /**
-     * @param url the url to set
+     * @param code the code to set
      */
-    public void setUrl(URL url) {
-        this.url = url;
+    public void setCode(String code) {
+        this.code = code;
     }
-    
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"[code:"+getCode()+",name:"+getName()+",url:"+url+"]";
+        return getClass().getSimpleName() + "[code:" + code + ",name:" + name + "]";
     }
 }

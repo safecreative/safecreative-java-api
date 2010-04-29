@@ -25,18 +25,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.safecreative.api.wrapper.converters;
 
 import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.wrapper.model.License;
 
 import org.safecreative.api.wrapper.model.Link;
@@ -51,49 +45,55 @@ import org.slf4j.LoggerFactory;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class WorkEntryConverter implements Converter {
+public class WorkEntryConverter extends AbstractModelConverter {
 
     private static Logger log = LoggerFactory.getLogger(WorkEntryConverter.class);
-    private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private LicenseConverter licenseConverter;
 
     public boolean canConvert(Class type) {
         return Work.class.equals(type);
     }
 
-    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-        throw new UnsupportedOperationException("Not supported");
-    }
-
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         Work work = new Work();
+        //Code
         reader.moveDown();
         work.setCode(reader.getValue());
         reader.moveUp();
+        //Title
         reader.moveDown();
         work.setTitle(reader.getValue());
         reader.moveUp();
-        reader.moveDown();
-        try {
-            work.setEntryDate(dateFormat.parse(reader.getValue()));
-        } catch (ParseException ex) {
-            throw new ConversionException("bad entrydate " + reader.getValue(), ex);
-        }
-        reader.moveUp();
-        reader.moveDown();
-        work.setExcerpt(reader.getValue());
-        reader.moveUp();
-        reader.moveDown();
-        work.setTags(reader.getValue());
-        reader.moveUp();
-
+        String node;
         while (reader.hasMoreChildren()) {
             reader.moveDown();
-            if (reader.getNodeName().equals("thumbnail")) {
-                work.setThumbnail(reader.getValue());
+            node = reader.getNodeName();
+            log.trace("Unmarshaling node {}",node);
+            if (node.equals("entrydate")) {
+                Date entryDate = readDate(reader);
+                if(entryDate == null) {
+                    throw new ConversionException("bad entrydate " + reader.getValue());
+                }
+                work.setEntryDate(entryDate);
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("links")) {
+            if (node.equals("excerpt")) {
+                work.setExcerpt(reader.getValue());
+                reader.moveUp();
+                continue;
+            }
+            if (node.equals("tags")) {
+                work.setTags(reader.getValue());
+                reader.moveUp();
+                continue;
+            }
+            if (node.equals("thumbnail")) {
+                work.setThumbnail(readUrl(reader));
+                reader.moveUp();
+                continue;
+            }
+            if (node.equals("links")) {
                 List<Link> links = new LinkedList<Link>();
                 Link link;
                 while (reader.hasMoreChildren()) {
@@ -112,39 +112,44 @@ public class WorkEntryConverter implements Converter {
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("relations")) {
+            if (node.equals("relations")) {
                 reader.moveDown();
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("authors")) {
+            if (node.equals("authors")) {
                 work.setAuthors(readUsers(reader));
                 continue;
             }
-            if (reader.getNodeName().equals("rights-holders")) {
+            if (node.equals("rights-holders")) {
                 work.setRightHolders(readUsers(reader));
                 continue;
             }
-            if (reader.getNodeName().equals("license")) {
-                work.setLicense(readLicense(reader));
+            if (node.equals("license")) {
+                if(licenseConverter == null) {
+                    //Lazy load
+                    licenseConverter = new LicenseConverter();
+                }
+                License license = (License) context.convertAnother(work, License.class, licenseConverter);
+                work.setLicense(license);
                 continue;
             }
-            if (reader.getNodeName().equals("human-url")) {
+            if (node.equals("human-url")) {
                 work.setHumanUrl(readUrl(reader));
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("machine-url")) {
+            if (node.equals("machine-url")) {
                 work.setApiUrl(readUrl(reader));
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("allowdownload")) {
+            if (node.equals("allowdownload")) {
                 work.setAllowdownload(Boolean.valueOf(reader.getValue()));
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("worktype")) {
+            if (node.equals("worktype")) {
                 Work.Type type = new Work.Type();
                 reader.moveDown();
                 type.setCode(reader.getValue());
@@ -156,7 +161,7 @@ public class WorkEntryConverter implements Converter {
                 reader.moveUp();
                 continue;
             }
-            if (reader.getNodeName().equals("worktypegroup")) {
+            if (node.equals("worktypegroup")) {
                 Work.TypeGroup typeGroup = new Work.TypeGroup();
                 reader.moveDown();
                 typeGroup.setCode(reader.getValue());
@@ -175,71 +180,28 @@ public class WorkEntryConverter implements Converter {
 
     private List<User> readUsers(HierarchicalStreamReader reader) {
         List<User> users = new LinkedList<User>();
-
-        while (reader.hasMoreChildren()) {
-            reader.moveDown();
-            User user = new User();
-            reader.moveDown();
-            user.setCode(reader.getValue());
-            reader.moveUp();
-            reader.moveDown();
-            user.setName(reader.getValue());
-            reader.moveUp();
-            reader.moveDown();
-            user.setUrl(readUrl(reader));
-            reader.moveUp();
-            users.add(user);
-        }
-        reader.moveUp();
-        reader.moveUp();
-        return users;
-    }
-
-    private License readLicense(HierarchicalStreamReader reader) {
-        License license = new License();
-        reader.moveDown();
-        license.setCode(reader.getValue());
-        reader.moveUp();
-        reader.moveDown();
-        license.setName(reader.getValue());
-        reader.moveUp();
-        reader.moveDown();
-        license.setShortName(reader.getValue());
-        reader.moveUp();
-        reader.moveDown();
-        try {
-            license.setEndDate(StringUtils.isBlank(reader.getValue()) ? null : dateFormat.parse(reader.getValue()));
-        } catch (ParseException ex) {
-            log.error("bad entrydate " + reader.getValue(), ex);
-        }
-        reader.moveUp();
-        reader.moveDown();
-        license.setUrl(readUrl(reader));
-        reader.moveUp();
-        reader.moveDown();
-        String feature;
-        while (reader.hasMoreChildren()) {
-            reader.moveDown();
-            feature = reader.getNodeName().toUpperCase();
-            try {
-                license.getFeatures().put(License.Feature.valueOf(feature), License.FeatureValue.valueOf(reader.getValue()));
-            } catch (Exception ex) {
-                log.error("bad license feature " + feature + ":" + reader.getValue(), ex);
+        if(reader.hasMoreChildren()) {
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                User user = new User();
+                reader.moveDown();
+                user.setCode(reader.getValue());
+                reader.moveUp();
+                reader.moveDown();
+                user.setName(reader.getValue());
+                reader.moveUp();
+                reader.moveDown();
+                user.setUrl(readUrl(reader));
+                reader.moveUp();
+                users.add(user);
             }
             reader.moveUp();
         }
         reader.moveUp();
-        reader.moveUp();
-        return license;
+        return users;
     }
 
-    private URL readUrl(HierarchicalStreamReader reader) {
-        URL result = null;
-        try {
-            result = new URL(reader.getValue());
-        } catch (MalformedURLException ex) {
-            log.error(String.format("bad url %s for element %s", reader.getValue(), reader.getNodeName()), ex);
-        }
-        return result;
-    }
+
+
+
 }

@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -74,6 +75,7 @@ public class SafeCreativeAPI {
     private XPathFactory xpathFactory;
     private String sharedKey, privateKey;
     private String authKey, privateAuthKey;
+    private Locale locale;
 
     public enum AuthkeyLevel {
         GET, ADD, MANAGE
@@ -122,6 +124,20 @@ public class SafeCreativeAPI {
         return StringUtils.isNotBlank(code) && StringUtils.isNumeric(code) && code.trim().length() == 13;
     }
 
+    /**
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return locale;
+    }
+
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
     @SuppressWarnings("unchecked")
     public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level) {
         Map params = createParams();
@@ -157,7 +173,7 @@ public class SafeCreativeAPI {
     }
 
     //////////////////////////////////////////////////////// CORE:
-    public Map<String, String> createParams(String... values) {
+    public Map<String, String> createParams(Object... values) {
         if (values != null && values.length % 2 != 0) {
             throw new IllegalArgumentException("odd value array size");
         }
@@ -165,7 +181,7 @@ public class SafeCreativeAPI {
         if (values != null) {
             int size = values.length;
             for (int i = 0; i < size; i += 2) {
-                result.put(values[i], values[i + 1]);
+                result.put(String.valueOf(values[i]), String.valueOf(values[i + 1]));
             }
         }
         return result;
@@ -182,11 +198,17 @@ public class SafeCreativeAPI {
         if (noncekey) {
             params.put("noncekey", getNonceKey(authKey));
         }
+        if(!params.containsKey("locale") && locale != null) {
+            params.put("locale",locale.toString());
+        }
         return call(signParams(params, privateKey));
     }
 
     public String call(Map<String, String> params) {
         StringBuilder encoded = new StringBuilder();
+        if(!params.containsKey("locale") && locale != null) {
+            params.put("locale",locale.toString());
+        }
         for (String param : params.keySet()) {
             String value = params.get(param);
             try {

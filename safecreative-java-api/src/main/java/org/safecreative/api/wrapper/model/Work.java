@@ -42,7 +42,7 @@ public class Work {
     private String excerpt;
     private String tags;
     private boolean allowdownload;
-    private String thumbnail;
+    private URL thumbnail;
     private List<Link> links;
     private List<User> authors;
     private List<User> rightHolders;
@@ -51,45 +51,28 @@ public class Work {
     private URL apiUrl;
     private Type type;
     private TypeGroup typeGroup;
+    private Language language;
 
+    public static class Language extends CodeableEntity {
+        
+    }
 
-    public static class Type {
-        private String code;
-        private String name;
-
+    public static class Type extends CodeableEntity {
         /**
-         * @return the code
+         * Common work type codes:
          */
-        public String getCode() {
-            return code;
-        }
-
-        /**
-         * @param code the code to set
-         */
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        /**
-         * @return the name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name the name to set
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-
-
-        @Override
-        public String toString() {
-            return getClass().getSimpleName()+"[code:"+code+",name:"+name+"]";
-        }
+        public static final String ARTICLE      =   "article";
+        public static final String DOCUMENT     =   "document";
+        public static final String ARTISTIC     =   "artistic";
+        public static final String LITERATURE   =   "literature";
+        public static final String SOFTWARE     =   "software";
+        public static final String MULTIMEDIA   =   "multimedia";
+        public static final String MUSIC        =   "music";
+        public static final String PODCAST      =   "podcast";
+        public static final String AUDIO        =   "audio";
+        public static final String VIDEO        =   "video";
+        public static final String DRAWING      =   "drawing";
+        public static final String PHOTO        =   "photo";        
         
     }
 
@@ -184,14 +167,14 @@ public class Work {
     /**
      * @return the thumbnail
      */
-    public String getThumbnail() {
+    public URL getThumbnail() {
         return thumbnail;
     }
 
     /**
      * @param thumbnail the thumbnail to set
      */
-    public void setThumbnail(String thumbnail) {
+    public void setThumbnail(URL thumbnail) {
         this.thumbnail = thumbnail;
     }
 
@@ -310,6 +293,20 @@ public class Work {
     @Override
     public String toString() {
         return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
+    }
+
+    /**
+     * @return the language
+     */
+    public Language getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }
 

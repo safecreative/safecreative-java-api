@@ -37,7 +37,7 @@ import java.util.Map;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class License {
+public class License extends CodeableEntity {
     public enum Feature {
         RECOGNITION,DERIVATIONS,DISTRIBUTION,COMMERCIAL,TIMELIMITED
     }
@@ -45,41 +45,10 @@ public class License {
 		NOT_APPLICABLE, YES, YES_WITH_RESTRICTIONS, NO, INHERITANCE
 	}
 
-    private String code;
-    private String name;
     private String shortName;
     private Date endDate;
     private URL url;
     private Map<Feature,FeatureValue> features;
-
-
-    /**
-     * @return the code
-     */
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * @param code the code to set
-     */
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
 
     /**
      * @return the url
@@ -144,6 +113,6 @@ public class License {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"[code:"+code+",shortName:"+shortName+",url:"+url+"]";
+        return getClass().getSimpleName()+"[code:"+getCode()+",shortName:"+shortName+",url:"+url+"]";
     }
 }

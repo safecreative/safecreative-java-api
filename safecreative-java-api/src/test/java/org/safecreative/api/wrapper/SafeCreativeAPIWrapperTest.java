@@ -27,7 +27,10 @@ package org.safecreative.api.wrapper;
 import com.thoughtworks.xstream.XStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.safecreative.api.ApiException;
@@ -47,11 +50,16 @@ import org.safecreative.api.wrapper.model.Work;
  */
 public class SafeCreativeAPIWrapperTest {
     private static SafeCreativeAPIWrapper instance;
+    private static SafeCreativeAPITestProperties testProperties;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        SafeCreativeAPITestProperties testProperties = SafeCreativeAPITestProperties.getInstance();
+        testProperties = SafeCreativeAPITestProperties.getInstance();
         instance = new SafeCreativeAPIWrapper(testProperties.getSharedKey(), testProperties.getPrivateKey());
+    }
+
+    @Before
+    public void setUp() {
         instance.setBaseUrl(testProperties.getBaseUrl());
         instance.setBaseSearchUrl(testProperties.getBaseSearchUrl());
     }
@@ -144,7 +152,65 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
-     * Test of createAuth method, of class SafeCreativeAPIWrapper.
+     * Test of getWorkTypes method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetWorkTypes() throws Exception {
+        System.out.println("getWorkTypes");
+        List<Work.Type> result = instance.getWorkTypes();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of getWorkLanguages method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetWorkLanguage() throws Exception {
+        System.out.println("getWorkLanguages");
+        List<Work.Language> result = instance.getWorkLanguages();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of setLocale method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testSetLocale() throws Exception {
+        System.out.println("setLocale");
+        //Use production:
+        instance.setBaseUrl(SafeCreativeAPIWrapper.DEFAULT_API_URL); 
+        instance.setLocale(Locale.ENGLISH);
+        //Use a basic localized list:
+        List<Work.Language> resultEN = instance.getWorkLanguages();
+        assertNotNull(resultEN);
+        assertFalse(resultEN.isEmpty());
+        System.out.println("Result EN: "+ resultEN);
+        for(Work.Language language : resultEN) {
+            if("ES".equals(language.getCode())) {
+                assertEquals("Spanish", language.getName());
+                break;
+            }
+        }
+        //Check list in Spanish
+        instance.setLocale(new Locale("es"));
+        List<Work.Language> resultES = instance.getWorkLanguages();
+        assertNotNull(resultES);
+        assertFalse(resultES.isEmpty());
+        System.out.println("Result ES: "+ resultES);
+        for(Work.Language language : resultES) {
+            if("ES".equals(language.getCode())) {
+                assertEquals("Español", language.getName());
+                break;
+            }
+        }
+    }
+
+    /**
+     * Test of getWork method, of class SafeCreativeAPIWrapper.
      */
     @Test
     public void testGetWork() throws Exception {
@@ -161,6 +227,46 @@ public class SafeCreativeAPIWrapperTest {
         xs.toXML(work, System.out);
     }
 
+    /**
+     * Test of searchByFields method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSearchByFields() throws Exception {
+        System.out.println("searchByFields");
+        ListPage<Work> results = instance.searchWorksByFields(
+                SearchMethod.WORK_TYPE,Work.Type.PHOTO,
+                SearchMethod.DOWNLOADABLE,true
+        );
+        assertNotNull(results);
+        assertTrue(results.getSize() > 0);
+        //Last page
+        results = instance.searchWorksByFields(results.getPageTotal(),
+                SearchMethod.WORK_TYPE,Work.Type.PHOTO,
+                SearchMethod.DOWNLOADABLE,true
+        );
+        assertNotNull(results);
+        assertTrue(results.getSize() > 0);
+        //Out of bounds page
+        results = instance.searchWorksByFields(results.getPageTotal()+1,
+                SearchMethod.WORK_TYPE,Work.Type.PHOTO,
+                SearchMethod.DOWNLOADABLE,true
+        );
+        assertNotNull(results);
+        assertTrue(results.getSize() == 0);
+    }
+
+    /**
+     * Test of searchWorksByHashMD5 method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testSearchWorksByHashMD5() throws Exception {
+        System.out.println("searchByFields");
+        instance.setBaseUrl(SafeCreativeAPIWrapper.DEFAULT_API_URL); //Use prod
+        ListPage<Work> results = instance.searchWorksByHashMD5("22f5ce4f4bb5f49625b664927d5854d8");
+        assertNotNull(results);
+        assertTrue(results.getSize() == 1);
+    }
 
     /**
      * Test of callComponent method, of class SafeCreativeAPIWrapper.

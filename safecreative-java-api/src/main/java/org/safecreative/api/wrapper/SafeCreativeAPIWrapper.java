@@ -24,15 +24,14 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.RegisterWork;
@@ -40,9 +39,12 @@ import org.safecreative.api.SafeCreativeAPI;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.UploadProgressListener;
 import org.safecreative.api.util.Digest;
+import org.safecreative.api.wrapper.converters.LicenseConverter;
+import org.safecreative.api.wrapper.converters.ListPageConverter;
 import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
+import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Profile;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
@@ -70,35 +72,72 @@ public class SafeCreativeAPIWrapper {
 
     private AuthKey authKey;
 
+    /**
+     * Constructor
+     *
+     * @param sharedKey api's shared key
+     * @param privateKey api's privatekey key
+     */
     public SafeCreativeAPIWrapper(String sharedKey, String privateKey) {
         this(new SafeCreativeAPI(sharedKey, privateKey));
     }
 
+    /**
+     * Constructor using low level api interface
+     * @param api low level interface
+     */
     public SafeCreativeAPIWrapper(SafeCreativeAPI api) {
         this.api = api;
     }
 
+    /**
+     * Get low level api interface
+     *
+     * @return low level api interface
+     */
     public SafeCreativeAPI getApi() {
         return api;
     }
 
+    /**
+     * Gets api search endpoint url
+     *
+     * @return api search endpoint url
+     */
     public String getBaseSearchUrl() {
         return StringUtils.defaultIfEmpty(baseSearchUrl, DEFAULT_API_SEARCH_URL);
     }
 
+    /**
+     * Sets api search endpoint url
+     *
+     * @param baseSearchUrl api search endpoint url
+     */
     public void setBaseSearchUrl(String baseSearchUrl) {
         this.baseSearchUrl = baseSearchUrl;
     }
 
+    /**
+     * Sets api endpoint url
+     *
+     * @param baseUrl api endpoint url
+     */
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Gets api endpoint url
+     *
+     * @return api endpoint url
+     */
     public String getBaseUrl() {
         return StringUtils.defaultIfEmpty(baseUrl, DEFAULT_API_URL);
     }
 
     /**
+     * Gets current authorization key
+     *
      * @return the authKey
      */
     public AuthKey getAuthKey() {
@@ -106,27 +145,52 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
+     * Sets current authorization key
+     *
      * @param authKey the authKey to set
      */
     public void setAuthKey(AuthKey authKey) {
         this.authKey = authKey;
     }
 
-    
-
-    public String getVersion() throws ApiException {
-        if (api.getBaseUrl() == null) {
-            api.setBaseUrl(getBaseUrl());
-        }
-        String result = callComponent("version");
-        String version = api.evalXml(result, "/version");
-        return version;
+    /**
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return api.getLocale();
     }
 
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        api.setLocale(locale);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Authorization methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Check authorization state
+     *
+     * @param authKey authorization key
+     * @return authorization state
+     * @see AuthKeyState
+     * @throws ApiException
+     */
     public AuthKeyState checkAuth(AuthKey authKey) throws ApiException {
         return checkAuth(authKey.getAuthkey());
     }
 
+    /**
+     * Check authorization state
+     *
+     * @param authKey authorization key
+     * @return authorization state
+     * @see AuthKeyState
+     * @throws ApiException
+     */
     public AuthKeyState checkAuth(String authKey) throws ApiException {
         setApiUrl();
         String result = api.getAuthKeyState(authKey);
@@ -139,10 +203,23 @@ public class SafeCreativeAPIWrapper {
         return state;
     }
 
+    /**
+     * Create a new authorization key with default <code>MANAGE</code> access
+     * level
+     *
+     * @return authorization key
+     * @throws ApiException
+     */
     public AuthKey createAuth() throws ApiException {
         return createAuth(AuthkeyLevel.MANAGE);
     }
 
+    /**
+     * Create a new authorization key
+     * @param authkeyLevel api authorization access level
+     * @return authorization key
+     * @throws ApiException
+     */
     @SuppressWarnings("unchecked")
     public AuthKey createAuth(AuthkeyLevel authkeyLevel) throws ApiException {
         setApiUrl();
@@ -161,11 +238,45 @@ public class SafeCreativeAPIWrapper {
         return authKey;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // User methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Create/Update a user by using a mail address
+     *
+     * @param mail user's mail address
+     * @param level api authorization access level
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @return user link information
+     * @see UserLink
+     * @throws ApiException
+     */
     public UserLink linkUser(String mail, AuthkeyLevel level,
             String firstName, String middleName, String lastName) throws ApiException {
         return linkUser(mail, level, firstName, middleName, lastName, null, null, null, null, null, null);
     }
 
+    /**
+     * Create/Update a user by using a mail address
+     *
+     * @param mail mail user's mail address
+     * @param level api authorization access level
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @param addressline1
+     * @param addressline2
+     * @param addresszip
+     * @param addresscity
+     * @param addresscountry
+     * @param locale
+     * @return user link information
+     * @see UserLink
+     * @throws ApiException
+     */
     @SuppressWarnings("unchecked")
     public UserLink linkUser(String mail, AuthkeyLevel level,
             String firstName, String middleName, String lastName,
@@ -190,10 +301,42 @@ public class SafeCreativeAPIWrapper {
         return readObject(UserLink.class, result);
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Information methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Retrieves current api version. This method can also be used to check api
+     * access.
+     * @return api's current version
+     * @throws ApiException
+     */
+    public String getVersion() throws ApiException {
+        if (api.getBaseUrl() == null) {
+            api.setBaseUrl(getBaseUrl());
+        }
+        String result = callComponent("version");
+        String version = api.evalXml(result, "/version");
+        return version;
+    }
+
+    /**
+     * Get user defined registration profiles using last authorization
+     *
+     * @return List of registration profiles
+     * @throws ApiException
+     */
     public List<Profile> getProfiles() throws ApiException {
         return getProfiles(authKey);
     }
 
+    /**
+     * Get user defined registration profiles
+     *
+     * @param authKey user authorization key
+     * @return List of registration profiles
+     * @throws ApiException
+     */
     @SuppressWarnings("unchecked")
     public List<Profile> getProfiles(AuthKey authKey) throws ApiException {
         if (authKey == null) {
@@ -208,6 +351,64 @@ public class SafeCreativeAPIWrapper {
         return profiles;
     }
 
+    /**
+     * Get user available licenses including custom licenses
+     *
+     * @return First list page of user avaliable licenses
+     * @throws ApiException
+     */
+    public ListPage<License> getLicenses() throws ApiException {
+        return getLicenses(1);
+    }
+
+    /**
+     * Get user available licenses including custom licenses
+     *
+     * @param page page number
+     * @return List of user avaliable licenses
+     * @throws ApiException
+     */
+    public ListPage<License> getLicenses(int page) throws ApiException {
+        return getLicenses(page,authKey);
+    }
+    /**
+     * Get user available licenses including custom licenses
+     *
+     * @param page page number
+     * @param authKey authKey user authorization key
+     * @return List of user avaliable licenses
+     * @throws ApiException
+     */
+    @SuppressWarnings("unchecked")
+    public ListPage<License> getLicenses(int page,AuthKey authKey) throws ApiException {
+        if (authKey == null) {
+            throw new ApiException("null auth key");
+        }
+        setApiUrl();
+        Map params = api.createParams("component", "user.licenses", "authkey", authKey.getAuthkey());
+        String result = api.callSigned(params, authKey.getPrivatekey(), true, false);
+        checkError(result);
+        return readListPage(result, License.class, new LicenseConverter());
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Work.Type> getWorkTypes() throws ApiException {
+        setApiUrl();
+        String result = callComponent("work.types");
+        List<Work.Type> workTypes = readList(result, "worktypes", "worktype", Work.Type.class);
+        log.debug("Work Types {}", workTypes);
+        return workTypes;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Work.Language> getWorkLanguages() throws ApiException {
+        setApiUrl();
+        String result = callComponent("work.languages");
+        List<Work.Language> workLanguages = readList(result, "worklanguages", "language", Work.Language.class);
+        log.debug("Work Languages {}", workLanguages);
+        return workLanguages;
+    }
+    
     /**
      * Get public work info
      * @param code
@@ -228,6 +429,20 @@ public class SafeCreativeAPIWrapper {
         return readObject(Work.class, result,new WorkEntryConverter());
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Registration methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Registers a file using a registration profile
+     *
+     * @param title Work's title
+     * @param file File to register
+     * @param profile Registration profile
+     * @param uploadProgressListener Upload progress listener
+     * @return Work's registration code
+     * @throws ApiException
+     */
     public String registerWork(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
         setApiUrl();
         byte[] digest;
@@ -255,6 +470,93 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException(e);
         }
         return workCode;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // SEARCH methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Search works by search field.
+     *
+     * @param fieldValues Variable list of pairs of search field,value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByFields(Object...fieldValues) throws ApiException {
+        return searchWorksByFields(1,fieldValues);
+    }
+
+    /**
+     * Search works by search field.
+     *
+     * @see SearchField
+     * @param page page number
+     * @param fieldValues Variable list of pairs of search field,value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByFields(int page,Object...fieldValues) throws ApiException {        
+        if (fieldValues != null && fieldValues.length % 2 != 0) {
+            throw new IllegalArgumentException("odd field value array size");
+        }
+        Map<String, String> params = api.createParams(fieldValues);
+        List<String> fieldParamList = new LinkedList<String>();
+        int field=1;
+        for(String fieldName : params.keySet()) {
+            fieldParamList.add("field"+field);
+            fieldParamList.add(fieldName);
+            fieldParamList.add("value"+field);
+            fieldParamList.add(params.get(fieldName));
+            field++;
+        }
+        fieldParamList.add("page");
+        fieldParamList.add(String.valueOf(page));
+        setApiSearchUrl();
+        String result = callComponent("search.byfields",fieldParamList.toArray(new String[fieldParamList.size()]));
+        ListPage<Work> results = readWorkListPage(result);
+        return results;
+    }
+
+    /**
+     * Search works by MD5 hash.
+     * @param md5 value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByHashMD5(String md5) throws ApiException {
+        return searchWorksByHash(1, SearchMethod.HASH_MD5, md5);
+    }
+
+    /**
+     * Search works by SHA-1 hash.
+     * @param sha1 value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByHashSHA1(String sha1) throws ApiException {
+        return searchWorksByHash(1, SearchMethod.HASH_SHA1, sha1);
+    }
+
+
+    /**
+     * Search works by hash.
+     *
+     * @param page page number
+     * @param method A SearchMethod.HASH_XXX value
+     * @param value value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByHash(int page,SearchMethod method,String value) throws ApiException {
+        if(!method.name().startsWith("HASH_")) {
+            throw new IllegalArgumentException("Bad search method "+method);
+        }
+        //Direct search by hash (use main api servers instead of search servers):
+        setApiUrl();
+        String result = callComponent("search.byhash",method.getFieldName(),value);
+        ListPage<Work> results = readWorkListPage(result);
+        return results;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -320,6 +622,18 @@ public class SafeCreativeAPIWrapper {
             return null;
         }
         return result.toString();
+    }
+
+    private ListPage<Work> readWorkListPage(String response) {
+        return readListPage(response, Work.class, new WorkEntryConverter());
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Object> ListPage<T> readListPage(String response,Class<T> clazz,Converter converter) {
+        XStream xs = new XStream();        
+        xs.registerConverter(new ListPageConverter<T>(clazz,converter));                
+        ListPage<T> listPage = readObject(ListPage.class, response,xs);        
+        return listPage;
     }
 
     @SuppressWarnings("unchecked")
