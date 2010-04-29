@@ -1,27 +1,27 @@
 /*
- Copyright (c) 2010 Safe Creative (http://www.safecreative.org)
+Copyright (c) 2010 Safe Creative (http://www.safecreative.org)
 
- Permission is hereby granted, free of charge, to any person
- obtaining a copy of this software and associated documentation
- files (the "Software"), to deal in the Software without
- restriction, including without limitation the rights to use,
- copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following
- conditions:
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
 
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- OTHER DEALINGS IN THE SOFTWARE.
-*/
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+ */
 package org.safecreative.api;
 
 import org.safecreative.api.util.Digest;
@@ -63,12 +63,10 @@ public class SafeCreativeAPI {
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String API_ENDPOINT = "/v2/";
     public static final String MANAGE_ENDPOINT = "/api-ui/authkey.edit?";
-    
-    public static final String STATE_REGISTERED 		= "REGISTERED";
-	public static final String STATE_PRE_REGISTERED 	= "PRE_REGISTERED";
-	public static final String NOT_AUTHORIZED_ERROR		= "NotAuthorized";
-    
-	private static Logger log = LoggerFactory.getLogger(SafeCreativeAPI.class);
+    public static final String STATE_REGISTERED = "REGISTERED";
+    public static final String STATE_PRE_REGISTERED = "PRE_REGISTERED";
+    public static final String NOT_AUTHORIZED_ERROR = "NotAuthorized";
+    private static Logger log = LoggerFactory.getLogger(SafeCreativeAPI.class);
     private String baseUrl;
     private char[] charBuf;
     private Long timeOffset;
@@ -82,7 +80,7 @@ public class SafeCreativeAPI {
     }
 
     public enum RelationType {
-        COMPOSITION,DERIVATION,VERSION,RELATED
+        COMPOSITION, DERIVATION, VERSION, RELATED
     }
 
     public SafeCreativeAPI(String sharedKey, String privateKey) {
@@ -198,17 +196,13 @@ public class SafeCreativeAPI {
         if (noncekey) {
             params.put("noncekey", getNonceKey(authKey));
         }
-        if(!params.containsKey("locale") && locale != null) {
-            params.put("locale",locale.toString());
-        }
+        addLocale(params);
         return call(signParams(params, privateKey));
     }
 
     public String call(Map<String, String> params) {
         StringBuilder encoded = new StringBuilder();
-        if(!params.containsKey("locale") && locale != null) {
-            params.put("locale",locale.toString());
-        }
+        addLocale(params);
         for (String param : params.keySet()) {
             String value = params.get(param);
             try {
@@ -240,7 +234,7 @@ public class SafeCreativeAPI {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-           IOHelper.closeQuietly(os);
+            IOHelper.closeQuietly(os);
         }
     }
 
@@ -254,8 +248,8 @@ public class SafeCreativeAPI {
 
         for (String key : keys) {
             String value = params.get(key);
-            if(value == null) {
-                log.debug("null param {}",key);
+            if (value == null) {
+                log.debug("null param {}", key);
                 continue;
             }
             unencoded.append("&" + key + "=" + value);
@@ -277,20 +271,20 @@ public class SafeCreativeAPI {
     public String getResponseState(String responseType, String response) throws Exception {
         return evalXml(response, String.format("/%s/state", responseType));
     }
-    
-	public boolean isError(String result) {		
-		return !StringUtils.isEmpty(result) && (result.indexOf("error") != -1 || result.indexOf("exception") != -1) ;
-	}
+
+    public boolean isError(String result) {
+        return !StringUtils.isEmpty(result) && (result.indexOf("error") != -1 || result.indexOf("exception") != -1);
+    }
 
     public String getErrorCode(String response) {
-        if(response.indexOf("error") != -1) {
+        if (response.indexOf("error") != -1) {
             return evalXml(response, "/error/errorId");
-        } 
+        }
         return evalXml(response, "/exception/exceptionId");
     }
 
-    public String getErrorMessage(String response)  {
-        if(response.indexOf("error") != -1) {
+    public String getErrorMessage(String response) {
+        if (response.indexOf("error") != -1) {
             return evalXml(response, "/error/errorMessage");
         }
         return evalXml(response, "/exception/exceptionMessage");
@@ -325,9 +319,14 @@ public class SafeCreativeAPI {
         return out.toString();
     }
 
+    private void addLocale(Map<String, String> params) {
+        if (!params.containsKey("locale") && locale != null) {
+            params.put("locale", locale.toString());
+        }
+    }
+
     private long getSystemTime() {
         return System.currentTimeMillis();
     }
-
 }
 
