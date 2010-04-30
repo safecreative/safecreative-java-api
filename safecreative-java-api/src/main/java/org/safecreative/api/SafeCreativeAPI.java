@@ -28,11 +28,8 @@ import org.safecreative.api.util.Digest;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -186,23 +183,39 @@ public class SafeCreativeAPI {
     }
 
     public String callSigned(Map<String, String> params, boolean ztime, boolean noncekey) {
-        return callSigned(params, privateKey, ztime, noncekey);
+        return callSigned(params, ztime, noncekey,true);
+    }
+
+    public String callSigned(Map<String, String> params, boolean ztime, boolean noncekey, boolean addLocale) {
+        return callSigned(params, privateKey, ztime, noncekey,addLocale);
     }
 
     public String callSigned(Map<String, String> params, String privateKey, boolean ztime, boolean noncekey) {
+        return callSigned(params, privateKey,ztime, noncekey,true);
+    }
+
+    public String callSigned(Map<String, String> params, String privateKey, boolean ztime, boolean noncekey,boolean addLocale) {
         if (ztime) {
             params.put("ztime", getZTime());
         }
         if (noncekey) {
             params.put("noncekey", getNonceKey(authKey));
         }
-        addLocale(params);
+        if (addLocale) {
+            addLocale(params);
+        }
         return call(signParams(params, privateKey));
     }
 
     public String call(Map<String, String> params) {
+        return call(params,true);
+    }
+
+    public String call(Map<String, String> params,boolean addLocale) {
         StringBuilder encoded = new StringBuilder();
-        addLocale(params);
+        if(addLocale) {
+            addLocale(params);
+        }
         for (String param : params.keySet()) {
             String value = params.get(param);
             try {
@@ -302,21 +315,7 @@ public class SafeCreativeAPI {
     }
 
     protected String readString(InputStream in) throws IOException {
-        return readString(new InputStreamReader(in), DEFAULT_ENCODING);
-    }
-
-    protected String readString(Reader in, String charset) throws IOException {
-        int len = 0;
-        StringWriter out = new StringWriter();
-        try {
-            while ((len = in.read(charBuf)) != -1) {
-                out.write(charBuf, 0, len);
-            }
-        } finally {
-            IOHelper.closeQuietly(in);
-            IOHelper.closeQuietly(out);
-        }
-        return out.toString();
+        return IOHelper.readString(in, DEFAULT_ENCODING);
     }
 
     private void addLocale(Map<String, String> params) {

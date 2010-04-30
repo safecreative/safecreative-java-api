@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.safecreative.api.ApiException;
+import org.safecreative.api.SafeCreativeAPI;
 import static org.junit.Assert.*;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.SafeCreativeAPITestProperties;
@@ -42,6 +43,7 @@ import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Link;
+import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 
 /**
@@ -221,10 +223,21 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("work response "+xml);
         Work work = instance.readObject(Work.class, xml,xs);
         assertNotNull(work);
-        xs = new XStream();
-        xs.alias("work", Work.class);
-        xs.addImplicitCollection(Work.class,"links",Link.class);
-        xs.toXML(work, System.out);
+        assertTrue(SafeCreativeAPI.isValidCode(work.getCode()));
+    }
+
+    /**
+     * Test of un/linkUser methods, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testUserLinkingUnLinking() throws Exception {
+        if(!testProperties.isPartner()) return;
+        System.out.println("userLink");
+        UserLink userLink = instance.userLink("alice@wonderland.tv", AuthkeyLevel.GET, "Alice", "Wander", "Wonders");
+        assertNotNull(userLink);
+        assertTrue(SafeCreativeAPI.isValidCode(userLink.getCode()));
+        System.out.println("userUnLink");
+        assertTrue(instance.userUnLink(userLink.getCode()));
     }
 
     /**

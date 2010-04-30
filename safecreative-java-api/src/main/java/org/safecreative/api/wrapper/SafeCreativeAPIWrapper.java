@@ -254,9 +254,9 @@ public class SafeCreativeAPIWrapper {
      * @see UserLink
      * @throws ApiException
      */
-    public UserLink linkUser(String mail, AuthkeyLevel level,
+    public UserLink userLink(String mail, AuthkeyLevel level,
             String firstName, String middleName, String lastName) throws ApiException {
-        return linkUser(mail, level, firstName, middleName, lastName, null, null, null, null, null, null);
+        return userLink(mail, level, firstName, middleName, lastName, null, null, null, null, null);
     }
 
     /**
@@ -271,17 +271,16 @@ public class SafeCreativeAPIWrapper {
      * @param addressline2
      * @param addresszip
      * @param addresscity
-     * @param addresscountry
-     * @param locale
+     * @param addresscountry     
      * @return user link information
      * @see UserLink
      * @throws ApiException
      */
     @SuppressWarnings("unchecked")
-    public UserLink linkUser(String mail, AuthkeyLevel level,
+    public UserLink userLink(String mail, AuthkeyLevel level,
             String firstName, String middleName, String lastName,
             String addressline1, String addressline2,
-            String addresszip, String addresscity, String addresscountry, String locale) throws ApiException {
+            String addresszip, String addresscity, String addresscountry) throws ApiException {
         setApiUrl();
         Map params = api.createParams("component", "user.link", "sharedkey", api.getSharedKey());
         params.put("mail", mail);
@@ -293,12 +292,32 @@ public class SafeCreativeAPIWrapper {
         params.put("addressline2", addressline2);
         params.put("addresszip", addresszip);
         params.put("addresscity", addresscity);
-        params.put("addresscountry", addresscountry);
-        params.put("locale", locale);
+        params.put("addresscountry", addresscountry);        
         String result = api.callSigned(params, true, false);
         checkError(result);
         log.debug("user.link result:\n{}", result);
-        return readObject(UserLink.class, result);
+        XStream xs = new XStream();
+        xs.aliasField("usercode", UserLink.class, "code");
+        xs.aliasField("authkey", UserLink.class, "authKey");
+        xs.aliasField("privatekey", UserLink.class, "authPrivateKey");
+        return readObject(UserLink.class, result,xs);
+    }
+
+    /**
+     * Unlinks a user
+     * @param userCode
+     * @return
+     * @throws ApiException
+     */
+    @SuppressWarnings("unchecked")
+    public boolean userUnLink(String userCode) throws ApiException {
+        setApiUrl();
+        Map params = api.createParams("component", "user.unlink", "sharedkey", api.getSharedKey());
+        params.put("usercode", userCode);
+        String result = api.callSigned(params, true, false,false);
+        checkError(result);
+        log.debug("user.unlink result:\n{}", result);
+        return checkReady(result);
     }
 
     ////////////////////////////////////////////////////////////////////////////

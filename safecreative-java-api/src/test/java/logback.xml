@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+
+    <appender name="con" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} %-5level %msg %n </pattern>
+        </layout>
+    </appender>
+
+
+    <logger name="org.safecreative.api" level="DEBUG" additivity="false">
+        <appender-ref ref="con" />
+    </logger>
+
+
+    <root>
+        <level value="DEBUG" />
+        <appender-ref ref="con" />        
+    </root>
+
+</configuration>
