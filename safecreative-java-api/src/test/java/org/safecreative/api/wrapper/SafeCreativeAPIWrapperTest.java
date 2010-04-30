@@ -240,6 +240,26 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
+     * Test of workDownload method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testWorkDownload() throws Exception {
+        System.out.println("workDownload");
+        //Find any public downloadable works
+        instance.setBaseSearchUrl(SafeCreativeAPIWrapper.DEFAULT_API_SEARCH_URL);
+        ListPage<Work> results = instance.searchWorksByFields(
+                SearchMethod.DOWNLOADABLE,true
+        );
+        assertNotNull(results);
+        assertTrue(results.getSize() > 0);
+        Work work = results.getList().get(0);
+        URL result = instance.workDownload(work.getCode(), false);
+        assertNotNull(result);
+        System.out.println("Result: "+ result);
+    }
+
+    /**
      * Test of un/linkUser methods, of class SafeCreativeAPIWrapper.
      */
     @Test

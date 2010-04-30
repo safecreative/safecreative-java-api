@@ -24,11 +24,14 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
+import java.net.MalformedURLException;
+import java.util.logging.Level;
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -495,10 +498,41 @@ public class SafeCreativeAPIWrapper {
         return readObject(Work.class, result,new WorkEntryConverter());
     }
 
+    /**
+     * Deletes a work
+     * @param code work's registry code
+     * @return <code>true</code> on success
+     * @throws ApiException
+     */
     public boolean workDelete(String code) throws ApiException {
         setApiUrl();        
-        String result = callComponentSigned("work.delete");        
+        String result = callComponentSigned("work.delete","code",code);
         return checkReady(result);
+    }
+
+    /**
+     * Gets a work's download URL.
+     * To access this URL the work must be in REGISTERED state.
+     *
+     * @param code work's registry code
+     * @param owner <code>true</code> if user is owner else
+     * you can get the URL to download any downloadable (Registered with public
+     * access and allow download) work
+     * @return
+     * @throws ApiException
+     */
+    public URL workDownload(String code,boolean owner) throws ApiException {
+        setApiUrl();
+        String result = callComponentSigned(
+                "work.download" + (owner ? ".private" : ""),
+                "code",code);
+        URL downloadUrl = null;
+        try {
+            downloadUrl = new URL(result);
+        } catch (MalformedURLException ex) {
+            throw new ApiException(ex);
+        }
+        return downloadUrl;
     }
 
     ////////////////////////////////////////////////////////////////////////////
