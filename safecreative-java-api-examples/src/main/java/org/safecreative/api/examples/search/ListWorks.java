@@ -44,7 +44,7 @@ public class ListWorks {
             boolean firstCode = false;
             for(Work.Type type : workTypes) {
                 if(firstCode) {
-                    codes.append(" | ");
+                    codes.append("|");
                 }
                 codes.append(type.getCode());
                 firstCode = true;
