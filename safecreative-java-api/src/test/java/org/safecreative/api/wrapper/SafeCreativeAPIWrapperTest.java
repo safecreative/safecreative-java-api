@@ -42,6 +42,7 @@ import org.safecreative.api.util.IOHelper;
 import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
+import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
@@ -172,6 +173,18 @@ public class SafeCreativeAPIWrapperTest {
     public void testGetWorkLanguage() throws Exception {
         System.out.println("getWorkLanguages");
         List<Work.Language> result = instance.getWorkLanguages();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of getCountries method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetCountries() throws Exception {
+        System.out.println("getCountries");
+        List<Country> result = instance.getCountries();
         assertNotNull(result);
         assertFalse(result.isEmpty());
         System.out.println("Result: "+ result);

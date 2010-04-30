@@ -44,6 +44,7 @@ import org.safecreative.api.wrapper.converters.ListPageConverter;
 import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
+import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Profile;
 import org.safecreative.api.wrapper.model.UserLink;
@@ -304,6 +305,43 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
+     * Modify user's data
+     *
+     * @param mail mail user's mail address
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @param addressline1
+     * @param addressline2
+     * @param addresszip
+     * @param addresscity
+     * @param addresscountry
+     * @return <code>true</code> on success
+     * @throws ApiException
+     */
+    @SuppressWarnings("unchecked")
+    public boolean userModify(String mail,
+            String firstName, String middleName, String lastName,
+            String addressline1, String addressline2,
+            String addresszip, String addresscity, String addresscountry) throws ApiException {
+        setApiUrl();
+        Map params = api.createParams("component", "user.modify", "authKey", authKey);
+        params.put("mail", mail);
+        params.put("firstname", firstName);
+        params.put("middlename", middleName);
+        params.put("lastname", lastName);
+        params.put("addressline1", addressline1);
+        params.put("addressline2", addressline2);
+        params.put("addresszip", addresszip);
+        params.put("addresscity", addresscity);
+        params.put("addresscountry", addresscountry);
+        String result = api.callSigned(params, true, false);
+        checkError(result);
+        log.debug("user.modify result:\n{}", result);
+        return checkReady(result);
+    }
+
+    /**
      * Unlinks a user
      * @param userCode
      * @return
@@ -426,6 +464,15 @@ public class SafeCreativeAPIWrapper {
         List<Work.Language> workLanguages = readList(result, "worklanguages", "language", Work.Language.class);
         log.debug("Work Languages {}", workLanguages);
         return workLanguages;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Country> getCountries() throws ApiException {
+        setApiUrl();
+        String result = callComponent("user.countries");
+        List<Country> countries = readList(result, "countries", "country", Country.class);
+        log.debug("Countries {}", countries);
+        return countries;
     }
     
     /**
