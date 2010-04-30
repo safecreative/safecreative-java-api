@@ -325,7 +325,7 @@ public class SafeCreativeAPIWrapper {
             String addressline1, String addressline2,
             String addresszip, String addresscity, String addresscountry) throws ApiException {
         setApiUrl();
-        Map params = api.createParams("component", "user.modify", "authKey", authKey);
+        Map params = api.createParams("component", "user.modify", "authKey", authKey.getAuthkey());
         params.put("mail", mail);
         params.put("firstname", firstName);
         params.put("middlename", middleName);
@@ -400,9 +400,7 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException("null auth key");
         }
         setApiUrl();
-        Map params = api.createParams("component", "user.profiles", "authkey", authKey.getAuthkey());
-        String result = api.callSigned(params, authKey.getPrivatekey(), true, false);
-        checkError(result);
+        String result = callComponentSigned("user.profiles",authKey);
         List<Profile> profiles = readList(result, "profiles", "profile", Profile.class);
         log.debug("Profiles {}", profiles);
         return profiles;
@@ -442,9 +440,7 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException("null auth key");
         }
         setApiUrl();
-        Map params = api.createParams("component", "user.licenses", "authkey", authKey.getAuthkey());
-        String result = api.callSigned(params, authKey.getPrivatekey(), true, false);
-        checkError(result);
+        String result = callComponentSigned("user.licenses",authKey);
         return readListPage(result, License.class, new LicenseConverter());
     }
 
@@ -474,6 +470,10 @@ public class SafeCreativeAPIWrapper {
         log.debug("Countries {}", countries);
         return countries;
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Work methods
+    ////////////////////////////////////////////////////////////////////////////
     
     /**
      * Get public work info
@@ -493,6 +493,12 @@ public class SafeCreativeAPIWrapper {
             throw ex;
         }        
         return readObject(Work.class, result,new WorkEntryConverter());
+    }
+
+    public boolean workDelete(String code) throws ApiException {
+        setApiUrl();        
+        String result = callComponentSigned("work.delete");        
+        return checkReady(result);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -653,14 +659,15 @@ public class SafeCreativeAPIWrapper {
     ////////////////////////////////////////////////////////////////////////////
     // Internal api helpers
     ////////////////////////////////////////////////////////////////////////////
+
     String callComponent(String component, String... params) throws ApiException {
-        Map<String, String> p = createParams(component);
+        Map<String, String> allParams = createParams(component);
         if (params != null && params.length > 0) {
-            p.putAll(api.createParams((Object[])params));
+            allParams.putAll(api.createParams((Object[])params));
         }
         String result = null;
         try {
-            result = api.call(p);
+            result = api.call(allParams);
         } catch (Exception ex) {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
@@ -673,8 +680,31 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    //TODO
-    //public String callComponentSigned(String component, String... params) throws ApiException {
+    String callComponentSigned(String component, String... params) throws ApiException {
+        return callComponentSigned(component,authKey, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    String callComponentSigned(String component,AuthKey authKey, String... params) throws ApiException {
+        Map allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
+        if (params != null && params.length > 0) {
+            allParams.putAll(api.createParams((Object[])params));
+        }
+        String result = null;
+        try {
+            result = api.callSigned(allParams, authKey.getPrivatekey(), true, false);
+        } catch (Exception ex) {
+            if (ex instanceof ApiException) {
+                throw (ApiException) ex;
+            }
+            //Wrap
+            Throwable cause = ex.getCause();
+            throw new ApiException(cause);
+        }
+        checkError(result);
+        return result;
+    }
+
     boolean checkReady(String response) throws ApiException {
         return checkState(response, STATE_READY);
     }
