@@ -24,20 +24,21 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper.converters;
 
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import java.net.URL;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import org.safecreative.api.wrapper.model.License;
 
+import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.Work;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
  * XStream Work converter
@@ -190,9 +191,11 @@ public class WorkEntryConverter extends AbstractModelConverter {
                 reader.moveDown();
                 user.setName(reader.getValue());
                 reader.moveUp();
-                reader.moveDown();
-                user.setUrl(readUrl(reader));
-                reader.moveUp();
+                if(reader.hasMoreChildren()) {
+	                reader.moveDown();
+	                user.setUrl(readUrl(reader));
+	                reader.moveUp();
+                }
                 users.add(user);
             }
             reader.moveUp();
