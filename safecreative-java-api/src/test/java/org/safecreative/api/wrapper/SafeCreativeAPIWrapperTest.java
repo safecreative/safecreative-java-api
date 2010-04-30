@@ -267,7 +267,7 @@ public class SafeCreativeAPIWrapperTest {
         assertNotNull(results);
         assertTrue(results.getSize() > 0);
         instance.setBaseSearchUrl(SafeCreativeAPIWrapper.DEFAULT_API_SEARCH_URL); //Use prod
-        results = instance.searchWorksByQuery(1,"tag:jamendo");
+        results = instance.searchWorksByQuery(1,SearchMethod.USER_NAME+":magnatune");
         assertNotNull(results);
         assertTrue(results.getSize() > 0);
     }
