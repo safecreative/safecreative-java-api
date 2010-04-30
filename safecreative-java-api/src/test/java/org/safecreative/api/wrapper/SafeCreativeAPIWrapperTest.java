@@ -228,12 +228,12 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
-     * Test of searchByFields method, of class SafeCreativeAPIWrapper.
+     * Test of searchWorksByFields method, of class SafeCreativeAPIWrapper.
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void testSearchByFields() throws Exception {
-        System.out.println("searchByFields");
+    public void testSearchWorksByFields() throws Exception {
+        System.out.println("searchWorksByFields");
         ListPage<Work> results = instance.searchWorksByFields(
                 SearchMethod.WORK_TYPE,Work.Type.PHOTO,
                 SearchMethod.DOWNLOADABLE,true
@@ -256,6 +256,22 @@ public class SafeCreativeAPIWrapperTest {
         assertTrue(results.getSize() == 0);
     }
 
+    /**
+     * Test of searchWorksByQuery method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSearchWorksByQuery() throws Exception {
+        System.out.println("searchWorksByQuery");
+        ListPage<Work> results = instance.searchWorksByQuery(1,"Mario Pena");
+        assertNotNull(results);
+        assertTrue(results.getSize() > 0);
+        instance.setBaseSearchUrl(SafeCreativeAPIWrapper.DEFAULT_API_SEARCH_URL); //Use prod
+        results = instance.searchWorksByQuery(1,"tag:jamendo");
+        assertNotNull(results);
+        assertTrue(results.getSize() > 0);
+    }
+    
     /**
      * Test of searchWorksByHashMD5 method, of class SafeCreativeAPIWrapper.
      */

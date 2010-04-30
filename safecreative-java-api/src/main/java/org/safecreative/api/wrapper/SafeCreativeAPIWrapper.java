@@ -559,6 +559,31 @@ public class SafeCreativeAPIWrapper {
         return results;
     }
 
+    /**
+     * Search works by text query.
+     *
+     * @param query text query
+     * @return First page list of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByQuery(String query) throws ApiException {
+        return searchWorksByQuery(1, query);
+    }
+
+    /**
+     * Search works by text query.
+     * @param page page number
+     * @param query text query
+     * @return List of found works
+     * @throws ApiException
+     */
+    public ListPage<Work> searchWorksByQuery(int page,String query) throws ApiException {
+        setApiSearchUrl();
+        String result = callComponent("search.byquery","query",query);
+        ListPage<Work> results = readWorkListPage(result);
+        return results;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Internal api helpers
     ////////////////////////////////////////////////////////////////////////////
