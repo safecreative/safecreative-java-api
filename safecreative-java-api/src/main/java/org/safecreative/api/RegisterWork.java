@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -353,7 +354,7 @@ public class RegisterWork {
 
 
 
-    private String postFile(String uri, Map<String, String> params, File file) {
+    private String postFile(String uri, Map<String, String> params, final File file) {
         try {
             log.debug(String.format("api request by post: \n%s/%s\n",
                     uri, file.getName()));
@@ -366,8 +367,19 @@ public class RegisterWork {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 parts[i++] = new StringPart(param.getKey(), param.getValue());
             }
-            parts[i] = new FilePart("file", file, "application/octet-stream", null);
-            //TODO notify upload progress
+            parts[i] = new FilePart("file", file, "application/octet-stream", null) {
+
+                @Override
+                protected void sendData(OutputStream out) throws IOException {
+                    //TODO notify upload progress
+                    if(uploadProgressListener == null) {
+                        super.sendData(out);
+                    } else {
+                        super.sendData(new PostUploadProgressListenerOutputStream(out,uploadProgressListener,file.length()));
+                    }
+                }
+
+            };
             MultipartRequestEntity entity = new MultipartRequestEntity(parts, post.getParams());
             post.setRequestEntity(entity);
             int status = client.executeMethod(post);

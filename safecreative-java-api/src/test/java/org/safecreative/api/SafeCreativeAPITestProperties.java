@@ -35,11 +35,14 @@ import org.apache.commons.lang.StringUtils;
  * @author mpolo@safecreative.org
  */
 public class SafeCreativeAPITestProperties {
+    public final static String PROPERTY_FILE   =  "safecreative-api-tests.properties";
     private final static SafeCreativeAPITestProperties instance = new SafeCreativeAPITestProperties();
-    private final static String PROPERTY_FILE   =  "safecreative-api-tests.properties";
+    
 
     private final static String SHARED_KEY      =  "sharedKey";
     private final static String PRIVATE_KEY     =  "privateKey";
+    private final static String AUTH_KEY        =  "authKey";
+    private final static String AUTH_PRIVATE_KEY     =  "authPrivateKey";
     private final static String BASE_URL        =  "baseUrl";
     private final static String BASE_SEARCH_URL =  "baseSearchUrl";
     private final static String PARTNER         =  "partner";
@@ -59,6 +62,14 @@ public class SafeCreativeAPITestProperties {
 
     public String getPrivateKey() {
         return getProperty(PRIVATE_KEY);
+    }
+
+    public String getAuthKey() {
+        return getProperty(AUTH_KEY);
+    }
+
+    public String getAuthPrivateKey() {
+        return getProperty(AUTH_PRIVATE_KEY);
     }
 
     public String getBaseUrl() {

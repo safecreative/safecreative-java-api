@@ -43,7 +43,6 @@ import org.safecreative.api.wrapper.converters.WorkEntryConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
-import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 
@@ -59,12 +58,27 @@ public class SafeCreativeAPIWrapperTest {
     public static void setUpClass() throws Exception {
         testProperties = SafeCreativeAPITestProperties.getInstance();
         instance = new SafeCreativeAPIWrapper(testProperties.getSharedKey(), testProperties.getPrivateKey());
+        instance.setBaseUrl(testProperties.getBaseUrl());
+        instance.setBaseSearchUrl(testProperties.getBaseSearchUrl());
+        try {
+            instance.setAuthKey(testProperties.getAuthKey(),testProperties.getAuthPrivateKey());
+        }catch(Exception ex) {
+            AuthKey authKey = instance.createAuth(AuthkeyLevel.MANAGE);
+            System.out.println(
+                    "Created AuthKey\nauthKey="+authKey.getAuthkey()+
+                    "\nauthPrivateKey="+authKey.getPrivatekey()+
+                    "\nGoto manage url:"+authKey.getManageUrl()+
+                    "\nand save auth/PrivateKey keys in "+SafeCreativeAPITestProperties.PROPERTY_FILE);
+            throw ex;
+        }
+        
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         instance.setBaseUrl(testProperties.getBaseUrl());
         instance.setBaseSearchUrl(testProperties.getBaseSearchUrl());
+        instance.setAuthKey(testProperties.getAuthKey(),testProperties.getAuthPrivateKey());
     }
 
 
@@ -240,21 +254,21 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
-     * Test of workDownload method, of class SafeCreativeAPIWrapper.
+     * Test of getWorkDownload method, of class SafeCreativeAPIWrapper.
      */
     @Test
     @SuppressWarnings("unchecked")
     public void testWorkDownload() throws Exception {
-        System.out.println("workDownload");
-        //Find any public downloadable works
-        instance.setBaseSearchUrl(SafeCreativeAPIWrapper.DEFAULT_API_SEARCH_URL);
+        System.out.println("getWorkDownload");
+        //Find any public downloadable works        
         ListPage<Work> results = instance.searchWorksByFields(
                 SearchMethod.DOWNLOADABLE,true
         );
         assertNotNull(results);
         assertTrue(results.getSize() > 0);
         Work work = results.getList().get(0);
-        URL result = instance.workDownload(work.getCode(), false);
+        System.out.println("Getting download url of work: "+ work);
+        URL result = instance.getWorkDownload(work.getCode(), false);
         assertNotNull(result);
         System.out.println("Result: "+ result);
     }
@@ -336,9 +350,8 @@ public class SafeCreativeAPIWrapperTest {
     @Test
     public void testCallComponent() throws Exception {
         System.out.println("callComponent");
-        String component = "version";
-        String[] params = null;
-        String result = instance.callComponent(component, params);
+        String component = "version";        
+        String result = instance.callComponent(component);
         assertNotNull(result);
         System.out.println("Result: "+ result);
     }

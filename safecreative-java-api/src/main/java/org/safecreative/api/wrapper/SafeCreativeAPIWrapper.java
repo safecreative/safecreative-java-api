@@ -140,21 +140,30 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
-     * Gets current authorization key
+     * Gets current authorization key pair
      *
-     * @return the authKey
+     * @return the authKey key pair
      */
     public AuthKey getAuthKey() {
         return authKey;
     }
 
     /**
-     * Sets current authorization key
+     * Sets current authorization key pair
      *
-     * @param authKey the authKey to set
+     * @param authKey the authKey key pair to set
      */
     public void setAuthKey(AuthKey authKey) {
         this.authKey = authKey;
+    }
+
+    /**
+     * Sets current authorization key pair
+     * @param authKey public auth key
+     * @param authPrivateKey private auth key
+     */
+    public void setAuthKey(String authKey, String authPrivateKey) {
+        setAuthKey(new AuthKey(authKey, authPrivateKey));
     }
 
     /**
@@ -443,7 +452,7 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException("null auth key");
         }
         setApiUrl();
-        String result = callComponentSigned("user.licenses",authKey);
+        String result = callComponentSigned("user.licenses",authKey,"page",page);
         return readListPage(result, License.class, new LicenseConverter());
     }
 
@@ -521,14 +530,15 @@ public class SafeCreativeAPIWrapper {
      * @return
      * @throws ApiException
      */
-    public URL workDownload(String code,boolean owner) throws ApiException {
+    public URL getWorkDownload(String code,boolean owner) throws ApiException {
         setApiUrl();
         String result = callComponentSigned(
-                "work.download" + (owner ? ".private" : ""),
+                "work.download" + (owner ? ".private" : ""),authKey,false,false,false,
                 "code",code);
         URL downloadUrl = null;
         try {
-            downloadUrl = new URL(result);
+            String resultUrl = api.evalXml(result, "/url");
+            downloadUrl = new URL(resultUrl);
         } catch (MalformedURLException ex) {
             throw new ApiException(ex);
         }
@@ -549,7 +559,7 @@ public class SafeCreativeAPIWrapper {
      * @return Work's registration code
      * @throws ApiException
      */
-    public String registerWork(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
+    public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
         setApiUrl();
         byte[] digest;
         log.debug("Calculating file {} {} checksum", file, Digest.SHA1);
@@ -567,7 +577,7 @@ public class SafeCreativeAPIWrapper {
         api.setPrivateAuthKey(authKey.getPrivatekey());
         String workCode = null;
         try {
-            workCode = registerWork.registerWork(title, file.getName(), file, null);
+            workCode = registerWork.registerWork(title, file.getName(), file, checkSum);
         } catch (Exception e) {
             if (SafeCreativeAPI.NOT_AUTHORIZED_ERROR.equals(e.getMessage())) {
                 log.warn("Not authorized to update/register {}", e);
@@ -586,7 +596,7 @@ public class SafeCreativeAPIWrapper {
      * Search works by search field.
      *
      * @param fieldValues Variable list of pairs of search field,value
-     * @return List of found works
+     * @return First page list of found works
      * @throws ApiException
      */
     public ListPage<Work> searchWorksByFields(Object...fieldValues) throws ApiException {
@@ -619,7 +629,7 @@ public class SafeCreativeAPIWrapper {
         fieldParamList.add("page");
         fieldParamList.add(String.valueOf(page));
         setApiSearchUrl();
-        String result = callComponent("search.byfields",fieldParamList.toArray(new String[fieldParamList.size()]));
+        String result = callComponent("search.byfields",fieldParamList.toArray());
         ListPage<Work> results = readWorkListPage(result);
         return results;
     }
@@ -627,7 +637,7 @@ public class SafeCreativeAPIWrapper {
     /**
      * Search works by MD5 hash.
      * @param md5 value
-     * @return List of found works
+     * @return First page list of found works
      * @throws ApiException
      */
     public ListPage<Work> searchWorksByHashMD5(String md5) throws ApiException {
@@ -637,7 +647,7 @@ public class SafeCreativeAPIWrapper {
     /**
      * Search works by SHA-1 hash.
      * @param sha1 value
-     * @return List of found works
+     * @return First page list of found works
      * @throws ApiException
      */
     public ListPage<Work> searchWorksByHashSHA1(String sha1) throws ApiException {
@@ -660,7 +670,7 @@ public class SafeCreativeAPIWrapper {
         }
         //Direct search by hash (use main api servers instead of search servers):
         setApiUrl();
-        String result = callComponent("search.byhash",method.getFieldName(),value);
+        String result = callComponent("search.byhash",method.getFieldName(),value,"page",page);
         ListPage<Work> results = readWorkListPage(result);
         return results;
     }
@@ -685,7 +695,7 @@ public class SafeCreativeAPIWrapper {
      */
     public ListPage<Work> searchWorksByQuery(int page,String query) throws ApiException {
         setApiSearchUrl();
-        String result = callComponent("search.byquery","query",query);
+        String result = callComponent("search.byquery","query",query,"page",page);
         ListPage<Work> results = readWorkListPage(result);
         return results;
     }
@@ -694,10 +704,10 @@ public class SafeCreativeAPIWrapper {
     // Internal api helpers
     ////////////////////////////////////////////////////////////////////////////
 
-    String callComponent(String component, String... params) throws ApiException {
+    String callComponent(String component, Object... params) throws ApiException {
         Map<String, String> allParams = createParams(component);
         if (params != null && params.length > 0) {
-            allParams.putAll(api.createParams((Object[])params));
+            allParams.putAll(api.createParams(params));
         }
         String result = null;
         try {
@@ -714,19 +724,19 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    String callComponentSigned(String component, String... params) throws ApiException {
+    String callComponentSigned(String component, Object... params) throws ApiException {
         return callComponentSigned(component,authKey, params);
     }
 
     @SuppressWarnings("unchecked")
-    String callComponentSigned(String component,AuthKey authKey, String... params) throws ApiException {
+    String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale, Object... params) throws ApiException {
         Map allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
         if (params != null && params.length > 0) {
-            allParams.putAll(api.createParams((Object[])params));
+            allParams.putAll(api.createParams(params));
         }
         String result = null;
         try {
-            result = api.callSigned(allParams, authKey.getPrivatekey(), true, false);
+            result = api.callSigned(allParams, authKey.getPrivatekey(), ztime, noncekey,addLocale);
         } catch (Exception ex) {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
@@ -852,4 +862,6 @@ public class SafeCreativeAPIWrapper {
     private void setApiSearchUrl() {
         api.setBaseUrl(getBaseSearchUrl());
     }
+
+
 }
