@@ -25,7 +25,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.safecreative.api.wrapper;
 
 import java.net.MalformedURLException;
-import java.util.logging.Level;
 import org.safecreative.api.ApiException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
@@ -634,6 +633,27 @@ public class SafeCreativeAPIWrapper {
         return results;
     }
 
+
+    /**
+     * Search works by content (Aka Semantic query).
+     *     
+     * @param method A SearchMethod.WORK_CNT_XXX value
+     * @param value value
+     * @return List of found works
+     * @throws ApiException
+     */
+    public List<Work> searchWorksByContent(SearchMethod method,String value) throws ApiException {
+        if(!method.name().startsWith("WORK_CNT_")) {
+            throw new IllegalArgumentException("Bad search method "+method);
+        }
+        setApiSearchUrl();
+        String result = callComponent("semantic.query",method.getFieldName(),value);
+        XStream xs = new XStream();
+        xs.registerConverter(new WorkEntryConverter());
+        List<Work> results = readList(result, "works", "work", Work.class,xs);
+        return results;
+    }
+
     /**
      * Search works by MD5 hash.
      * @param md5 value
@@ -801,9 +821,15 @@ public class SafeCreativeAPIWrapper {
         return listPage;
     }
 
-    @SuppressWarnings("unchecked")
     private <T extends Object> List<T> readList(String response, String listElement, String element, Class<T> clazz) {
-        XStream xs = new XStream();
+        return readList(response, listElement, element, clazz,null);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Object> List<T> readList(String response, String listElement, String element, Class<T> clazz,XStream xs) {
+        if(xs == null)  {
+            xs = new XStream();
+        }
         xs.alias(listElement, List.class);
         xs.alias(element, clazz);
         Object result = null;

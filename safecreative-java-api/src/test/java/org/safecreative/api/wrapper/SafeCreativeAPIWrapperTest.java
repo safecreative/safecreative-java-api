@@ -337,11 +337,25 @@ public class SafeCreativeAPIWrapperTest {
      */
     @Test
     public void testSearchWorksByHashMD5() throws Exception {
-        System.out.println("searchByFields");
+        System.out.println("searchWorksByHashMD5");
         instance.setBaseUrl(SafeCreativeAPIWrapper.DEFAULT_API_URL); //Use prod
         ListPage<Work> results = instance.searchWorksByHashMD5("22f5ce4f4bb5f49625b664927d5854d8");
         assertNotNull(results);
         assertTrue(results.getSize() == 1);
+        System.out.println("Result: "+ results.getList().get(0));
+    }
+
+    /**
+     * Test of searchWorksByContent method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testSearchWorksByContent() throws Exception {
+        System.out.println("searchWorksByContent");
+        instance.setBaseSearchUrl(SafeCreativeAPIWrapper.DEFAULT_API_SEARCH_URL); //Use prod
+        List<Work> results = instance.searchWorksByContent(SearchMethod.WORK_CNT_MD5,"22f5ce4f4bb5f49625b664927d5854d8");
+        assertNotNull(results);
+        assertTrue(results.size() == 1);
+        System.out.println("Result: "+ results.get(0));
     }
 
     /**
