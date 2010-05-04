@@ -246,7 +246,7 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("getWork");
         XStream xs = new XStream();
         xs.registerConverter(new WorkEntryConverter());
-        String xml = IOHelper.readString(getClass().getResourceAsStream("resources/work.get.xml"));
+        String xml = IOHelper.readString(getClass().getResourceAsStream("/work.get.xml"));
         System.out.println("work response "+xml);
         Work work = instance.readObject(Work.class, xml,xs);
         assertNotNull(work);
