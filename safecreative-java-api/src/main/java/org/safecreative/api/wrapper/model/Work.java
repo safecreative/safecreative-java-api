@@ -76,7 +76,7 @@ public class Work {
         
     }
 
-    public static class TypeGroup extends Type {
+    public static class TypeGroup extends CodeableEntity {
 
     }
 
