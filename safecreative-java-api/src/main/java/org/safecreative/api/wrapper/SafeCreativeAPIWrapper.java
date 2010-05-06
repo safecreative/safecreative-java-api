@@ -597,6 +597,7 @@ public class SafeCreativeAPIWrapper {
      * @param fieldValues Variable list of pairs of search field,value
      * @return First page list of found works
      * @throws ApiException
+     * @see SearchMethod
      */
     public ListPage<Work> searchWorksByFields(Object...fieldValues) throws ApiException {
         return searchWorksByFields(1,fieldValues);
@@ -604,12 +605,12 @@ public class SafeCreativeAPIWrapper {
 
     /**
      * Search works by search field.
-     *
-     * @see SearchField
+     *     
      * @param page page number
      * @param fieldValues Variable list of pairs of search field,value
      * @return List of found works
      * @throws ApiException
+     * @see SearchMethod
      */
     public ListPage<Work> searchWorksByFields(int page,Object...fieldValues) throws ApiException {        
         if (fieldValues != null && fieldValues.length % 2 != 0) {
