@@ -60,7 +60,7 @@ public class RegisterWork {
 
     private static Logger log = LoggerFactory.getLogger(RegisterWork.class);
     private SafeCreativeAPI api;
-    private String workTpe;
+    private String workType;
     private String excerpt;
     private String license;
     private String tags;
@@ -158,12 +158,12 @@ public class RegisterWork {
         this.profile = profile;
     }
 
-    public void setWorkTpe(String workTpe) {
-        this.workTpe = workTpe;
+    public void setWorkType(String workTpe) {
+        this.workType = workTpe;
     }
 
-    public String getWorkTpe() {
-        return workTpe;
+    public String getWorkType() {
+        return workType;
     }
 
     public void setLicense(String license) {
@@ -329,7 +329,7 @@ public class RegisterWork {
             params.put("code", getCode());
         }
         if (StringUtils.isEmpty(profile)) {
-            params.put("worktype", getWorkTpe());
+            params.put("worktype", getWorkType());
             params.put("license", getLicense());
             params.put("tags", getTags());
             params.put("allowdownload", allowdownload ? "1" : "0");
