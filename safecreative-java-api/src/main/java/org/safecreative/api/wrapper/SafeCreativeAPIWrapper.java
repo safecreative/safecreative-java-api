@@ -413,7 +413,7 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException("null auth key");
         }
         setApiUrl();
-        String result = callComponentSigned("user.profiles",authKey);
+        String result = callComponentSigned("user.profiles",authKey,true,false,false);
         List<Profile> profiles = readList(result, "profiles", "profile", Profile.class);
         log.debug("Profiles {}", profiles);
         return profiles;
@@ -453,7 +453,7 @@ public class SafeCreativeAPIWrapper {
             throw new ApiException("null auth key");
         }
         setApiUrl();
-        String result = callComponentSigned("user.licenses",authKey,"page",page);
+        String result = callComponentSigned("user.licenses",authKey,true,false,true,"page",page);
         return readListPage(result, License.class, new LicenseConverter());
     }
 
@@ -515,10 +515,21 @@ public class SafeCreativeAPIWrapper {
      * @throws ApiException
      */
     public Work getWorkPrivate(String code) throws ApiException {
+        return getWorkPrivate(code, getAuthKey());
+    }
+
+    /**
+     * Get private work info
+     * @param code
+     * @param authKey authKey user authorization key
+     * @return Work or <code>null</code> if none found
+     * @throws ApiException
+     */
+    public Work getWorkPrivate(String code, AuthKey authKey) throws ApiException {
         setApiUrl();
         String result = null;
         try {
-            result = callComponentSigned("work.get.private", "code", code);
+            result = callComponentSigned("work.get.private", authKey, true, false, true, "code", code);
         } catch (ApiException ex) {
             if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
                 return null;
@@ -536,7 +547,7 @@ public class SafeCreativeAPIWrapper {
      */
     public boolean workDelete(String code) throws ApiException {
         setApiUrl();        
-        String result = callComponentSigned("work.delete","code",code);
+        String result = callComponentSigned("work.delete", getAuthKey(), true, false, false, "code",code);
         return checkReady(result);
     }
 
@@ -767,12 +778,8 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    String callComponentSigned(String component, Object... params) throws ApiException {
-        return callComponentSigned(component,authKey, params);
-    }
-
     @SuppressWarnings("unchecked")
-    String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale, Object... params) throws ApiException {
+    String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
         Map allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
