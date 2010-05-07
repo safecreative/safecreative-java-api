@@ -4,8 +4,10 @@
     <groupId>org.safecreative</groupId>
     <artifactId>safecreative-java-api</artifactId>
     <packaging>jar</packaging>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.6.0</version>
     <name>safecreative-java-api</name>
+    <description>Safe Creative Java API</description>
+    <inceptionYear>2010</inceptionYear>
     <url>http://code.google.com/p/safecreative-java-api</url>
     <organization>
         <name>Safe Creative</name>
