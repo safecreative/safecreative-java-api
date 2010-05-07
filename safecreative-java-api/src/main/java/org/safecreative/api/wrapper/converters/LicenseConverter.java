@@ -59,9 +59,6 @@ public class LicenseConverter extends AbstractModelConverter {
         reader.moveDown();
         if(reader.getNodeName().equals("endDate")) {
             Date endDate = readDate(reader);
-            if(endDate == null) {
-                log.error("bad license end date {}", reader.getValue());
-            }
             license.setEndDate(endDate);
             reader.moveUp();
             reader.moveDown();
