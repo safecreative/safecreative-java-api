@@ -2,10 +2,14 @@ Safe Creative Java API
 #######################
 
 This package contains the Safe Creative Java API packaged with all dependencies
-plus its documentation (javadocs).
+plus its documentation (javadocs and project info).
 
 If you want to compile it by yourself check its home page at 
 
 	http://code.google.com/p/safecreative-java-api
+
+Project info: Open with your browser the file doc/index.html
+
+JavaDocs: Open with your browser the file doc/apidocs/index.html
 
 The license that covers all contents is provided in the LICENSE.txt
