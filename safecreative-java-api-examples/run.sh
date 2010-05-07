@@ -3,9 +3,10 @@
 sharedKey=
 privateKey=
 
-version=0.5.0
-apiLib=../safecreative-java-api/target/safecreative-java-api-$version-SNAPSHOT-jar-with-dependencies.jar
-examplesLib=target/safecreative-java-api-examples-$version.jar
+api_version=0.6.0
+examples_version=0.5.0
+apiLib=../safecreative-java-api/target/safecreative-java-api-$api_version-jar-with-dependencies.jar
+examplesLib=target/safecreative-java-api-examples-$examples_version.jar
 
 class=$1
 shift 1
