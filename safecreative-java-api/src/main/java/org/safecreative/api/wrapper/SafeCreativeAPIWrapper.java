@@ -24,22 +24,21 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
-import java.net.MalformedURLException;
-import org.safecreative.api.ApiException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.safecreative.api.ApiException;
 import org.safecreative.api.RegisterWork;
 import org.safecreative.api.SafeCreativeAPI;
-import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.UploadProgressListener;
+import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.util.Digest;
 import org.safecreative.api.wrapper.converters.LicenseConverter;
 import org.safecreative.api.wrapper.converters.ListPageConverter;
@@ -53,6 +52,9 @@ import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
 
 /**
  * SafeCreativeAPI main wrapper
@@ -497,6 +499,26 @@ public class SafeCreativeAPIWrapper {
         String result = null;
         try {
             result = callComponent("work.get", "code", code);
+        } catch (ApiException ex) {
+            if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
+                return null;
+            }
+            throw ex;
+        }        
+        return readObject(Work.class, result,new WorkEntryConverter());
+    }
+
+    /**
+     * Get private work info
+     * @param code
+     * @return Work or <code>null</code> if none found
+     * @throws ApiException
+     */
+    public Work getWorkPrivate(String code) throws ApiException {
+        setApiUrl();
+        String result = null;
+        try {
+            result = callComponentSigned("work.get.private", "code", code);
         } catch (ApiException ex) {
             if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
                 return null;
