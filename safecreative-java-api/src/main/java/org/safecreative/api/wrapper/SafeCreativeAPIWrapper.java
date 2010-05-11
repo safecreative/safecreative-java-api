@@ -42,7 +42,7 @@ import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.util.Digest;
 import org.safecreative.api.wrapper.converters.LicenseConverter;
 import org.safecreative.api.wrapper.converters.ListPageConverter;
-import org.safecreative.api.wrapper.converters.WorkEntryConverter;
+import org.safecreative.api.wrapper.converters.WorkConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
@@ -505,7 +505,7 @@ public class SafeCreativeAPIWrapper {
             }
             throw ex;
         }        
-        return readObject(Work.class, result,new WorkEntryConverter());
+        return readObject(Work.class, result,new WorkConverter());
     }
 
     /**
@@ -536,7 +536,7 @@ public class SafeCreativeAPIWrapper {
             }
             throw ex;
         }        
-        return readObject(Work.class, result,new WorkEntryConverter());
+        return readObject(Work.class, result,new WorkConverter());
     }
 
     /**
@@ -683,7 +683,7 @@ public class SafeCreativeAPIWrapper {
         setApiSearchUrl();
         String result = callComponent("semantic.query",method.getFieldName(),value);
         XStream xs = new XStream();
-        xs.registerConverter(new WorkEntryConverter());
+        xs.registerConverter(new WorkConverter());
         List<Work> results = readList(result, "works", "work", Work.class,xs);
         return results;
     }
@@ -840,7 +840,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     private ListPage<Work> readWorkListPage(String response) {
-        return readListPage(response, Work.class, new WorkEntryConverter());
+        return readListPage(response, Work.class, new WorkConverter());
     }
 
     @SuppressWarnings("unchecked")

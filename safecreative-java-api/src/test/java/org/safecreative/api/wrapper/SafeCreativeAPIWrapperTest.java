@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.SafeCreativeAPITestProperties;
 import org.safecreative.api.util.IOHelper;
-import org.safecreative.api.wrapper.converters.WorkEntryConverter;
+import org.safecreative.api.wrapper.converters.WorkConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
@@ -245,7 +245,7 @@ public class SafeCreativeAPIWrapperTest {
     public void testGetWork() throws Exception {
         System.out.println("getWork");
         XStream xs = new XStream();
-        xs.registerConverter(new WorkEntryConverter());
+        xs.registerConverter(new WorkConverter());
         String xml = IOHelper.readString(getClass().getResourceAsStream("/work.get.xml"));
         System.out.println("work response "+xml);
         Work work = instance.readObject(Work.class, xml,xs);

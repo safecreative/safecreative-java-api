@@ -46,9 +46,9 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class WorkEntryConverter extends AbstractModelConverter {
+public class WorkConverter extends AbstractModelConverter {
 
-    private static Logger log = LoggerFactory.getLogger(WorkEntryConverter.class);
+    private static Logger log = LoggerFactory.getLogger(WorkConverter.class);
     private LicenseConverter licenseConverter;
 
     public boolean canConvert(Class type) {
