@@ -64,8 +64,7 @@ public class SafeCreativeAPI {
     public static final String STATE_PRE_REGISTERED = "PRE_REGISTERED";
     public static final String NOT_AUTHORIZED_ERROR = "NotAuthorized";
     private static Logger log = LoggerFactory.getLogger(SafeCreativeAPI.class);
-    private String baseUrl;
-    private char[] charBuf;
+    private String baseUrl;    
     private Long timeOffset;
     private XPathFactory xpathFactory;
     private String sharedKey, privateKey;
@@ -83,8 +82,7 @@ public class SafeCreativeAPI {
     public SafeCreativeAPI(String sharedKey, String privateKey) {
         this.sharedKey = sharedKey;
         this.privateKey = privateKey;
-        this.xpathFactory = XPathFactory.newInstance();
-        charBuf = new char[8192];
+        this.xpathFactory = XPathFactory.newInstance();        
     }
 
     public void setBaseUrl(String baseUrl) {
