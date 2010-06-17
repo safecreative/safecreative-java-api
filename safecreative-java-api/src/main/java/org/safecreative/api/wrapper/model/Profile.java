@@ -82,8 +82,7 @@ public class Profile implements Comparable {
         }
         return hashCode() == obj.hashCode();
     }
-
-    @Override
+    
     public int compareTo(Object o) {
         if(o == null || !(o instanceof Profile)) {
             return -1;
