@@ -113,6 +113,10 @@ public class SafeCreativeAPI {
         return sharedKey;
     }
 
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
     public static boolean isValidCode(String code) {
         return StringUtils.isNotBlank(code) && StringUtils.isNumeric(code) && code.trim().length() == 13;
     }

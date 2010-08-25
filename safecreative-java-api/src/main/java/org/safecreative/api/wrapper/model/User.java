@@ -36,6 +36,8 @@ import java.net.URL;
  */
 public class User extends CodeableEntity {
     private URL url;
+    private String email;
+    private Country country;
 
     /**
      * @return the url
@@ -49,6 +51,34 @@ public class User extends CodeableEntity {
      */
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the country
+     */
+    public Country getCountry() {
+        return country;
+    }
+
+    /**
+     * @param country the country to set
+     */
+    public void setCountry(Country country) {
+        this.country = country;
     }
     
     @Override

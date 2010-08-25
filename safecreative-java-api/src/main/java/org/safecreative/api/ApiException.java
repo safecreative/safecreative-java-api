@@ -24,6 +24,8 @@
 */
 package org.safecreative.api;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Api's main exception class
  *
@@ -53,7 +55,7 @@ public class ApiException extends Exception {
      * @param errorMessage the detail message.
      */
     public ApiException(String errorCode,String errorMessage) {
-        super(errorMessage);
+        super(StringUtils.isBlank(errorMessage) ? errorCode : errorMessage);
         this.errorCode = errorCode;
     }
 

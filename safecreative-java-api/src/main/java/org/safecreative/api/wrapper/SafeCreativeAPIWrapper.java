@@ -757,15 +757,18 @@ public class SafeCreativeAPIWrapper {
     ////////////////////////////////////////////////////////////////////////////
     // Internal api helpers
     ////////////////////////////////////////////////////////////////////////////
-
-    String callComponent(String component, Object... params) throws ApiException {
+    protected String callComponent(String component, Object... params) throws ApiException {
         Map<String, String> allParams = createParams(component);
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
         }
+        return call(allParams);
+    }
+
+    protected String call(Map<String, String> params) throws ApiException {
         String result = null;
         try {
-            result = api.call(allParams);
+            result = api.call(params);
         } catch (Exception ex) {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
@@ -778,15 +781,19 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
-        Map allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
+    protected String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
+        Map<String, String> allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
         }
+        return callSigned(authKey.getPrivatekey(),ztime,noncekey,addLocale,allParams);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected String callSigned(String privateKey,boolean ztime,boolean noncekey,boolean addLocale,Map<String, String> params) throws ApiException {
         String result = null;
         try {
-            result = api.callSigned(allParams, authKey.getPrivatekey(), ztime, noncekey,addLocale);
+            result = api.callSigned(params, privateKey, ztime, noncekey,addLocale);
         } catch (Exception ex) {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
@@ -799,11 +806,11 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    boolean checkReady(String response) throws ApiException {
+    protected boolean checkReady(String response) throws ApiException {
         return checkState(response, STATE_READY);
     }
 
-    boolean checkState(String response, String expected) throws ApiException {
+    protected boolean checkState(String response, String expected) throws ApiException {
         try {
             String state = api.getResponseState(response);
             return expected.equals(state);
@@ -812,7 +819,7 @@ public class SafeCreativeAPIWrapper {
         }
     }
 
-    void checkError(String response) throws ApiException {
+    protected void checkError(String response) throws ApiException {
         if (api.isError(response)) {
             try {
                 String errorCode = api.getErrorCode(response);
@@ -827,7 +834,7 @@ public class SafeCreativeAPIWrapper {
         }
     }
 
-    private Map<String, String> createParams(String component) {
+    protected Map<String, String> createParams(String component) {
         return api.createParams("component", component);
     }
 
@@ -844,7 +851,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Object> ListPage<T> readListPage(String response,Class<T> clazz,Converter converter) {
+    protected <T extends Object> ListPage<T> readListPage(String response,Class<T> clazz,Converter converter) {
         XStream xs = new XStream();        
         xs.registerConverter(new ListPageConverter<T>(clazz,converter));                
         ListPage<T> listPage = readObject(ListPage.class, response,xs);        
@@ -911,11 +918,11 @@ public class SafeCreativeAPIWrapper {
         return result;
     }
 
-    private void setApiUrl() {
+    protected void setApiUrl() {
         api.setBaseUrl(getBaseUrl());
     }
 
-    private void setApiSearchUrl() {
+    protected void setApiSearchUrl() {
         api.setBaseUrl(getBaseSearchUrl());
     }
 
