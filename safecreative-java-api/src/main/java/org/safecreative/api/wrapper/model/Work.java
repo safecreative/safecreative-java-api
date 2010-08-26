@@ -39,6 +39,7 @@ public class Work {
     private String code;
     private String title;
     private Date entryDate;
+    private Date updateDate;
     private String excerpt;
     private String tags;
     private boolean allowdownload;
@@ -121,6 +122,20 @@ public class Work {
      */
     public void setEntryDate(Date entryDate) {
         this.entryDate = entryDate;
+    }
+
+    /**
+     * @return the updateDate
+     */
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    /**
+     * @param updateDate the updateDate to set
+     */
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
     /**

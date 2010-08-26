@@ -79,6 +79,15 @@ public class WorkConverter extends AbstractModelConverter {
                 reader.moveUp();
                 continue;
             }
+            if (node.equals("updatedate")) {
+                Date date = readDate(reader);
+                if(date == null) {
+                    throw new ConversionException("bad updatedate " + reader.getValue());
+                }
+                work.setUpdateDate(date);
+                reader.moveUp();
+                continue;
+            }
             if (node.equals("excerpt")) {
                 work.setExcerpt(reader.getValue());
                 reader.moveUp();
