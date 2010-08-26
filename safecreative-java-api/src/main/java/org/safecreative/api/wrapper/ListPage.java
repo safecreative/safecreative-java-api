@@ -103,4 +103,9 @@ public class ListPage<T> implements Iterable<T>{
         return getList().iterator();
     }
 
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[recordtotal:"+getRecordTotal()+",pages:"+getPageTotal()+",list:"+getList()+"]";
+    }
 }
