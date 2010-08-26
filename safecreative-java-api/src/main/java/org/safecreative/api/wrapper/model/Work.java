@@ -42,6 +42,7 @@ public class Work {
     private String excerpt;
     private String tags;
     private boolean allowdownload;
+    private boolean registryPublic;
     private URL thumbnail;
     private List<Link> links;
     private List<User> authors;
@@ -162,6 +163,20 @@ public class Work {
      */
     public void setAllowdownload(boolean allowdownload) {
         this.allowdownload = allowdownload;
+    }
+
+    /**
+     * @return the registryPublic
+     */
+    public boolean isRegistryPublic() {
+        return registryPublic;
+    }
+
+    /**
+     * @param registryPublic the registryPublic to set
+     */
+    public void setRegistryPublic(boolean registryPublic) {
+        this.registryPublic = registryPublic;
     }
 
     /**
@@ -289,12 +304,6 @@ public class Work {
         this.typeGroup = typeGroup;
     }
 
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
-    }
-
     /**
      * @return the language
      */
@@ -307,6 +316,12 @@ public class Work {
      */
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
     }
 }
 

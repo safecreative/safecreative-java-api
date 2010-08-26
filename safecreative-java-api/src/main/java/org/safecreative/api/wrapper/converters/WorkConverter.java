@@ -69,7 +69,7 @@ public class WorkConverter extends AbstractModelConverter {
         while (reader.hasMoreChildren()) {
             reader.moveDown();
             node = reader.getNodeName();
-            log.trace("Unmarshaling node {}",node);
+            log.trace("Unmarshalling node {}",node);
             if (node.equals("entrydate")) {
                 Date entryDate = readDate(reader);
                 if(entryDate == null) {
@@ -180,24 +180,29 @@ public class WorkConverter extends AbstractModelConverter {
     }
 
     private List<User> readUsers(HierarchicalStreamReader reader) {
-        List<User> users = new LinkedList<User>();
-        if(reader.hasMoreChildren()) {
+        List<User> users = new LinkedList<User>();        
+        while (reader.hasMoreChildren()) {
+            reader.moveDown();
+            User user = new User();
+            reader.moveDown();
+            user.setCode(reader.getValue());
+            reader.moveUp();
+            reader.moveDown();
+            user.setName(reader.getValue());
+            reader.moveUp();
+            String node;
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
-                User user = new User();
-                reader.moveDown();
-                user.setCode(reader.getValue());
-                reader.moveUp();
-                reader.moveDown();
-                user.setName(reader.getValue());
-                reader.moveUp();
-                if(reader.hasMoreChildren()) {
-	                reader.moveDown();
-	                user.setUrl(readUrl(reader));
-	                reader.moveUp();
+                node = reader.getNodeName();
+                if (node.equals("human-url")) {
+                    user.setProfileUrl(readUrl(reader));
                 }
-                users.add(user);
+                if (node.equals("image")) {
+                    user.setThumbnailUrl(readUrl(reader));
+                }
+                reader.moveUp();
             }
+            users.add(user);
             reader.moveUp();
         }
         reader.moveUp();

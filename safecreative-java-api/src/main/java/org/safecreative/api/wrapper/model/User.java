@@ -25,6 +25,7 @@
 package org.safecreative.api.wrapper.model;
 
 import java.net.URL;
+import java.util.Date;
 
 
 
@@ -35,23 +36,40 @@ import java.net.URL;
  * @author jguillo@safecreative.org
  */
 public class User extends CodeableEntity {
-    private URL url;
+    private URL profileUrl;
+    private URL thumbnailUrl;
     private String email;
+    private Date entryDate;
     private Country country;
 
     /**
-     * @return the url
+     * @return the profileUrl
      */
-    public URL getUrl() {
-        return url;
+    public URL getProfileUrl() {
+        return profileUrl;
     }
 
     /**
-     * @param url the url to set
+     * @param profileUrl the profileUrl to set
      */
-    public void setUrl(URL url) {
-        this.url = url;
+    public void setProfileUrl(URL profileUrl) {
+        this.profileUrl = profileUrl;
     }
+
+    /**
+     * @return the thumbnailUrl
+     */
+    public URL getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    /**
+     * @param thumbnailUrl the thumbnailUrl to set
+     */
+    public void setThumbnailUrl(URL thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
 
     /**
      * @return the email
@@ -68,6 +86,20 @@ public class User extends CodeableEntity {
     }
 
     /**
+     * @return the entryDate
+     */
+    public Date getEntryDate() {
+        return entryDate;
+    }
+
+    /**
+     * @param entryDate the entryDate to set
+     */
+    public void setEntryDate(Date entryDate) {
+        this.entryDate = entryDate;
+    }
+    
+    /**
      * @return the country
      */
     public Country getCountry() {
@@ -83,6 +115,6 @@ public class User extends CodeableEntity {
     
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"[code:"+getCode()+",name:"+getName()+",url:"+url+"]";
+        return getClass().getSimpleName()+"[code:"+getCode()+",name:"+getName()+",profile:"+profileUrl+",thumbnail:"+thumbnailUrl+"]";
     }
 }

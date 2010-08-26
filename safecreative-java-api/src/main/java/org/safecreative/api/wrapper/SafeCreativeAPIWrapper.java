@@ -55,6 +55,8 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
+import org.safecreative.api.wrapper.converters.UserConverter;
+import org.safecreative.api.wrapper.model.User;
 
 /**
  * SafeCreativeAPI main wrapper
@@ -255,6 +257,27 @@ public class SafeCreativeAPIWrapper {
     ////////////////////////////////////////////////////////////////////////////
     // User methods
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Get public user info
+     * @param code
+     * @return User or <code>null</code> if none found
+     * @throws ApiException
+     */
+    public User getUser(String code) throws ApiException {
+        setApiUrl();
+        String result = null;
+        try {
+            result = callComponentSigned("user.get",getAuthKey(),true,false,true, "code", code);
+        } catch (ApiException ex) {
+            if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
+                return null;
+            }
+            throw ex;
+        }
+        return readObject(User.class, result,new UserConverter());
+    }
+
 
     /**
      * Create/Update a user by using a mail address
