@@ -43,6 +43,8 @@ public class Work {
     private String excerpt;
     private String tags;
     private boolean allowdownload;
+    private boolean allowSale;
+    private boolean allowLicensing;
     private boolean registryPublic;
     private URL thumbnail;
     private List<Link> links;
@@ -338,5 +340,21 @@ public class Work {
     public String toString() {
         return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
     }
+
+	public boolean isAllowSale() {
+		return allowSale;
+	}
+
+	public void setAllowSale(boolean allowSale) {
+		this.allowSale = allowSale;
+	}
+
+	public boolean isAllowLicensing() {
+		return allowLicensing;
+	}
+
+	public void setAllowLicensing(boolean allowLicensing) {
+		this.allowLicensing = allowLicensing;
+	}
 }
 
