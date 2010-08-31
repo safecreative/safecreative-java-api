@@ -27,7 +27,10 @@ package org.safecreative.api.wrapper.model;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a work
@@ -36,13 +39,16 @@ import java.util.List;
  * @author jguillo@safecreative.org
  */
 public class Work {
+    public enum RelationType {
+		VERSION, DERIVATION, COMPOSITION, RELATED
+	}
     private String code;
     private String title;
     private Date entryDate;
     private Date updateDate;
     private String excerpt;
     private String tags;
-    private boolean allowdownload;
+    private boolean allowDownload;
     private boolean allowSale;
     private boolean allowLicensing;
     private boolean registryPublic;
@@ -50,6 +56,8 @@ public class Work {
     private List<Link> links;
     private List<User> authors;
     private List<User> rightHolders;
+    private List<User> informers;
+    private Map<RelationType,List<Work>> relationMap;
     private License license;
     private URL humanUrl;
     private URL apiUrl;
@@ -171,15 +179,15 @@ public class Work {
     /**
      * @return the allowdownload
      */
-    public boolean isAllowdownload() {
-        return allowdownload;
+    public boolean isAllowDownload() {
+        return allowDownload;
     }
 
     /**
      * @param allowdownload the allowdownload to set
      */
-    public void setAllowdownload(boolean allowdownload) {
-        this.allowdownload = allowdownload;
+    public void setAllowDownload(boolean allowDownload) {
+        this.allowDownload = allowDownload;
     }
 
     /**
@@ -194,6 +202,34 @@ public class Work {
      */
     public void setRegistryPublic(boolean registryPublic) {
         this.registryPublic = registryPublic;
+    }
+
+    /**
+     * @return the allowSale
+     */
+    public boolean isAllowSale() {
+        return allowSale;
+    }
+
+    /**
+     * @param allowSale the allowSale to set
+     */
+    public void setAllowSale(boolean allowSale) {
+        this.allowSale = allowSale;
+    }
+
+    /**
+     * @return the allowLicensing
+     */
+    public boolean isAllowLicensing() {
+        return allowLicensing;
+    }
+
+    /**
+     * @param allowLicensing the allowLicensing to set
+     */
+    public void setAllowLicensing(boolean allowLicensing) {
+        this.allowLicensing = allowLicensing;
     }
 
     /**
@@ -250,6 +286,45 @@ public class Work {
      */
     public void setRightHolders(List<User> rightHolders) {
         this.rightHolders = rightHolders;
+    }
+
+    /**
+     * @return the informers
+     */
+    public List<User> getInformers() {
+        return informers;
+    }
+
+    /**
+     * @param informers the informers to set
+     */
+    public void setInformers(List<User> informers) {
+        this.informers = informers;
+    }
+
+
+    /**
+     * Sets a list of related works
+     * @param relationType
+     * @param works
+     */
+    public void setRelations(RelationType relationType,List<Work> works) {
+        if(relationMap == null) {
+            relationMap = new HashMap<RelationType,List<Work>>();
+        }
+        relationMap.put(relationType, works);
+    }
+
+    /**
+     * Gets a list of related works
+     * @param relationType
+     * @return
+     */
+    public List<Work> getRelations(RelationType relationType) {
+        if(relationMap == null || !relationMap.containsKey(relationType)) {
+            setRelations(relationType, new LinkedList<Work>());
+        }
+        return relationMap.get(relationType);
     }
 
     /**
@@ -340,21 +415,5 @@ public class Work {
     public String toString() {
         return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
     }
-
-	public boolean isAllowSale() {
-		return allowSale;
-	}
-
-	public void setAllowSale(boolean allowSale) {
-		this.allowSale = allowSale;
-	}
-
-	public boolean isAllowLicensing() {
-		return allowLicensing;
-	}
-
-	public void setAllowLicensing(boolean allowLicensing) {
-		this.allowLicensing = allowLicensing;
-	}
 }
 

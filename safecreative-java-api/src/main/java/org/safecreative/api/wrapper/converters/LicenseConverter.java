@@ -80,8 +80,7 @@ public class LicenseConverter extends AbstractModelConverter {
             }
             reader.moveUp();
         }
-        reader.moveUp();
-        reader.moveUp();
+        reader.moveUp();        
         return license;
     }
 }

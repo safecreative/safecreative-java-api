@@ -251,6 +251,19 @@ public class SafeCreativeAPIWrapperTest {
         Work work = instance.readObject(Work.class, xml,xs);
         assertNotNull(work);
         assertTrue(SafeCreativeAPI.isValidCode(work.getCode()));
+        assertNotNull(work.getLinks());
+        assertEquals("http://www.flickr.com/photos/mrmx/3141714714/",work.getLinks().get(0).getUrl().toExternalForm());
+        assertEquals("0804290061501", work.getAuthors().get(0).getCode());
+        assertEquals("0804290061501", work.getRightHolders().get(0).getCode());
+        assertEquals("0907030200236", work.getRelations(Work.RelationType.RELATED).get(0).getCode());
+        assertEquals("0907030200236", work.getRelations(Work.RelationType.VERSION).get(0).getCode());
+        assertEquals("0907030200236", work.getRelations(Work.RelationType.DERIVATION).get(0).getCode());
+        assertEquals(2,work.getRelations(Work.RelationType.COMPOSITION).size());
+        assertEquals("1702034400231", work.getRelations(Work.RelationType.COMPOSITION).get(0).getCode());
+        assertEquals("0902030200236", work.getRelations(Work.RelationType.COMPOSITION).get(1).getCode());
+        assertTrue(work.isAllowDownload());
+        assertTrue(work.isAllowLicensing());
+        assertFalse(work.isAllowSale());
     }
 
     /**

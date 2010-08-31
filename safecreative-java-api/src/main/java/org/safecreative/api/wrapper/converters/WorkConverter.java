@@ -33,6 +33,7 @@ import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.Work;
+import org.safecreative.api.wrapper.model.Work.RelationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,141 +66,120 @@ public class WorkConverter extends AbstractModelConverter {
         reader.moveDown();
         work.setTitle(reader.getValue());
         reader.moveUp();
-        String node;
         while (reader.hasMoreChildren()) {
             reader.moveDown();
-            node = reader.getNodeName();
-            log.trace("Unmarshalling node {}",node);
-            if (node.equals("entrydate")) {
-                Date entryDate = readDate(reader);
-                if(entryDate == null) {
-                    throw new ConversionException("bad entrydate " + reader.getValue());
-                }
-                work.setEntryDate(entryDate);
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("updatedate")) {
-                Date date = readDate(reader);
-                if(date == null) {
-                    throw new ConversionException("bad updatedate " + reader.getValue());
-                }
-                work.setUpdateDate(date);
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("excerpt")) {
-                work.setExcerpt(reader.getValue());
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("tags")) {
-                work.setTags(reader.getValue());
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("thumbnail")) {
-                work.setThumbnail(readUrl(reader));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("links")) {
-                List<Link> links = new LinkedList<Link>();
-                Link link;
-                while (reader.hasMoreChildren()) {
-                    reader.moveDown();
-                    link = new Link();
-                    link.setName(reader.getAttribute("name"));
-                    link.setType(Link.Type.valueOf(reader.getAttribute("type")));
-                    URL url = readUrl(reader);
-                    link.setUrl(url);
-                    if (url != null) {
-                        links.add(link);
-                    }
-                    reader.moveUp();
-                }
-                work.setLinks(links);
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("relations")) {
-                reader.moveDown();
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("authors")) {
-                work.setAuthors(readUsers(reader));
-                continue;
-            }
-            if (node.equals("rights-holders")) {
-                work.setRightHolders(readUsers(reader));
-                continue;
-            }
-            if (node.equals("license")) {
-                if(licenseConverter == null) {
-                    //Lazy load
-                    licenseConverter = new LicenseConverter();
-                }
-                License license = (License) context.convertAnother(work, License.class, licenseConverter);
-                work.setLicense(license);
-                continue;
-            }
-            if (node.equals("human-url")) {
-                work.setHumanUrl(readUrl(reader));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("machine-url")) {
-                work.setApiUrl(readUrl(reader));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("allowdownload")) {
-                work.setAllowdownload(Boolean.valueOf(reader.getValue()));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("allowsale")) {
-                work.setAllowSale(Boolean.valueOf(reader.getValue()));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("allowlicensing")) {
-                work.setAllowLicensing(Boolean.valueOf(reader.getValue()));
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("worktype")) {
-                Work.Type type = new Work.Type();
-                reader.moveDown();
-                type.setCode(reader.getValue());
-                reader.moveUp();
-                reader.moveDown();
-                type.setName(reader.getValue());
-                reader.moveUp();
-                work.setType(type);
-                reader.moveUp();
-                continue;
-            }
-            if (node.equals("worktypegroup")) {
-                Work.TypeGroup typeGroup = new Work.TypeGroup();
-                reader.moveDown();
-                typeGroup.setCode(reader.getValue());
-                reader.moveUp();
-                reader.moveDown();
-                typeGroup.setName(reader.getValue());
-                reader.moveUp();
-                work.setTypeGroup(typeGroup);
-                reader.moveUp();
-                continue;
-            }
+            unmarshalWork(work,reader,context);
             reader.moveUp();
         }
         return work;
     }
 
+    protected void unmarshalWork(Work work, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        String node = reader.getNodeName();
+        log.trace("Unmarshalling node {}",node);
+        if (node.equals("entrydate")) {
+            Date entryDate = readDate(reader);
+            if(entryDate == null) {
+                throw new ConversionException("bad entrydate " + reader.getValue());
+            }
+            work.setEntryDate(entryDate);
+        }else
+        if (node.equals("updatedate")) {
+            Date date = readDate(reader);
+            if(date == null) {
+                throw new ConversionException("bad updatedate " + reader.getValue());
+            }
+            work.setUpdateDate(date);
+        }else
+        if (node.equals("excerpt")) {
+            work.setExcerpt(reader.getValue());
+        }else
+        if (node.equals("tags")) {
+            work.setTags(reader.getValue());
+        }else
+        if (node.equals("thumbnail")) {
+            work.setThumbnail(readUrl(reader));
+        }else
+        if (node.equals("links")) {
+            List<Link> links = new LinkedList<Link>();
+            Link link;
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                link = new Link();
+                link.setName(reader.getAttribute("name"));
+                link.setType(Link.Type.valueOf(reader.getAttribute("type")));
+                URL url = readUrl(reader);
+                link.setUrl(url);
+                if (url != null) {
+                    links.add(link);
+                }
+                reader.moveUp();
+            }
+            work.setLinks(links);
+        }else
+        if (node.equals("relations")) {
+            setWorkRelations(reader,work);
+        }else
+        if (node.equals("authors")) {
+            work.setAuthors(readUsers(reader));
+        }else
+        if (node.equals("rights-holders")) {
+            work.setRightHolders(readUsers(reader));
+        }else
+        if (node.equals("informers")) {
+            work.setInformers(readUsers(reader));
+        }else
+        if (node.equals("license")) {
+            if(licenseConverter == null) {
+                //Lazy load
+                licenseConverter = new LicenseConverter();
+            }
+            License license = (License) context.convertAnother(work, License.class, licenseConverter);
+            work.setLicense(license);
+        }else
+        if (node.equals("human-url")) {
+            work.setHumanUrl(readUrl(reader));
+        }else
+        if (node.equals("machine-url")) {
+            work.setApiUrl(readUrl(reader));
+        }else
+        if (node.equals("allowdownload")) {
+            work.setAllowDownload(Boolean.valueOf(reader.getValue()));
+        }else
+        if (node.equals("registrypublic")) {
+            work.setRegistryPublic(Boolean.valueOf(reader.getValue()));
+        }else
+        if (node.equals("allowsale")) {
+            work.setAllowSale(Boolean.valueOf(reader.getValue()));
+        }else
+        if (node.equals("allowlicensing")) {
+            work.setAllowLicensing(Boolean.valueOf(reader.getValue()));
+        }else
+        if (node.equals("worktype")) {
+            Work.Type type = new Work.Type();
+            reader.moveDown();
+            type.setCode(reader.getValue());
+            reader.moveUp();
+            reader.moveDown();
+            type.setName(reader.getValue());
+            reader.moveUp();
+            work.setType(type);
+        }else
+        if (node.equals("worktypegroup")) {
+            Work.TypeGroup typeGroup = new Work.TypeGroup();
+            reader.moveDown();
+            typeGroup.setCode(reader.getValue());
+            reader.moveUp();
+            reader.moveDown();
+            typeGroup.setName(reader.getValue());
+            reader.moveUp();
+            work.setTypeGroup(typeGroup);
+        }
+    }
+
+
     private List<User> readUsers(HierarchicalStreamReader reader) {
-        List<User> users = new LinkedList<User>();        
+        List<User> users = new LinkedList<User>();
         while (reader.hasMoreChildren()) {
             reader.moveDown();
             User user = new User();
@@ -224,11 +204,28 @@ public class WorkConverter extends AbstractModelConverter {
             users.add(user);
             reader.moveUp();
         }
-        reader.moveUp();
         return users;
     }
 
-
-
+    private void setWorkRelations(HierarchicalStreamReader reader, Work work) {
+        List<Work> relatedWorks;
+        Work related;
+        RelationType relationType;
+        while (reader.hasMoreChildren()) {
+            reader.moveDown();
+            relationType = RelationType.valueOf(reader.getAttribute("type"));
+            relatedWorks = new LinkedList<Work>();
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                related = new Work();
+                related.setTitle(reader.getAttribute("name"));
+                related.setCode(reader.getAttribute("code"));
+                relatedWorks.add(related);
+                reader.moveUp();
+            }
+            reader.moveUp();
+            work.setRelations(relationType,relatedWorks);
+        }
+    }
 
 }

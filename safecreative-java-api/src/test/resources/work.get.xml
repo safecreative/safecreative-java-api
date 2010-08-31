@@ -10,6 +10,23 @@
   <links>
     <link name="Espacio puente 8" type="INFO">http://www.flickr.com/photos/mrmx/3141714714/</link>
   </links>
+  <!-- Sample relations: -->
+  <relations>
+    <relation type="RELATED">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="VERSION">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="DERIVATION">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="COMPOSITION">
+      <work name="My firts post" code="1702034400231"/>
+      <work name="Work with links" code="0902030200236"/>
+    </relation>
+  </relations>
+  <!-- End sample relations: -->
   <authors>
     <author>
       <code>0804290061501</code>
@@ -41,6 +58,8 @@
   <human-url>http://www.safecreative.org/work/1004226079740</human-url>
   <machine-url>http://www.safecreative.org/v2/?component=work.get&amp;code=1004226079740</machine-url>
   <allowdownload>true</allowdownload>
+  <allowlicensing>true</allowlicensing>
+  <allowsale>false</allowsale>
   <worktype>
     <code>photo</code>
     <name>Photography</name>

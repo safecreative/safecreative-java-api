@@ -73,6 +73,7 @@ public class SafeCreativeAPIWrapper {
     private static Logger log = LoggerFactory.getLogger(SafeCreativeAPIWrapper.class);
     private final static String STATE_READY = "ready";
     private final static String ERROR_WORK_NOTFOUND = "WorkNotFound";
+    private final static String ERROR_USER_NOTFOUND = "UserNotFound";
     private SafeCreativeAPI api;
     private String baseUrl;
     private String baseSearchUrl;
@@ -268,9 +269,9 @@ public class SafeCreativeAPIWrapper {
         setApiUrl();
         String result = null;
         try {
-            result = callComponentSigned("user.get",getAuthKey(),true,false,true, "code", code);
+            result = callComponentSigned("user.get",getApi().getPrivateKey(),true,false,true, "code", code,"sharedkey",getApi().getSharedKey());
         } catch (ApiException ex) {
-            if (ERROR_WORK_NOTFOUND.equals(ex.getErrorCode())) {
+            if (ERROR_USER_NOTFOUND.equals(ex.getErrorCode())) {
                 return null;
             }
             throw ex;
@@ -805,11 +806,19 @@ public class SafeCreativeAPIWrapper {
     }
 
     protected String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
-        Map<String, String> allParams = api.createParams("component", component, "authkey", authKey.getAuthkey());
+        Map<String, String> allParams = api.createParams("component",component,"authkey", authKey.getAuthkey());
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
         }
         return callSigned(authKey.getPrivatekey(),ztime,noncekey,addLocale,allParams);
+    }
+
+    protected String callComponentSigned(String component,String privateKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
+        Map<String, String> allParams = api.createParams("component", component);
+        if (params != null && params.length > 0) {
+            allParams.putAll(api.createParams(params));
+        }
+        return callSigned(privateKey,ztime,noncekey,addLocale,allParams);
     }
 
     @SuppressWarnings("unchecked")
