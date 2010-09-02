@@ -288,7 +288,9 @@ public class SafeCreativeAPI {
     }
 
     public boolean isError(String result) {
-        return !StringUtils.isEmpty(result) && (result.indexOf("error") != -1 || result.indexOf("exception") != -1);
+        return !StringUtils.isEmpty(result) && (
+                (hasXmlElement(result, "error") && hasXmlElement(result, "errorId")) ||
+                (hasXmlElement(result, "exception") && hasXmlElement(result, "exceptionId")) );
     }
 
     public String getErrorCode(String response) {
@@ -315,6 +317,21 @@ public class SafeCreativeAPI {
         }
         return result;
     }
+
+    /**
+     * Fast xml element check
+     * @param response xml response
+     * @param element element name to find
+     * @return <code>true</code> id a pair of xml element tags is withing the xml response
+     */
+    public boolean hasXmlElement(String response,String element) {
+        String beginElement = "<" + element + ">";
+        String endElement = "</" + element + ">";
+        int beginIdx = response.indexOf(beginElement);
+        int endIdx = response.indexOf(endElement);
+        return beginIdx >= 0 && beginIdx < endIdx;
+    }
+
 
     protected String readString(InputStream in) throws IOException {
         return IOHelper.readString(in, DEFAULT_ENCODING);

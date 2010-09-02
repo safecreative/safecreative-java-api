@@ -149,6 +149,9 @@ public class SafeCreativeAPITest {
         String expResult = "code";
         String result = api.getErrorCode(response);
         assertEquals(expResult, result);
+        response = "<exception><exceptionId>code</exceptionId></exception>";
+        result = api.getErrorCode(response);
+        assertEquals(expResult, result);
     }
 
     /**
@@ -161,6 +164,25 @@ public class SafeCreativeAPITest {
         String expResult = "message";
         String result = api.getErrorMessage(response);
         assertEquals(expResult, result);
+        response = "<exception><exceptionId>code</exceptionId><exceptionMessage>message</exceptionMessage></exception>";
+        result = api.getErrorMessage(response);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of hasXmlElement method, of class SafeCreativeAPI.
+     */
+    @Test
+    public void testHasXmlElement() {
+        System.out.println("hasXmlElement");
+        String response = "<error><errorId>code</errorId><errorMessage>message</errorMessage></error>";
+        assertTrue(api.hasXmlElement(response, "error"));
+        assertTrue(api.hasXmlElement(response, "errorId"));
+        assertTrue(api.hasXmlElement(response, "errorMessage"));
+        assertFalse(api.hasXmlElement(response, "notfound"));
+        assertFalse(api.hasXmlElement("<test>test", "test"));
+        assertFalse(api.hasXmlElement("</test><test>", "test"));
+        assertTrue(api.hasXmlElement("<test>test</test>", "test"));
     }
 
     /**

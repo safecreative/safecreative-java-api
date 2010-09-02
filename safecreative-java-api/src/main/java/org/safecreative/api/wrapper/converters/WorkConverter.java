@@ -74,7 +74,8 @@ public class WorkConverter extends AbstractModelConverter {
         return work;
     }
 
-    protected void unmarshalWork(Work work, HierarchicalStreamReader reader, UnmarshallingContext context) {
+    protected boolean unmarshalWork(Work work, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        boolean processedNode = false;
         String node = reader.getNodeName();
         log.trace("Unmarshalling node {}",node);
         if (node.equals("entrydate")) {
@@ -83,6 +84,7 @@ public class WorkConverter extends AbstractModelConverter {
                 throw new ConversionException("bad entrydate " + reader.getValue());
             }
             work.setEntryDate(entryDate);
+            processedNode = true;
         }else
         if (node.equals("updatedate")) {
             Date date = readDate(reader);
@@ -90,15 +92,19 @@ public class WorkConverter extends AbstractModelConverter {
                 throw new ConversionException("bad updatedate " + reader.getValue());
             }
             work.setUpdateDate(date);
+            processedNode = true;
         }else
         if (node.equals("excerpt")) {
             work.setExcerpt(reader.getValue());
+            processedNode = true;
         }else
         if (node.equals("tags")) {
             work.setTags(reader.getValue());
+            processedNode = true;
         }else
         if (node.equals("thumbnail")) {
             work.setThumbnail(readUrl(reader));
+            processedNode = true;
         }else
         if (node.equals("links")) {
             List<Link> links = new LinkedList<Link>();
@@ -116,18 +122,23 @@ public class WorkConverter extends AbstractModelConverter {
                 reader.moveUp();
             }
             work.setLinks(links);
+            processedNode = true;
         }else
         if (node.equals("relations")) {
             setWorkRelations(reader,work);
+            processedNode = true;
         }else
         if (node.equals("authors")) {
             work.setAuthors(readUsers(reader));
+            processedNode = true;
         }else
         if (node.equals("rights-holders")) {
             work.setRightHolders(readUsers(reader));
+            processedNode = true;
         }else
         if (node.equals("informers")) {
             work.setInformers(readUsers(reader));
+            processedNode = true;
         }else
         if (node.equals("license")) {
             if(licenseConverter == null) {
@@ -136,24 +147,31 @@ public class WorkConverter extends AbstractModelConverter {
             }
             License license = (License) context.convertAnother(work, License.class, licenseConverter);
             work.setLicense(license);
+            processedNode = true;
         }else
         if (node.equals("human-url")) {
             work.setHumanUrl(readUrl(reader));
+            processedNode = true;
         }else
         if (node.equals("machine-url")) {
             work.setApiUrl(readUrl(reader));
+            processedNode = true;
         }else
         if (node.equals("allowdownload")) {
             work.setAllowDownload(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
         }else
         if (node.equals("registrypublic")) {
             work.setRegistryPublic(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
         }else
         if (node.equals("allowsale")) {
             work.setAllowSale(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
         }else
         if (node.equals("allowlicensing")) {
             work.setAllowLicensing(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
         }else
         if (node.equals("worktype")) {
             Work.Type type = new Work.Type();
@@ -164,6 +182,7 @@ public class WorkConverter extends AbstractModelConverter {
             type.setName(reader.getValue());
             reader.moveUp();
             work.setType(type);
+            processedNode = true;
         }else
         if (node.equals("worktypegroup")) {
             Work.TypeGroup typeGroup = new Work.TypeGroup();
@@ -174,7 +193,9 @@ public class WorkConverter extends AbstractModelConverter {
             typeGroup.setName(reader.getValue());
             reader.moveUp();
             work.setTypeGroup(typeGroup);
+            processedNode = true;
         }
+        return processedNode;
     }
 
 
