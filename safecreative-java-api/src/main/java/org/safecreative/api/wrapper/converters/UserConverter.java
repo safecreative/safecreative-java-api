@@ -39,33 +39,42 @@ public class UserConverter extends AbstractModelConverter {
         String node;
         while (reader.hasMoreChildren()) {
             reader.moveDown();
-            node = reader.getNodeName();
-            log.trace("Unmarshalling node {}",node);
-            if (node.equals("country")) {
-                Country country = new Country();
-                reader.moveDown();                
-                country.setCode(reader.getValue());
-                reader.moveUp();
-                reader.moveDown();
-                country.setName(reader.getValue());
-                user.setCountry(country);
-                reader.moveUp();
-            }
-            if (node.equals("email")) {
-                user.setEmail(reader.getValue());                
-            }
-            if (node.equals("entrydate")) {
-                Date entryDate = readDate(reader);
-                if(entryDate == null) {
-                    throw new ConversionException("bad entrydate " + reader.getValue());
-                }
-                user.setEntryDate(entryDate);
-            }
-            if (node.equals("thumbnail")) {
-                user.setEmail(reader.getValue());
-            }
+            unmarshalUser(user, reader, context);
             reader.moveUp();
         }
         return user;
+    }
+
+    protected boolean unmarshalUser(User user, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        boolean processedNode = false;
+        String node = reader.getNodeName();
+        log.trace("Unmarshalling node {}",node);
+        if (node.equals("country")) {
+            Country country = new Country();
+            reader.moveDown();
+            country.setCode(reader.getValue());
+            reader.moveUp();
+            reader.moveDown();
+            country.setName(reader.getValue());
+            user.setCountry(country);
+            reader.moveUp();
+        }else
+        if (node.equals("email")) {
+            user.setEmail(reader.getValue());
+        }else
+        if (node.equals("human-url")) {
+            user.setProfileUrl(readUrl(reader));
+        }else
+        if (node.equals("entrydate")) {
+            Date entryDate = readDate(reader);
+            if(entryDate == null) {
+                throw new ConversionException("bad entrydate " + reader.getValue());
+            }
+            user.setEntryDate(entryDate);
+        }else
+        if (node.equals("thumbnail")) {
+            user.setThumbnailUrl(readUrl(reader));
+        }
+        return processedNode;
     }
 }
