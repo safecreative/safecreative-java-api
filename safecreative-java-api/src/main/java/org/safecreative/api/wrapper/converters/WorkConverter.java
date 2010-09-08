@@ -194,6 +194,12 @@ public class WorkConverter extends AbstractModelConverter {
             reader.moveUp();
             work.setTypeGroup(typeGroup);
             processedNode = true;
+        }else
+        if (node.equals("languagecode")) {
+            Work.Language language = new Work.Language();                        
+            language.setCode(reader.getValue());            
+            work.setLanguage(language);
+            processedNode = true;
         }
         return processedNode;
     }

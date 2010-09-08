@@ -60,6 +60,7 @@
   <allowdownload>true</allowdownload>
   <allowlicensing>true</allowlicensing>
   <allowsale>false</allowsale>
+  <languagecode>EN</languagecode>
   <worktype>
     <code>photo</code>
     <name>Photography</name>

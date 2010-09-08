@@ -264,6 +264,7 @@ public class SafeCreativeAPIWrapperTest {
         assertTrue(work.isAllowDownload());
         assertTrue(work.isAllowLicensing());
         assertFalse(work.isAllowSale());
+        assertEquals("EN",work.getLanguage().getCode());
     }
 
     /**
