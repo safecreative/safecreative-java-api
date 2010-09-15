@@ -362,6 +362,7 @@ public class SafeCreativeAPIWrapper {
             String addressline1, String addressline2,
             String addresszip, String addresscity, String addresscountry) throws ApiException {
         setApiUrl();
+        checkAuthKey(authKey);
         Map params = api.createParams("component", "user.modify", "authKey", authKey.getAuthkey());
         params.put("mail", mail);
         params.put("firstname", firstName);
@@ -433,10 +434,8 @@ public class SafeCreativeAPIWrapper {
      */
     @SuppressWarnings("unchecked")
     public List<Profile> getProfiles(AuthKey authKey) throws ApiException {
-        if (authKey == null) {
-            throw new ApiException("null auth key");
-        }
         setApiUrl();
+        checkAuthKey(authKey);
         String result = callComponentSigned("user.profiles",authKey,true,false,false);
         List<Profile> profiles = readList(result, "profiles", "profile", Profile.class);
         log.debug("Profiles {}", profiles);
@@ -473,10 +472,8 @@ public class SafeCreativeAPIWrapper {
      */
     @SuppressWarnings("unchecked")
     public ListPage<License> getLicenses(int page,AuthKey authKey) throws ApiException {
-        if (authKey == null) {
-            throw new ApiException("null auth key");
-        }
         setApiUrl();
+        checkAuthKey(authKey);
         String result = callComponentSigned("user.licenses",authKey,true,false,true,"page",page);
         return readListPage(result, License.class, new LicenseConverter());
     }
@@ -551,6 +548,7 @@ public class SafeCreativeAPIWrapper {
      */
     public Work getWorkPrivate(String code, AuthKey authKey) throws ApiException {
         setApiUrl();
+        checkAuthKey(authKey);
         String result = null;
         try {
             result = callComponentSigned("work.get.private", authKey, true, false, true, "code", code);
@@ -588,6 +586,7 @@ public class SafeCreativeAPIWrapper {
      */
     public URL getWorkDownload(String code,boolean owner) throws ApiException {
         setApiUrl();
+        checkAuthKey(authKey);
         String result = callComponentSigned(
                 "work.download" + (owner ? ".private" : ""),authKey,false,false,false,
                 "code",code);
@@ -617,6 +616,7 @@ public class SafeCreativeAPIWrapper {
      */
     public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
         setApiUrl();
+        checkAuthKey(authKey);
         byte[] digest;
         log.debug("Calculating file {} {} checksum", file, Digest.SHA1);
         try {
@@ -806,6 +806,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     protected String callComponentSigned(String component,AuthKey authKey,boolean ztime,boolean noncekey,boolean addLocale,Object... params) throws ApiException {
+        checkAuthKey(authKey);
         Map<String, String> allParams = api.createParams("component",component,"authkey", authKey.getAuthkey());
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
@@ -956,6 +957,12 @@ public class SafeCreativeAPIWrapper {
 
     protected void setApiSearchUrl() {
         api.setBaseUrl(getBaseSearchUrl());
+    }
+
+    private void checkAuthKey(AuthKey authKey) throws ApiException {
+        if(authKey == null || authKey.getAuthkey() == null || authKey.getPrivatekey() == null) {
+            throw new ApiException("authkey needed. Set o create one");
+        }
     }
 
 
