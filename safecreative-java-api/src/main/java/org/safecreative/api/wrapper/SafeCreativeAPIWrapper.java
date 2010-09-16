@@ -586,10 +586,17 @@ public class SafeCreativeAPIWrapper {
      */
     public URL getWorkDownload(String code,boolean owner) throws ApiException {
         setApiUrl();
-        checkAuthKey(authKey);
-        String result = callComponentSigned(
-                "work.download" + (owner ? ".private" : ""),authKey,false,false,false,
+        String result;
+        if(owner) {
+            checkAuthKey(authKey);
+            result = callComponentSigned(
+                "work.download.private" ,authKey,false,false,false,
                 "code",code);
+        } else {
+            result = callComponentSigned(
+                "work.download" ,getApi().getPrivateKey(),false,false,false,
+                "sharedkey",getApi().getSharedKey(),"code",code);            
+        }
         URL downloadUrl = null;
         try {
             String resultUrl = api.evalXml(result, "/url");
