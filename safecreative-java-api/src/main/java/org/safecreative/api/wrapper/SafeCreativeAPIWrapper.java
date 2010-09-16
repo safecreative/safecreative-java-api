@@ -594,7 +594,7 @@ public class SafeCreativeAPIWrapper {
                 "code",code);
         } else {
             result = callComponentSigned(
-                "work.download" ,getApi().getPrivateKey(),false,false,false,
+                "work.download" ,getApi().getPrivateKey(),true,false,false,
                 "sharedkey",getApi().getSharedKey(),"code",code);            
         }
         URL downloadUrl = null;
