@@ -43,6 +43,7 @@ import org.safecreative.api.wrapper.converters.WorkConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
+import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 
@@ -253,6 +254,7 @@ public class SafeCreativeAPIWrapperTest {
         assertTrue(SafeCreativeAPI.isValidCode(work.getCode()));
         assertNotNull(work.getLinks());
         assertEquals("http://www.flickr.com/photos/mrmx/3141714714/",work.getLinks().get(0).getUrl().toExternalForm());
+        assertEquals("image/jpeg", work.getMimeType());
         assertEquals("0804290061501", work.getAuthors().get(0).getCode());
         assertEquals("0804290061501", work.getRightHolders().get(0).getCode());
         assertEquals("0907030200236", work.getRelations(Work.RelationType.RELATED).get(0).getCode());
@@ -282,7 +284,7 @@ public class SafeCreativeAPIWrapperTest {
         assertTrue(results.getSize() > 0);
         Work work = results.getList().get(0);
         System.out.println("Getting download url of work: "+ work);
-        URL result = instance.getWorkDownload(work.getCode(), false);
+        DownloadInfo result = instance.getWorkDownload(work.getCode(), false);
         assertNotNull(result);
         System.out.println("Result: "+ result);
     }

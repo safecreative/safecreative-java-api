@@ -61,6 +61,7 @@ public class Work {
     private License license;
     private URL humanUrl;
     private URL apiUrl;
+    private String mimeType;
     private Type type;
     private TypeGroup typeGroup;
     private Language language;
@@ -368,6 +369,21 @@ public class Work {
     public void setApiUrl(URL apiUrl) {
         this.apiUrl = apiUrl;
     }
+
+    /**
+     * @return the mimeType
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * @param mimeType the mimeType to set
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+    
     /**
      * @return the type
      */

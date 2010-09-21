@@ -106,6 +106,10 @@ public class WorkConverter extends AbstractModelConverter {
             work.setThumbnail(readUrl(reader));
             processedNode = true;
         }else
+        if (node.equals("mimetype")) {
+            work.setMimeType(reader.getValue());
+            processedNode = true;
+        }else
         if (node.equals("links")) {
             List<Link> links = new LinkedList<Link>();
             Link link;

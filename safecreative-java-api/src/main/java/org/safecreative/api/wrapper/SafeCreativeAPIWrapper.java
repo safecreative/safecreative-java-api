@@ -55,7 +55,9 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
+import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
+import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.User;
 
 /**
@@ -574,37 +576,30 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
-     * Gets a work's download URL.
+     * Gets a work's download info.
      * To access this URL the work must be in REGISTERED state.
      *
      * @param code work's registry code
      * @param owner <code>true</code> if user is owner else
      * you can get the URL to download any downloadable (Registered with public
      * access and allow download) work
-     * @return
+     * @return download info
      * @throws ApiException
      */
-    public URL getWorkDownload(String code,boolean owner) throws ApiException {
+    public DownloadInfo getWorkDownload(String code,boolean owner) throws ApiException {
         setApiUrl();
         String result;
         if(owner) {
             checkAuthKey(authKey);
             result = callComponentSigned(
-                "work.download.private" ,authKey,false,false,false,
+                "work.download.private" ,authKey,true,false,false,
                 "code",code);
         } else {
             result = callComponentSigned(
                 "work.download" ,getApi().getPrivateKey(),true,false,false,
                 "sharedkey",getApi().getSharedKey(),"code",code);            
-        }
-        URL downloadUrl = null;
-        try {
-            String resultUrl = api.evalXml(result, "/url");
-            downloadUrl = new URL(resultUrl);
-        } catch (MalformedURLException ex) {
-            throw new ApiException(ex);
-        }
-        return downloadUrl;
+        }        
+        return readObject(DownloadInfo.class, result, new DownloadInfoConverter());
     }
 
     ////////////////////////////////////////////////////////////////////////////
