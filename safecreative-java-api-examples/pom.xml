@@ -24,9 +24,11 @@
         <system>code.google.com</system>
         <url>http://code.google.com/p/safecreative-java-api/issues/list</url>
     </issueManagement>
+    <scm>
         <url>https://safecreative-java-api.googlecode.com/hg/safecreative-java-api-examples</url>
         <connection>scm:hg:https://safecreative-java-api.googlecode.com/hg/safecreative-java-api-examples</connection>
         <developerConnection>scm:hg:https://safecreative-java-api.googlecode.com/hg/safecreative-java-api-examples</developerConnection>
+    </scm>
     <developers>
         <developer>
             <id>mpolo</id>
