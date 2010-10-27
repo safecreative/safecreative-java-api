@@ -36,9 +36,9 @@
         <url>http://code.google.com/p/safecreative-java-api/issues/list</url>
     </issueManagement>
     <scm>
-        <url>https://safecreative-java-api.googlecode.com/svn/trunk</url>
-        <connection>scm:svn:https://safecreative-java-api.googlecode.com/svn/trunk</connection>
-        <developerConnection>scm:svn:https://safecreative-java-api.googlecode.com/svn/trunk</developerConnection>
+        <url>https://safecreative-java-api.googlecode.com/hg</url>
+        <connection>scm:hg:https://safecreative-java-api.googlecode.com/hg</connection>
+        <developerConnection>scm:hg:https://safecreative-java-api.googlecode.com/hg</developerConnection>
     </scm>
     <developers>
         <developer>
