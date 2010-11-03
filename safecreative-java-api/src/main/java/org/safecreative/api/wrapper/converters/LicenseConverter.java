@@ -45,6 +45,9 @@ public class LicenseConverter extends AbstractModelConverter {
     }
 
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+        if(!reader.hasMoreChildren()) {            
+            return null;
+        }
         License license = new License();
         reader.moveDown();
         license.setCode(reader.getValue());
