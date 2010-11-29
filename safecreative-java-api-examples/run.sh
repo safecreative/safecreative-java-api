@@ -1,7 +1,7 @@
 #!/bin/bash
 #API Keys:
-sharedKey=504kre873efbl37jjf9oxq3i3
-privateKey=763o0yxvq44ek25fzcllepnv9
+sharedKey=
+privateKey=
 
 api_version=0.6.5
 examples_version=0.5.0
