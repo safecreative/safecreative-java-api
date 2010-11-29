@@ -646,6 +646,30 @@ public class SafeCreativeAPIWrapper {
         return workCode;
     }
 
+    public String workRegister(String title,URL url,Profile profile,long fileSize,String checkSum ) throws ApiException {
+        return workRegister(title,url,profile,url.getFile(),fileSize,checkSum);
+    }
+
+    public String workRegister(String title,URL url,Profile profile,String fileName,long fileSize,String checkSum ) throws ApiException {
+        setApiUrl();
+        checkAuthKey(authKey);
+        if(profile == null || !StringUtils.isNumeric(profile.getCode())) {
+            throw new IllegalArgumentException("bad profile");
+        }        
+        Map params = api.createParams("component", "work.register");
+        params.put("authkey", authKey.getAuthkey());
+        params.put("title",title);
+        params.put("profile",profile.getCode());
+        params.put("url",url.toString());
+        params.put("filename",fileName);
+        params.put("size",String.valueOf(fileSize));
+        params.put("checksum",checkSum);
+        api.setAuthKey(authKey.getAuthkey());
+        api.setPrivateAuthKey(authKey.getPrivatekey());
+        String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);
+        return api.evalXml(result, "/workregistry/code");
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // SEARCH methods
     ////////////////////////////////////////////////////////////////////////////
@@ -788,6 +812,9 @@ public class SafeCreativeAPIWrapper {
         if (params != null && params.length > 0) {
             allParams.putAll(api.createParams(params));
         }
+        if(getLocale() != null) {
+            api.addLocale(allParams);
+        }
         return call(allParams);
     }
 
@@ -799,9 +826,8 @@ public class SafeCreativeAPIWrapper {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
             }
-            //Wrap
-            Throwable cause = ex.getCause();
-            throw new ApiException(cause);
+            //Wrap            
+            throw new ApiException(ex);
         }
         checkError(result);
         return result;
@@ -833,9 +859,8 @@ public class SafeCreativeAPIWrapper {
             if (ex instanceof ApiException) {
                 throw (ApiException) ex;
             }
-            //Wrap
-            Throwable cause = ex.getCause();
-            throw new ApiException(cause);
+            //Wrap            
+            throw new ApiException(ex);
         }
         checkError(result);
         return result;

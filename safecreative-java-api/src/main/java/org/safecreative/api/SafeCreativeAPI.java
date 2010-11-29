@@ -137,6 +137,15 @@ public class SafeCreativeAPI {
 
     @SuppressWarnings("unchecked")
     public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level) {
+        if(authkey == null) {
+            throw new IllegalArgumentException("null auth key");
+        }
+        if(privatekey == null) {
+            throw new IllegalArgumentException("null private key");
+        }
+        if(level == null) {
+            throw new IllegalArgumentException("null auth key level");
+        }
         Map params = createParams();
         params.put("level", level.toString());
         params.put("authkey", authkey);
@@ -151,6 +160,9 @@ public class SafeCreativeAPI {
 
     @SuppressWarnings("unchecked")
     public String getAuthKeyState(String authKey) {
+        if(authKey == null) {
+            throw new IllegalArgumentException("null auth key");
+        }
         Map params = createParams("component", "authkey.state", "authkey", authKey, "sharedkey", sharedKey);
         return callSigned(params, true, false);
     }
@@ -177,8 +189,10 @@ public class SafeCreativeAPI {
         Map<String, String> result = new HashMap<String, String>();
         if (values != null) {
             int size = values.length;
+            Object value;
             for (int i = 0; i < size; i += 2) {
-                result.put(String.valueOf(values[i]), String.valueOf(values[i + 1]));
+                value = values[i + 1];
+                result.put(String.valueOf(values[i]), value == null ? null : String.valueOf(value));
             }
         }
         return result;
@@ -221,7 +235,7 @@ public class SafeCreativeAPI {
         for (String param : params.keySet()) {
             String value = params.get(param);
             try {
-                encoded.append("&" + param + "=" + URLEncoder.encode(value, DEFAULT_ENCODING));
+                encoded.append("&" + param + "=" + (value == null ? "" : URLEncoder.encode(value, DEFAULT_ENCODING)));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
@@ -331,16 +345,16 @@ public class SafeCreativeAPI {
         int endIdx = response.indexOf(endElement);
         return beginIdx >= 0 && beginIdx < endIdx;
     }
+    
+    public void addLocale(Map<String, String> params) {
+        if (!params.containsKey("locale") && locale != null) {
+            params.put("locale", locale.toString());
+        }
+    }
 
 
     protected String readString(InputStream in) throws IOException {
         return IOHelper.readString(in, DEFAULT_ENCODING);
-    }
-
-    private void addLocale(Map<String, String> params) {
-        if (!params.containsKey("locale") && locale != null) {
-            params.put("locale", locale.toString());
-        }
     }
 
     private long getSystemTime() {

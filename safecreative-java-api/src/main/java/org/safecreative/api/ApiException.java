@@ -36,12 +36,6 @@ public class ApiException extends Exception {
     private String errorCode;
 
     /**
-     * Creates a new instance of <code>ApiException</code> without detail message.
-     */
-    public ApiException() {
-    }
-
-    /**
      * Constructs an instance of <code>ApiException</code> with the specified detail message.
      * @param errorMessage the detail message.
      */
@@ -73,5 +67,18 @@ public class ApiException extends Exception {
      */
     public String getErrorCode() {
         return errorCode;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        if(getErrorCode() != null && !getErrorCode().equals(getMessage())) {
+            sb.append(" Error code: ").append(getErrorCode());
+        }
+        if(getCause() != null) {
+            sb.append(" Cause: ").append(getCause().toString());
+        }
+        return sb.toString();
     }
 }
