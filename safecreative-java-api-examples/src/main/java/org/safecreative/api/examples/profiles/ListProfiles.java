@@ -39,7 +39,7 @@ public class ListProfiles {
         System.out.println("Go to authorize url: "+authKey.getManageUrl()+" and press ENTER key to continue");
         System.in.read(); //Wait for key
         for(Profile profile : api.getProfiles(authKey)) {
-            System.out.println("Profile "+profile);
+            System.out.println("Profile code: "+profile.getCode() + " Name: " + profile);
         }
     }
 }

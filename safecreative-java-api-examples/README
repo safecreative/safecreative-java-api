@@ -23,6 +23,7 @@ Safe Creative API Examples
 
 	./run.sh profiles.ListProfiles
 	./run.sh work.RegisterFile profile-code path-to-some-file
+	./run.sh work.RegisterURL profile-code URL size sha1
 	./run.sh search.ListWorks photo
 	./run.sh search.SearchWorks user.name:magnatune
 
