@@ -38,7 +38,6 @@ public class UserConverter extends AbstractModelConverter {
         reader.moveDown();
         user.setName(reader.getValue());
         reader.moveUp();
-        String node;
         while (reader.hasMoreChildren()) {
             reader.moveDown();
             unmarshalUserField(user, reader, context);
@@ -63,9 +62,6 @@ public class UserConverter extends AbstractModelConverter {
         }else
         if (node.equals("email")) {
             user.setEmail(reader.getValue());
-        }else
-        if (node.equals("alias")) {
-            user.setAlias(reader.getValue());
         }else
         if (node.equals("human-url")) {
             user.setProfileUrl(readUrl(reader));
