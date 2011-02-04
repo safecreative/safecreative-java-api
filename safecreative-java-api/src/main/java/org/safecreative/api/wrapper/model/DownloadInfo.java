@@ -26,6 +26,8 @@ package org.safecreative.api.wrapper.model;
 
 import java.net.URL;
 
+import org.safecreative.api.wrapper.SafeCreativeAPIWrapper;
+
 /**
  * Download info.
  *
@@ -34,8 +36,11 @@ import java.net.URL;
  * @author jguillo@safecreative.org
  */
 public class DownloadInfo {
+	public enum Type { ORIGINAL, EVALUATION }
+	
     private String mimeType;
     private URL url;
+    private Type type;
 
     public DownloadInfo() {
     }
@@ -73,9 +78,23 @@ public class DownloadInfo {
         this.url = url;
     }
 
-    @Override
+    /**
+	 * @param type the type to set
+	 */
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public Type getType() {
+		return type;
+	}
+
+	@Override
     public String toString() {
-        return getClass().getSimpleName()+"[mimetype:"+getMimeType()+",url:"+getUrl()+"]";
+        return getClass().getSimpleName()+"[mimetype:"+getMimeType()+",url:"+getUrl()+",type:"+getType().name()+"]";
     }
     
 }

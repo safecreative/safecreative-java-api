@@ -49,6 +49,7 @@ public class Work {
     private String excerpt;
     private String tags;
     private boolean allowDownload;
+    private boolean allowEvaluation;
     private boolean allowSale;
     private boolean allowLicensing;
     private boolean registryPublic;
@@ -431,5 +432,19 @@ public class Work {
     public String toString() {
         return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
     }
+
+    /**
+     * @return allowEvaluation
+     */
+	public boolean isAllowEvaluation() {
+		return allowEvaluation;
+	}
+
+	/**
+	 * @param allowEvaluation the allowEvaluation to set
+	 */
+	public void setAllowEvaluation(boolean allowEvaluation) {
+		this.allowEvaluation = allowEvaluation;
+	}
 }
 

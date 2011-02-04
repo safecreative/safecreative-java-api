@@ -165,6 +165,10 @@ public class WorkConverter extends AbstractModelConverter {
             work.setAllowDownload(Boolean.valueOf(reader.getValue()));
             processedNode = true;
         }else
+        if (node.equals("allowevaluation")) {
+            work.setAllowEvaluation(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
         if (node.equals("registrypublic")) {
             work.setRegistryPublic(Boolean.valueOf(reader.getValue()));
             processedNode = true;

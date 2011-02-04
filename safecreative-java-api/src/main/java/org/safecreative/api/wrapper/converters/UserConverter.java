@@ -5,14 +5,16 @@
 
 package org.safecreative.api.wrapper.converters;
 
-import com.thoughtworks.xstream.converters.ConversionException;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import java.util.Date;
+
 import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.converters.ConversionException;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
  * XStream User converter
@@ -39,14 +41,14 @@ public class UserConverter extends AbstractModelConverter {
         String node;
         while (reader.hasMoreChildren()) {
             reader.moveDown();
-            unmarshalUser(user, reader, context);
+            unmarshalUserField(user, reader, context);
             reader.moveUp();
         }
         return user;
     }
 
-    protected boolean unmarshalUser(User user, HierarchicalStreamReader reader, UnmarshallingContext context) {
-        boolean processedNode = false;
+    protected boolean unmarshalUserField(User user, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        boolean processedNode = true;
         String node = reader.getNodeName();
         log.trace("Unmarshalling node {}",node);
         if (node.equals("country")) {
@@ -62,6 +64,9 @@ public class UserConverter extends AbstractModelConverter {
         if (node.equals("email")) {
             user.setEmail(reader.getValue());
         }else
+        if (node.equals("alias")) {
+            user.setAlias(reader.getValue());
+        }else
         if (node.equals("human-url")) {
             user.setProfileUrl(readUrl(reader));
         }else
@@ -74,6 +79,9 @@ public class UserConverter extends AbstractModelConverter {
         }else
         if (node.equals("thumbnail")) {
             user.setThumbnailUrl(readUrl(reader));
+        }
+        else {
+        	processedNode = false;
         }
         return processedNode;
     }

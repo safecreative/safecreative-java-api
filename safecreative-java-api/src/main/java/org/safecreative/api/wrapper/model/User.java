@@ -39,6 +39,7 @@ public class User extends CodeableEntity {
     private URL profileUrl;
     private URL thumbnailUrl;
     private String email;
+    private String alias;
     private Date entryDate;
     private Country country;
 
@@ -113,7 +114,21 @@ public class User extends CodeableEntity {
         this.country = country;
     }
     
-    @Override
+    /**
+	 * @param alias the alias to set
+	 */
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	/**
+	 * @return the alias
+	 */
+	public String getAlias() {
+		return alias;
+	}
+
+	@Override
     public String toString() {
         return getClass().getSimpleName()+"[code:"+getCode()+",name:"+getName()+",profile:"+profileUrl+",thumbnail:"+thumbnailUrl+"]";
     }

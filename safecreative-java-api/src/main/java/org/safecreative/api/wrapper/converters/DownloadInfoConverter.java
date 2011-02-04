@@ -24,11 +24,13 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper.converters;
 
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.DownloadInfo.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
  * XStream DownloadInfo converter
@@ -50,6 +52,12 @@ public class DownloadInfoConverter extends AbstractModelConverter {
                 info.setUrl(readUrl(reader));
             } else if("mimetype".equals(reader.getNodeName())) {
                 info.setMimeType(reader.getValue());
+            } else if("type".equals(reader.getNodeName())) {
+            	try {
+	            	Type t = Enum.valueOf(Type.class, reader.getValue());
+	                info.setType(t);
+            	}
+            	catch (IllegalArgumentException e) {}
             }
             reader.moveUp();
         }
