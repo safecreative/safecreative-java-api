@@ -1,7 +1,7 @@
 Safe Creative Java API
 #######################
 
-This package contains the Safe Creative Java API packaged with all dependencies
+This package contains the Safe Creative Java API packaged with all dependencies, standalone
 plus its documentation (javadocs and project info).
 
 If you want to compile it by yourself check its home page at 
