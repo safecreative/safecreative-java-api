@@ -282,11 +282,22 @@ public class SafeCreativeAPIWrapperTest {
         );
         assertNotNull(results);
         assertTrue(results.getSize() > 0);
-        Work work = results.getList().get(0);
-        System.out.println("Getting download url of work: "+ work);
-        DownloadInfo result = instance.getWorkDownload(work.getCode(), false);
-        assertNotNull(result);
-        System.out.println("Result: "+ result);
+		boolean atleastOneDownload = false;
+		for(Work work : results.getList()) {
+			System.out.println("Getting download url of work: "+ work);
+			try {
+				DownloadInfo result = instance.getWorkDownload(work.getCode(), false);
+				assertNotNull(result);
+				atleastOneDownload = true;
+				System.out.println("Result: "+ result);
+				break;
+			}catch(ApiException ex){
+				if(!"NotAuthorized".equals(ex.getErrorCode())) {
+					throw ex;
+				}				
+			}
+		}
+		assertTrue(atleastOneDownload);
     }
 
     /**

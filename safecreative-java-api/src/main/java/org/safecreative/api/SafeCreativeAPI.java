@@ -63,6 +63,7 @@ public class SafeCreativeAPI {
     public static final String STATE_REGISTERED = "REGISTERED";
     public static final String STATE_PRE_REGISTERED = "PRE_REGISTERED";
     public static final String NOT_AUTHORIZED_ERROR = "NotAuthorized";
+	public static final String INVALID_TIME_ERROR = "InvalidTime";
     private static Logger log = LoggerFactory.getLogger(SafeCreativeAPI.class);
     private String baseUrl;    
     private Long timeOffset;
@@ -169,6 +170,7 @@ public class SafeCreativeAPI {
 
     public String getZTime() {
         if (timeOffset == null) {
+			log.debug("Building time offset ztime");
             String result = call("component=ztime");
             String value = evalXml(result, "/ztime");
             if (value == null) {
@@ -176,9 +178,12 @@ public class SafeCreativeAPI {
             }
             long ztime = Long.parseLong(value);
             timeOffset = ztime - getSystemTime();
+			log.debug("ztime={} timeOffset={} systime={}",new Object[]{ztime,timeOffset,ztime-timeOffset});
             return value;
         }
-        return Long.toString(timeOffset + getSystemTime());
+		long ztime = timeOffset + getSystemTime();
+		log.debug("ztime={} timeOffset={} systime={}",new Object[]{ztime,timeOffset,ztime-timeOffset});
+        return Long.toString(ztime);
     }
 
     //////////////////////////////////////////////////////// CORE:
@@ -257,6 +262,10 @@ public class SafeCreativeAPI {
             os.write(params.getBytes(DEFAULT_ENCODING));
             String response = readString(conn.getInputStream());
             log.debug(String.format("api response:\n %s\n", response));
+			if(isError(response) && INVALID_TIME_ERROR.equals(getErrorCode(response))) {
+				log.warn("Client time needs resyncing");
+				timeOffset = null;
+			}
             return response;
         } catch (RuntimeException e) {
             throw e;

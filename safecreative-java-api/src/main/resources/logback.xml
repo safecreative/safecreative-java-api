@@ -28,7 +28,7 @@
 
 
     <root>
-        <level value="${sc.api.root.debug:-INFO}" />
+        <level value="${sc.api.root.debug:-DEBUG}" />
         <appender-ref ref="con" />
         <appender-ref ref="file" />
     </root>
