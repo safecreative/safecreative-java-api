@@ -42,6 +42,9 @@ public class Work {
     public enum RelationType {
 		VERSION, DERIVATION, COMPOSITION, RELATED
 	}
+    public enum WorkState {
+		PROCESSING, PRE_REGISTERED, REGISTERED
+	}
     private String code;
     private String title;
     private Date entryDate;
@@ -66,6 +69,12 @@ public class Work {
     private Type type;
     private TypeGroup typeGroup;
     private Language language;
+    private WorkState state;
+    private String observations;
+    private boolean useAlias;
+    private String userAlias;
+    private boolean userAuthor;
+    private boolean userRights;
 
     public static class Language extends CodeableEntity {
         
@@ -427,12 +436,6 @@ public class Work {
         this.language = language;
     }
 
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
-    }
-
     /**
      * @return allowEvaluation
      */
@@ -446,5 +449,95 @@ public class Work {
 	public void setAllowEvaluation(boolean allowEvaluation) {
 		this.allowEvaluation = allowEvaluation;
 	}
+
+    /**
+     * @return the observations
+     */
+    public String getObservations() {
+        return observations;
+    }
+
+    /**
+     * @param observations the observations to set
+     */
+    public void setObservations(String observations) {
+        this.observations = observations;
+    }
+
+    /**
+     * @return the workState
+     */
+    public WorkState getState() {
+        return state;
+    }
+
+    /**
+     * @param state the workState to set
+     */
+    public void setState(WorkState state) {
+        this.state = state;
+    }
+
+    /**
+     * @return the useAlias
+     */
+    public boolean isUseAlias() {
+        return useAlias;
+    }
+
+    /**
+     * @param useAlias the useAlias to set
+     */
+    public void setUseAlias(boolean useAlias) {
+        this.useAlias = useAlias;
+    }
+
+    /**
+     * @return the userAlias
+     */
+    public String getUserAlias() {
+        return userAlias;
+    }
+
+    /**
+     * @param userAlias the userAlias to set
+     */
+    public void setUserAlias(String userAlias) {
+        this.userAlias = userAlias;
+    }
+
+    /**
+     * @return the userAuthor
+     */
+    public boolean isUserAuthor() {
+        return userAuthor;
+    }
+
+    /**
+     * @param userAuthor the userAuthor to set
+     */
+    public void setUserAuthor(boolean userAuthor) {
+        this.userAuthor = userAuthor;
+    }
+
+    /**
+     * @return the userRights
+     */
+    public boolean isUserRights() {
+        return userRights;
+    }
+
+    /**
+     * @param userRights the userRights to set
+     */
+    public void setUserRights(boolean userRights) {
+        this.userRights = userRights;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
+    }
+
 }
 

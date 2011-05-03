@@ -208,6 +208,30 @@ public class WorkConverter extends AbstractModelConverter {
             language.setCode(reader.getValue());            
             work.setLanguage(language);
             processedNode = true;
+        }else
+        if (node.equals("state")) {
+            work.setState(Work.WorkState.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
+        if (node.equals("observations")) {
+            work.setObservations(reader.getValue());
+            processedNode = true;
+        }else
+        if (node.equals("usealias")) {
+            work.setUseAlias(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
+        if (node.equals("userauthor")) {
+            work.setUserAuthor(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
+        if (node.equals("userrights")) {
+            work.setUserRights(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
+        if (node.equals("useralias")) {
+            work.setUserAlias(reader.getValue());
+            processedNode = true;
         }
         return processedNode;
     }
