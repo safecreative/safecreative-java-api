@@ -270,6 +270,35 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
+     * Test of getWorkPrivate method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetWorkPrivate() throws Exception {// TODO make test for workgetprivate
+        System.out.println("getWorkPrivate");
+        XStream xs = new XStream();
+        xs.registerConverter(new WorkConverter());
+        String xml = IOHelper.readString(getClass().getResourceAsStream("/work.get.private.xml"));
+        System.out.println("work response "+xml);
+        Work work = instance.readObject(Work.class, xml,xs);
+        assertNotNull(work);
+        assertTrue(SafeCreativeAPI.isValidCode(work.getCode()));
+        assertNotNull(work.getLinks());
+        assertEquals("http://www.flickr.com/photos/mrmx/3141714714/",work.getLinks().get(0).getUrl().toExternalForm());
+        assertEquals("image/jpeg", work.getMimeType());
+        assertTrue(work.isAllowDownload());
+        assertTrue(work.isAllowLicensing());
+        assertFalse(work.isAllowSale());
+        assertEquals("EN",work.getLanguage().getCode());
+        assertEquals(Work.WorkState.REGISTERED, work.getState());
+        assertEquals("test observations", work.getObservations());
+        assertTrue(work.isRegistryPublic());
+        assertTrue(work.isUseAlias());
+        assertTrue(work.isUserAuthor());
+        assertTrue(work.isUserRights());
+        assertEquals("batman", work.getUserAlias());
+    }
+
+    /**
      * Test of getWorkDownload method, of class SafeCreativeAPIWrapper.
      */
     @Test
