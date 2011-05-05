@@ -273,7 +273,7 @@ public class SafeCreativeAPIWrapperTest {
      * Test of getWorkPrivate method, of class SafeCreativeAPIWrapper.
      */
     @Test
-    public void testGetWorkPrivate() throws Exception {// TODO make test for workgetprivate
+    public void testGetWorkPrivate() throws Exception {
         System.out.println("getWorkPrivate");
         XStream xs = new XStream();
         xs.registerConverter(new WorkConverter());

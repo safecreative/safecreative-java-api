@@ -564,6 +564,44 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
+     * Gets user's registered works list
+     *
+     * @return List of user's registered works
+     * @throws ApiException
+     */
+    public ListPage<Work> getWorkList() throws ApiException {
+        return getWorkList(1, getAuthKey());
+    }
+
+    /**
+     * Gets user's registered works list
+     *
+     * @param page page number
+     * @return List of user's registered works
+     * @throws ApiException
+     */
+    public ListPage<Work> getWorkList(int page) throws ApiException {
+        return getWorkList(page, getAuthKey());
+    }
+
+    /**
+     * Gets user's registered works list
+     *
+     * @param page page number
+     * @param authKey authKey user authorization key
+     * @return List of user's registered works
+     * @throws ApiException
+     */
+    public ListPage<Work> getWorkList(int page, AuthKey authKey) throws ApiException {
+        setApiUrl();
+        checkAuthKey(authKey);
+        
+        String result = callComponentSigned("work.list", authKey, true, false, true, "page", String.valueOf(page));
+        ListPage<Work> results = readWorkListPage(result);
+        return results;
+    }
+
+    /**
      * Deletes a work
      * @param code work's registry code
      * @return <code>true</code> on success
