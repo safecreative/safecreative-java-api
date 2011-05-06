@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.safecreative.api.ApiException;
 import org.safecreative.api.SafeCreativeAPI;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 import org.safecreative.api.SafeCreativeAPITestProperties;
 import org.safecreative.api.util.IOHelper;
@@ -44,6 +45,7 @@ import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.Work;
 
@@ -296,6 +298,39 @@ public class SafeCreativeAPIWrapperTest {
         assertTrue(work.isUserAuthor());
         assertTrue(work.isUserRights());
         assertEquals("batman", work.getUserAlias());
+    }
+
+    /**
+     * Test of getWorkList method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetWorkList() throws Exception {
+        System.out.println("getWorkList");
+        
+        // check keys
+        Locale oldLocale = instance.getLocale(); // hack for locale parameter bug
+        instance.setLocale(null);
+
+        AuthKeyState state = instance.checkAuth(instance.getAuthKey());
+
+        instance.setLocale(oldLocale); // /hack
+
+        assumeTrue(state.isAuthorized());
+
+        ListPage<Work> results = instance.getWorkList();
+
+        // check that all works in results correspont to user
+        for (Work work : results.getList()) {
+            List<User> authors = instance.getWork(work.getCode()).getAuthors();
+            boolean isAuthor = false;
+
+            for (User author : authors) {
+                if (author.getCode().equals(state.getCode())) {
+                    isAuthor = true;
+                }
+            }
+            assertTrue(isAuthor);
+        }
     }
 
     /**

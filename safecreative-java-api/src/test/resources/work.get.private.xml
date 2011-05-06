@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<work>
+  <code>1004226079740</code>
+  <title>Espacio puente 8</title>
+  <entrydate>2010-04-22T18:07:23Z</entrydate>
+  <state>REGISTERED</state>
+  <excerpt>&lt;http://www.flickr.com/people/mrmx/&gt;Mr.Mx. posted a photo:
+&lt;http://www.flickr.com/photos/mrmx/3141714714/&gt;</excerpt>
+  <observations>test observations</observations>
+  <tags>pabellón, puente, expo, zaragoza, interior, 2008</tags>
+  <thumbnail>https://thumbnails-safecreative-org.s3.amazonaws.com/1/00000128/26b3/d167/7b64/d3d6ab261eb1/3130314171471470d7462d8ao_thumb.png</thumbnail>
+  <mimetype>image/jpeg</mimetype>
+  <links>
+    <link name="Espacio puente 8" type="INFO">http://www.flickr.com/photos/mrmx/3141714714/</link>
+  </links>
+  <!-- Sample relations: -->
+  <relations>
+    <relation type="RELATED">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="VERSION">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="DERIVATION">
+      <work name="Work with lotsa links" code="0907030200236"/>
+    </relation>
+    <relation type="COMPOSITION">
+      <work name="My firts post" code="1702034400231"/>
+      <work name="Work with links" code="0902030200236"/>
+    </relation>
+  </relations>
+  <!-- End sample relations: -->
+  <license>
+    <code>http://creativecommons.org/licenses/by-nc-sa/3.0/</code>
+    <name>Creative Commons Attribution Non-Comercial Share Alike 3.0</name>
+    <shortname>CC by-nc-sa</shortname>
+    <endDate></endDate>
+    <human-url>http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode</human-url>
+    <features>
+      <recognition>YES</recognition>
+      <derivations>INHERITANCE</derivations>
+      <distribution>YES</distribution>
+      <commercial>NO</commercial>
+      <timelimited>NOT_APPLICABLE</timelimited>
+    </features>
+  </license>
+  <allowdownload>true</allowdownload>
+  <allowlicensing>true</allowlicensing>
+  <allowsale>false</allowsale>
+  <registrypublic>true</registrypublic>
+  <languagecode>EN</languagecode>
+  <worktype>
+    <code>photo</code>
+    <name>Photography</name>
+  </worktype>
+  <worktypegroup>
+    <code>Artistic</code>
+    <name>Artistic</name>
+  </worktypegroup>
+  <useralias>batman</useralias>
+  <usealias>true</usealias>
+  <userauthor>true</userauthor>
+  <userrights>true</userrights>
+</work>
