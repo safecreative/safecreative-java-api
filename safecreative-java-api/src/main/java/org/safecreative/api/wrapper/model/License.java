@@ -46,6 +46,7 @@ public class License extends CodeableEntity {
     private String shortName;
     private Date endDate;
     private URL url;
+    private Country jurisdiction;
     private Map<Feature,FeatureValue> features;
 
     /**
@@ -88,6 +89,20 @@ public class License extends CodeableEntity {
      */
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * @return the jurisdiction
+     */
+    public Country getJurisdiction() {
+        return jurisdiction;
+    }
+
+    /**
+     * @param jurisdiction the jurisdiction to set
+     */
+    public void setJurisdiction(Country jurisdiction) {
+        this.jurisdiction = jurisdiction;
     }
 
     /**

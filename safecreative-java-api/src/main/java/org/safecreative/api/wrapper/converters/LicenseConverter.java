@@ -27,6 +27,7 @@ package org.safecreative.api.wrapper.converters;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import java.util.Date;
+import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.License;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,22 +67,31 @@ public class LicenseConverter extends AbstractModelConverter {
             reader.moveUp();
             reader.moveDown();
         }
-        if(reader.getNodeName().equals("human-url")) {
+        if(reader.getNodeName().equals("human-url") || reader.getNodeName().equals("url")) { // API naming inconsistency
             license.setUrl(readUrl(reader));
             reader.moveUp();
             reader.moveDown();
         }
-
-        String feature;
-        while (reader.hasMoreChildren()) {
-            reader.moveDown();
-            feature = reader.getNodeName().toUpperCase();
-            try {
-                license.getFeatures().put(License.Feature.valueOf(feature), License.FeatureValue.valueOf(reader.getValue()));
-            } catch (Exception ex) {
-                log.error("bad license feature " + feature + ":" + reader.getValue(), ex);
-            }
+        if(reader.getNodeName().equals("jurisdiction")) {
+            Country jurisdiction = new Country();
+            jurisdiction.setCode(reader.getValue());
+            license.setJurisdiction(jurisdiction);
             reader.moveUp();
+            reader.moveDown();
+        }
+
+        if (reader.getNodeName().equals("features")) {
+            String feature;
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                feature = reader.getNodeName().toUpperCase();
+                try {
+                    license.getFeatures().put(License.Feature.valueOf(feature), License.FeatureValue.valueOf(reader.getValue()));
+                } catch (Exception ex) {
+                    log.error("bad license feature " + feature + ":" + reader.getValue(), ex);
+                }
+                reader.moveUp();
+            }
         }
         reader.moveUp();        
         return license;
