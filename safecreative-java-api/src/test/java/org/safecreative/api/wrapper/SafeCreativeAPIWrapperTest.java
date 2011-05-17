@@ -321,15 +321,20 @@ public class SafeCreativeAPIWrapperTest {
 
         // check that all works in results correspont to user
         for (Work work : results.getList()) {
-            List<User> authors = instance.getWork(work.getCode()).getAuthors();
-            boolean isAuthor = false;
+            System.out.println("checkwork, code:" + work.getCode());
 
-            for (User author : authors) {
-                if (author.getCode().equals(state.getCode())) {
-                    isAuthor = true;
+            Work publicWork = instance.getWork(work.getCode());
+            if (publicWork != null) { // work is public
+                List<User> authors = instance.getWork(work.getCode()).getAuthors();
+                boolean isAuthor = false;
+
+                for (User author : authors) {
+                    if (author.getCode().equals(state.getCode())) {
+                        isAuthor = true;
+                    }
                 }
+                assertTrue(isAuthor);
             }
-            assertTrue(isAuthor);
         }
     }
 
