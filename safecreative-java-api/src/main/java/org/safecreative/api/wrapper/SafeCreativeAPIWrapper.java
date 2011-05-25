@@ -26,7 +26,6 @@ package org.safecreative.api.wrapper;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +58,7 @@ import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.User;
+import org.safecreative.api.wrapper.util.ParamsMerger;
 
 /**
  * SafeCreativeAPI main wrapper
@@ -655,6 +655,22 @@ public class SafeCreativeAPIWrapper {
      * @throws ApiException
      */
     public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
+        Work work = new Work();
+        work.setTitle(title);
+        return workRegister(file, profile, work, uploadProgressListener);
+    }
+    /**
+     * Registers a file using a registration profile and/or a work object containing the registration parameters
+     *
+     * @param file File to register
+     * @param profile Registration profile
+     * @param customValues work containing register parameters to override those of defined profile
+     * @param uploadProgressListener Upload progress listener
+     * @return Work's registration code
+     * @throws ApiException
+     */
+    public String workRegister(File file,Profile profile,Work customValues,
+            UploadProgressListener uploadProgressListener) throws ApiException {
         setApiUrl();
         checkAuthKey(authKey);
         byte[] digest;
@@ -673,7 +689,7 @@ public class SafeCreativeAPIWrapper {
         api.setPrivateAuthKey(authKey.getPrivatekey());
         String workCode = null;
         try {
-            workCode = registerWork.registerWork(title, file.getName(), file, checkSum);
+            workCode = registerWork.registerWork(file.getName(), file, customValues, checkSum);
         } catch (Exception e) {
             if (SafeCreativeAPI.NOT_AUTHORIZED_ERROR.equals(e.getMessage())) {
                 log.warn("Not authorized to update/register {}", e);
@@ -689,6 +705,12 @@ public class SafeCreativeAPIWrapper {
     }
 
     public String workRegister(String title,URL url,Profile profile,String fileName,long fileSize,String checkSum ) throws ApiException {
+        Work work = new Work();
+        work.setTitle(title);
+        return workRegister(url,profile,work,url.getFile(),fileSize,checkSum);
+    }
+    public String workRegister(URL url,Profile profile,Work customValues,
+            String fileName,long fileSize,String checkSum ) throws ApiException {
         setApiUrl();
         checkAuthKey(authKey);
         if(profile == null || !StringUtils.isNumeric(profile.getCode())) {
@@ -696,12 +718,14 @@ public class SafeCreativeAPIWrapper {
         }        
         Map params = api.createParams("component", "work.register");
         params.put("authkey", authKey.getAuthkey());
-        params.put("title",title);
         params.put("profile",profile.getCode());
         params.put("url",url.toString());
         params.put("filename",fileName);
         params.put("size",String.valueOf(fileSize));
         params.put("checksum",checkSum);
+
+        params = ParamsMerger.mergeWork(params, customValues);
+
         api.setAuthKey(authKey.getAuthkey());
         api.setPrivateAuthKey(authKey.getPrivatekey());
         String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);

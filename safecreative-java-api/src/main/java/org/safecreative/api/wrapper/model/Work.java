@@ -51,11 +51,11 @@ public class Work {
     private Date updateDate;
     private String excerpt;
     private String tags;
-    private boolean allowDownload;
-    private boolean allowEvaluation;
-    private boolean allowSale;
-    private boolean allowLicensing;
-    private boolean registryPublic;
+    private Boolean allowDownload;
+    private Boolean allowEvaluation;
+    private Boolean allowSale;
+    private Boolean allowLicensing;
+    private Boolean registryPublic;
     private URL thumbnail;
     private List<Link> links;
     private List<User> authors;
@@ -71,10 +71,10 @@ public class Work {
     private Language language;
     private WorkState state;
     private String observations;
-    private boolean useAlias;
+    private Boolean useAlias;
     private String userAlias;
-    private boolean userAuthor;
-    private boolean userRights;
+    private Boolean userAuthor;
+    private Boolean userRights;
 
     public static class Language extends CodeableEntity {
         
@@ -190,56 +190,56 @@ public class Work {
     /**
      * @return the allowdownload
      */
-    public boolean isAllowDownload() {
+    public Boolean isAllowDownload() {
         return allowDownload;
     }
 
     /**
      * @param allowdownload the allowdownload to set
      */
-    public void setAllowDownload(boolean allowDownload) {
+    public void setAllowDownload(Boolean allowDownload) {
         this.allowDownload = allowDownload;
     }
 
     /**
      * @return the registryPublic
      */
-    public boolean isRegistryPublic() {
+    public Boolean isRegistryPublic() {
         return registryPublic;
     }
 
     /**
      * @param registryPublic the registryPublic to set
      */
-    public void setRegistryPublic(boolean registryPublic) {
+    public void setRegistryPublic(Boolean registryPublic) {
         this.registryPublic = registryPublic;
     }
 
     /**
      * @return the allowSale
      */
-    public boolean isAllowSale() {
+    public Boolean isAllowSale() {
         return allowSale;
     }
 
     /**
      * @param allowSale the allowSale to set
      */
-    public void setAllowSale(boolean allowSale) {
+    public void setAllowSale(Boolean allowSale) {
         this.allowSale = allowSale;
     }
 
     /**
      * @return the allowLicensing
      */
-    public boolean isAllowLicensing() {
+    public Boolean isAllowLicensing() {
         return allowLicensing;
     }
 
     /**
      * @param allowLicensing the allowLicensing to set
      */
-    public void setAllowLicensing(boolean allowLicensing) {
+    public void setAllowLicensing(Boolean allowLicensing) {
         this.allowLicensing = allowLicensing;
     }
 
@@ -439,14 +439,14 @@ public class Work {
     /**
      * @return allowEvaluation
      */
-	public boolean isAllowEvaluation() {
+	public Boolean isAllowEvaluation() {
 		return allowEvaluation;
 	}
 
 	/**
 	 * @param allowEvaluation the allowEvaluation to set
 	 */
-	public void setAllowEvaluation(boolean allowEvaluation) {
+	public void setAllowEvaluation(Boolean allowEvaluation) {
 		this.allowEvaluation = allowEvaluation;
 	}
 
@@ -481,14 +481,14 @@ public class Work {
     /**
      * @return the useAlias
      */
-    public boolean isUseAlias() {
+    public Boolean isUseAlias() {
         return useAlias;
     }
 
     /**
      * @param useAlias the useAlias to set
      */
-    public void setUseAlias(boolean useAlias) {
+    public void setUseAlias(Boolean useAlias) {
         this.useAlias = useAlias;
     }
 
@@ -509,28 +509,28 @@ public class Work {
     /**
      * @return the userAuthor
      */
-    public boolean isUserAuthor() {
+    public Boolean isUserAuthor() {
         return userAuthor;
     }
 
     /**
      * @param userAuthor the userAuthor to set
      */
-    public void setUserAuthor(boolean userAuthor) {
+    public void setUserAuthor(Boolean userAuthor) {
         this.userAuthor = userAuthor;
     }
 
     /**
      * @return the userRights
      */
-    public boolean isUserRights() {
+    public Boolean isUserRights() {
         return userRights;
     }
 
     /**
      * @param userRights the userRights to set
      */
-    public void setUserRights(boolean userRights) {
+    public void setUserRights(Boolean userRights) {
         this.userRights = userRights;
     }
 

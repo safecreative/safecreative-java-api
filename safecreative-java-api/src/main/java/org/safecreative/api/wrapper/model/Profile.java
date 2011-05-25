@@ -35,6 +35,7 @@ import org.safecreative.api.SafeCreativeAPI;
  * @author jguillo@safecreative.org
  */
 public class Profile implements Comparable {
+    // should extend from CodeableEntity
     
     private String code;
     private String name;
@@ -94,4 +95,99 @@ public class Profile implements Comparable {
     public String toString() {
         return StringUtils.isBlank(name) ? "" : name;
     }
+
+    // Class implementing all the fields of a profile.
+    // Should be merged with Profile when the API supports all the fields of a profile.
+    /*public static class ExtendedProfile extends Profile {
+        private String tags;
+        private boolean allowDownload;
+        private boolean registryPublic;
+        private License license;
+        private Work.Type workType;
+        private Language language;
+        private boolean useAlias;
+        private String userAlias;
+        private boolean userAuthor;
+        private boolean userRights;
+
+        public boolean isAllowDownload() {
+            return allowDownload;
+        }
+
+        public void setAllowDownload(boolean allowDownload) {
+            this.allowDownload = allowDownload;
+        }
+
+        public Language getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(Language language) {
+            this.language = language;
+        }
+
+        public License getLicense() {
+            return license;
+        }
+
+        public void setLicense(License license) {
+            this.license = license;
+        }
+
+        public boolean isRegistryPublic() {
+            return registryPublic;
+        }
+
+        public void setRegistryPublic(boolean registryPublic) {
+            this.registryPublic = registryPublic;
+        }
+
+        public String getTags() {
+            return tags;
+        }
+
+        public void setTags(String tags) {
+            this.tags = tags;
+        }
+
+        public boolean isUseAlias() {
+            return useAlias;
+        }
+
+        public void setUseAlias(boolean useAlias) {
+            this.useAlias = useAlias;
+        }
+
+        public String getUserAlias() {
+            return userAlias;
+        }
+
+        public void setUserAlias(String userAlias) {
+            this.userAlias = userAlias;
+        }
+
+        public boolean isUserAuthor() {
+            return userAuthor;
+        }
+
+        public void setUserAuthor(boolean userAuthor) {
+            this.userAuthor = userAuthor;
+        }
+
+        public boolean isUserRights() {
+            return userRights;
+        }
+
+        public void setUserRights(boolean userRights) {
+            this.userRights = userRights;
+        }
+
+        public Type getWorkType() {
+            return workType;
+        }
+
+        public void setWorkType(Type workType) {
+            this.workType = workType;
+        }
+    }*/
 }
