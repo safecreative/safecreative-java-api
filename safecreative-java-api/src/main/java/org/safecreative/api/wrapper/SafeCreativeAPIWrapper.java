@@ -659,6 +659,7 @@ public class SafeCreativeAPIWrapper {
         work.setTitle(title);
         return workRegister(file, profile, work, uploadProgressListener);
     }
+
     /**
      * Registers a file using a registration profile and/or a work object containing the registration parameters
      *
@@ -730,6 +731,33 @@ public class SafeCreativeAPIWrapper {
         api.setPrivateAuthKey(authKey.getPrivatekey());
         String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);
         return api.evalXml(result, "/workregistry/code");
+    }
+
+    /**
+     * Registers a file using a registration profile and/or a work object containing the registration parameters
+     *
+     * @param work work containing register parameters used to update work
+     * @return true on success
+     * @throws ApiException
+     */
+    public boolean workUpdate(Work work) throws ApiException {
+        // UPGRADE add parameters for extratag and extralinks
+        // TODO create placeholder methods to update workfile
+
+
+        setApiUrl();
+        checkAuthKey(authKey);
+
+        Map<String, String> params = api.createParams("component", "work.register");
+        params.put("code", work.getCode());
+        params.put("authkey", authKey.getAuthkey());
+        params = ParamsMerger.mergeWork(params, work);
+
+        api.setAuthKey(authKey.getAuthkey());
+        api.setPrivateAuthKey(authKey.getPrivatekey());
+        String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);
+        
+        return work.getCode().equals(api.evalXml(result, "/workregistry/code"));
     }
 
     ////////////////////////////////////////////////////////////////////////////
