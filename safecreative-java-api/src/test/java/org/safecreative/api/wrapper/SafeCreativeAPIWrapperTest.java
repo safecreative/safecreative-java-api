@@ -184,6 +184,18 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
+     * Test of getWorkTypesTree method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetWorkTypesTree() throws Exception {
+        System.out.println("getWorkTypesTree");
+        List<Work.TypeGroup> result = instance.getWorkTypesTree();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
      * Test of getWorkLanguages method, of class SafeCreativeAPIWrapper.
      */
     @Test

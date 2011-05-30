@@ -100,7 +100,21 @@ public class Work {
     }
 
     public static class TypeGroup extends CodeableEntity {
+        private List<Type> workTypes;
 
+        /**
+         * @return the workTypes
+         */
+        public List<Type> getWorkTypes() {
+            return workTypes;
+        }
+
+        /**
+         * @param workTypes the workTypes to set
+         */
+        public void setWorkTypes(List<Type> workTypes) {
+            this.workTypes = workTypes;
+        }
     }
 
     /**

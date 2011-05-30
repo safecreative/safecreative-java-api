@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
+import java.util.ArrayList;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
@@ -487,6 +488,21 @@ public class SafeCreativeAPIWrapper {
         List<Work.Type> workTypes = readList(result, "worktypes", "worktype", Work.Type.class);
         log.debug("Work Types {}", workTypes);
         return workTypes;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Work.TypeGroup> getWorkTypesTree() throws ApiException {
+        setApiUrl();
+        String result = callComponent("work.types.tree");
+        XStream xs = new XStream();
+
+        // alias for worktype
+        xs.aliasField("worktypes", Work.TypeGroup.class, "workTypes");
+        xs.alias("worktype", Work.Type.class);
+
+        List<Work.TypeGroup> workTypeGroups = readList(result, "worktypegroups", "worktypegroup", Work.TypeGroup.class, xs);
+        log.debug("Work Type Groups {}", workTypeGroups);
+        return workTypeGroups;
     }
 
     @SuppressWarnings("unchecked")
