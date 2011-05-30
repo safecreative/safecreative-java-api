@@ -59,6 +59,7 @@ import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.User;
+import org.safecreative.api.wrapper.model.UserQuota;
 import org.safecreative.api.wrapper.util.ParamsMerger;
 
 /**
@@ -280,6 +281,49 @@ public class SafeCreativeAPIWrapper {
             throw ex;
         }
         return readObject(User.class, result,new UserConverter());
+    }
+
+    /**
+     * Get user quota info of currently authorized user
+     *
+     * @return UserQuota or <code>null</code> if not authorized
+     * @throws ApiException
+     */
+    public UserQuota getUserQuota() throws ApiException {
+        return getUserQuota(getAuthKey());
+    }
+
+    /**
+     * Get user quota info
+     *
+     * @param authKey user's authKey to get quota
+     * @return UserQuota or <code>null</code> if not authorized
+     * @throws ApiException
+     */
+    public UserQuota getUserQuota(AuthKey authKey) throws ApiException {
+        setApiUrl();
+        String response = null;
+        UserQuota quota = null;
+        try {
+            response = callComponentSigned("user.quota",getApi().getPrivateKey(),true,false,false,
+                    "authkey", authKey.getAuthkey(),"sharedkey",getApi().getSharedKey());
+        } catch (ApiException ex) {
+            if (SafeCreativeAPI.NOT_AUTHORIZED_ERROR.equals(ex.getErrorCode())) {
+                return null;
+            }
+            throw ex;
+        }
+
+        XStream xs = new XStream();
+        xs.alias("userquota", UserQuota.class);
+        xs.aliasField("usercode", UserQuota.class, "userCode");
+
+        try {
+            quota = (UserQuota) xs.fromXML(response);
+        } catch (Exception e) {
+            log.error("Parsing xml response", e);
+        }
+        return quota;
     }
 
 
