@@ -336,34 +336,15 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("getWorkList");
         
         // check keys
-        Locale oldLocale = instance.getLocale(); // hack for locale parameter bug
-        instance.setLocale(null);
-
         AuthKeyState state = instance.checkAuth(instance.getAuthKey());
-
-        instance.setLocale(oldLocale); // /hack
 
         assumeTrue(state.isAuthorized());
 
         ListPage<Work> results = instance.getWorkList();
 
-        // check that all works in results correspont to user
-        for (Work work : results.getList()) {
-            System.out.println("checkwork, code:" + work.getCode());
-
-            Work publicWork = instance.getWork(work.getCode());
-            if (publicWork != null) { // work is public
-                List<User> authors = instance.getWork(work.getCode()).getAuthors();
-                boolean isAuthor = false;
-
-                for (User author : authors) {
-                    if (author.getCode().equals(state.getCode())) {
-                        isAuthor = true;
-                    }
-                }
-                assertTrue(isAuthor);
-            }
-        }
+        assertNotNull(results);
+        assertFalse(results.getList().isEmpty());
+        System.out.println("Result: "+ results);
     }
 
     /**
@@ -415,6 +396,12 @@ public class SafeCreativeAPIWrapperTest {
     @Test
     public void testGetUserQuota() throws Exception {
         System.out.println("getUserQuota");
+
+        // check keys
+        AuthKeyState state = instance.checkAuth(instance.getAuthKey());
+
+        assumeTrue(state.isAuthorized());
+        
         UserQuota result = instance.getUserQuota();
         assertNotNull(result);
         assertEquals(testProperties.getUerCode(), result.getUserCode());
