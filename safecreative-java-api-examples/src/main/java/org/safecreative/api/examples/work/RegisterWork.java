@@ -48,7 +48,6 @@ public class RegisterWork {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, ApiException {
 		SafeCreativeAPIWrapper api = LoadAPI.load();
-		api.setLocale(null); // error if locale is defined in API Wrapper
 		
 	    String filePath = "mylocalfile.txt";
 	    String workCode;

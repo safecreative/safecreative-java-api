@@ -47,7 +47,6 @@ public class UserFromKeys {
 	 */
 	public static void main(String[] args) throws FileNotFoundException, IOException, ApiException {
 		SafeCreativeAPIWrapper api = LoadAPI.load();
-        api.setLocale(null); // error if locale is defined in API Wrapper
 
         AuthKey myKey = api.getAuthKey();
         AuthKeyState checkState = api.checkAuth(myKey);
