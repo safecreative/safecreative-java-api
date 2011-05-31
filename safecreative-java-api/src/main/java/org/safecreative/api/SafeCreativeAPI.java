@@ -165,7 +165,7 @@ public class SafeCreativeAPI {
             throw new IllegalArgumentException("null auth key");
         }
         Map params = createParams("component", "authkey.state", "authkey", authKey, "sharedkey", sharedKey);
-        return callSigned(params, true, false);
+        return callSigned(params, true, false, false);
     }
 
     public String getZTime() {

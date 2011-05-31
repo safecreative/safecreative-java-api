@@ -94,6 +94,6 @@ public abstract class CodeableEntity implements Comparable<CodeableEntity> {
      * Should be used only between objects of the same CodeableEntity subclass.
      */
     public int compareTo(CodeableEntity o) {
-        return this.name.compareTo(o.name); // TODO implement more sensible string comparator
+        return this.name.compareTo(o.name);
     }
 }

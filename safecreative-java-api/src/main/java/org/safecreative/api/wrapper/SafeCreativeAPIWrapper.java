@@ -245,7 +245,7 @@ public class SafeCreativeAPIWrapper {
     public AuthKey createAuth(AuthkeyLevel authkeyLevel) throws ApiException {
         setApiUrl();
         Map params = api.createParams("component", "authkey.create", "sharedkey", api.getSharedKey());
-        String result = api.callSigned(params, true, false);
+        String result = api.callSigned(params, true, false, false);
         checkError(result);
         String auth = api.evalXml(result, "/authkeycreate/authkey");
         String authPrivate = api.evalXml(result, "/authkeycreate/privatekey");
@@ -378,7 +378,7 @@ public class SafeCreativeAPIWrapper {
         params.put("addresszip", addresszip);
         params.put("addresscity", addresscity);
         params.put("addresscountry", addresscountry);        
-        String result = api.callSigned(params, true, false);
+        String result = api.callSigned(params, true, false, false);
         checkError(result);
         log.debug("user.link result:\n{}", result);
         XStream xs = new XStream();
@@ -789,7 +789,7 @@ public class SafeCreativeAPIWrapper {
 
         api.setAuthKey(authKey.getAuthkey());
         api.setPrivateAuthKey(authKey.getPrivatekey());
-        String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);
+        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
         return api.evalXml(result, "/workregistry/code");
     }
 
@@ -815,7 +815,7 @@ public class SafeCreativeAPIWrapper {
 
         api.setAuthKey(authKey.getAuthkey());
         api.setPrivateAuthKey(authKey.getPrivatekey());
-        String result = callSigned(api.getPrivateAuthKey(), true, true, true,params);
+        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
         
         return work.getCode().equals(api.evalXml(result, "/workregistry/code"));
     }

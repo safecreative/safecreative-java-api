@@ -45,8 +45,10 @@ import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserLink;
+import org.safecreative.api.wrapper.model.UserQuota;
 import org.safecreative.api.wrapper.model.Work;
 
 /**
@@ -93,6 +95,7 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("getBaseSearchUrl");
         String result = instance.getBaseSearchUrl();
         assertNotNull(result);
+        assertEquals(testProperties.getBaseSearchUrl(), result);
         System.out.println("Result: "+ new URL(result));
     }
 
@@ -105,6 +108,7 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("getBaseUrl");
         String result = instance.getBaseUrl();
         assertNotNull(result);
+        assertEquals(testProperties.getBaseUrl(), result);
         System.out.println("Result: "+ new URL(result));
     }
 
@@ -214,6 +218,18 @@ public class SafeCreativeAPIWrapperTest {
     public void testGetCountries() throws Exception {
         System.out.println("getCountries");
         List<Country> result = instance.getCountries();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of getLicenses method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetLicenses() throws Exception {
+        System.out.println("getCountries");
+        List<License> result = instance.getLicenses().getList();
         assertNotNull(result);
         assertFalse(result.isEmpty());
         System.out.println("Result: "+ result);
@@ -382,6 +398,30 @@ public class SafeCreativeAPIWrapperTest {
     }
 
     /**
+     * Test of getUser method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetUser() throws Exception {
+        System.out.println("getUser");
+        User result = instance.getUser(testProperties.getUerCode());
+        assertNotNull(result);
+        //assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of getUserQuota method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetUserQuota() throws Exception {
+        System.out.println("getUserQuota");
+        UserQuota result = instance.getUserQuota();
+        assertNotNull(result);
+        assertEquals(testProperties.getUerCode(), result.getUserCode());
+        System.out.println("Result: " + result);
+    }
+
+    /**
      * Test of un/linkUser methods, of class SafeCreativeAPIWrapper.
      */
     @Test
@@ -518,6 +558,26 @@ public class SafeCreativeAPIWrapperTest {
             assertEquals("code",ex.getErrorCode() );
             assertEquals("message",ex.getMessage() );
         }
+    }
+
+    /**
+     * Locale parameter should not be passed to components that dont require locale
+     */
+    @Test
+    public void testLocaleNotRequired() throws Exception {
+        System.out.println("LocaleNotRequired");
+
+        instance.setLocale(Locale.ENGLISH);
+        try {
+            testCheckAuth_AuthKey();
+        } catch (ApiException ex) {
+            fail(ex.toString());
+        }
+
+        List<Country> result = instance.getCountries();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
     }
 
 }

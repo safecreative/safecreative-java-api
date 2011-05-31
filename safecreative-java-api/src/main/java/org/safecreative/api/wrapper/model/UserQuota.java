@@ -33,8 +33,8 @@ public class UserQuota {
     private String userCode;
     private long diskUsage;
     private long diskQuota;
-    private long monthlyResgistrations;
-    private long monthlyResgistrationsQuota;
+    private long monthlyRegistrations;
+    private long monthlyRegistrationsQuota;
 
     public long getDiskQuota() {
         return diskQuota;
@@ -53,19 +53,19 @@ public class UserQuota {
     }
 
     public long getMonthlyResgistrations() {
-        return monthlyResgistrations;
+        return monthlyRegistrations;
     }
 
     public void setMonthlyResgistrations(long monthlyResgistrations) {
-        this.monthlyResgistrations = monthlyResgistrations;
+        this.monthlyRegistrations = monthlyResgistrations;
     }
 
     public long getMonthlyResgistrationsQuota() {
-        return monthlyResgistrationsQuota;
+        return monthlyRegistrationsQuota;
     }
 
     public void setMonthlyResgistrationsQuota(long monthlyResgistrationsQuota) {
-        this.monthlyResgistrationsQuota = monthlyResgistrationsQuota;
+        this.monthlyRegistrationsQuota = monthlyResgistrationsQuota;
     }
 
     public String getUserCode() {
