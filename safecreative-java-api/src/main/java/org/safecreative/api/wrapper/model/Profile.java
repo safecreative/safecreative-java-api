@@ -34,33 +34,14 @@ import org.safecreative.api.SafeCreativeAPI;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class Profile implements Comparable {
+public class Profile extends CodeableEntity {
     // should extend from CodeableEntity
-    
-    private String code;
-    private String name;
 
     public Profile() {
     }
 
     public Profile(String code) {
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        setCode(code);
     }
 
     public static Profile fromCode(String code) {
@@ -72,28 +53,8 @@ public class Profile implements Comparable {
     }
 
     @Override
-    public int hashCode() {
-        return code == null ? -1 : code.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(compareTo(obj) != 0) {
-            return false;
-        }
-        return hashCode() == obj.hashCode();
-    }
-    
-    public int compareTo(Object o) {
-        if(o == null || !(o instanceof Profile)) {
-            return -1;
-        }
-        return name.compareTo(((Profile)o).name);
-    }
-
-    @Override
     public String toString() {
-        return StringUtils.isBlank(name) ? "" : name;
+        return StringUtils.isBlank(getName()) ? "" : getName();
     }
 
     // Class implementing all the fields of a profile.

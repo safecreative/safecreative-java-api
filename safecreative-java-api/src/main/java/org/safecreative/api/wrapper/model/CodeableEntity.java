@@ -29,7 +29,7 @@ package org.safecreative.api.wrapper.model;
  *
  * @author mpolo@safecreative.org
  */
-public abstract class CodeableEntity {
+public abstract class CodeableEntity implements Comparable<CodeableEntity> {
 
     private String code;
     private String name;
@@ -65,5 +65,35 @@ public abstract class CodeableEntity {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "[code:" + code + ",name:" + name + "]";
+    }
+
+    /**
+     * Should be used only between objects of the same CodeableEntity subclass
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+
+        CodeableEntity other = (CodeableEntity) o;
+        return this.code.equals(other.code);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.code != null ? this.code.hashCode() : 0);
+        return hash;
+    }
+
+    /**
+     * Should be used only between objects of the same CodeableEntity subclass.
+     */
+    public int compareTo(CodeableEntity o) {
+        return this.name.compareTo(o.name); // TODO implement more sensible string comparator
     }
 }

@@ -552,6 +552,26 @@ public class Work {
     public String toString() {
         return getClass().getSimpleName()+"[code:"+code+",title:"+title+",type:"+type+",typeGroup:"+typeGroup+",license:"+license+"]";
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+
+        Work other = (Work) o;
+        return this.code.equals(other.code);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (this.code != null ? this.code.hashCode() : 0);
+        return hash;
+    }
 
 }
 
