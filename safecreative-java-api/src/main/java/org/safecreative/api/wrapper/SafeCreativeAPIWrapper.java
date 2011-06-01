@@ -26,11 +26,14 @@ package org.safecreative.api.wrapper;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.ApiException;
@@ -54,10 +57,11 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserQuota;
 import org.safecreative.api.wrapper.util.ParamsMerger;
@@ -783,7 +787,7 @@ public class SafeCreativeAPIWrapper {
         if(profile == null || !StringUtils.isNumeric(profile.getCode())) {
             throw new IllegalArgumentException("bad profile");
         }        
-        Map params = api.createParams("component", "work.register");
+        Map params = api.createParams("component", "work.register"); // REFACTORING extract to uploading by URL method, return params
         params.put("authkey", authKey.getAuthkey());
         params.put("profile",profile.getCode());
         params.put("url",url.toString());
@@ -799,31 +803,105 @@ public class SafeCreativeAPIWrapper {
         return api.evalXml(result, "/workregistry/code");
     }
 
+
     /**
-     * Registers a file using a registration profile and/or a work object containing the registration parameters
+     * Updates a file using a work object containing the registration parameters.
+     * Uploads a new version of work by file
+     *
+     * @param file File to upload
+     * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
+     * @return true on success
+     * @throws ApiException
+     */
+    public boolean workUpdate(File file, Work work) throws ApiException {
+        return workUpdate(file, work, null, null);
+    }
+
+    public boolean workUpdate(File file, Work work,
+            String extraTags, List<Link> extraLinks) throws ApiException {
+        
+        Map<String, String> params = api.createParams();
+        
+        // call uploadFile
+        String ticket = uploadFile(file, file.getName(), true);
+        if (ticket != null) {
+            params.put("ticket", ticket);
+        }
+
+        // call common update
+        return workUpdate(params, work, extraTags, extraLinks);
+    }
+
+    /**
+     * Updates a file using a work object containing the registration parameters.
+     * Uploads a new version of work by URL
+     *
+     * @param url URL of file
+     * @param fileName name of file
+     * @param fileSize size of file
+     * @param checkSum checksum of file
+     * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
+     * @return true on success
+     * @throws ApiException
+     */
+    public boolean workUpdate(URL url, String fileName, long fileSize, String checkSum,Work work) throws ApiException {
+        return workUpdate(url, fileName, fileSize, checkSum, work, null, null);
+    }
+    
+    public boolean workUpdate(URL url, String fileName, long fileSize,
+            String checkSum, Work work, String extraTags, List<Link> extraLinks) throws ApiException {
+        Map<String, String> params = api.createParams();
+
+        // set parameters
+        params.put("url",url.toString());
+        params.put("filename",fileName);
+        params.put("size",String.valueOf(fileSize));
+        params.put("checksum",checkSum);
+
+        // call common update
+        return workUpdate(params, work, extraTags, extraLinks);
+    }
+
+    /**
+     * Updates a file using a work object containing the registration parameters.
      *
      * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
      * @return true on success
      * @throws ApiException
      */
     public boolean workUpdate(Work work) throws ApiException {
-        // UPGRADE add parameters for extratag and extralinks
-        // TODO create placeholder methods to update workfile
+        return workUpdate(work, null, null);
+    }
 
+    public boolean workUpdate(Work work, String extraTags, List<Link> extraLinks) throws ApiException {
+        Map<String, String> params = api.createParams();
 
-        setApiUrl();
-        checkAuthKey(authKey);
+        // call common update
+        return workUpdate(params, work, extraTags, extraLinks);
+    }
 
-        Map<String, String> params = api.createParams("component", "work.register");
-        params.put("code", work.getCode());
-        params.put("authkey", authKey.getAuthkey());
-        params = ParamsMerger.mergeWork(params, work);
+    // common
+    private boolean workUpdate(Map<String, String> updateParams, Work work, String extraTags, List<Link> extraLinks) throws ApiException {
+        // proccess extra fields
+        if (extraTags != null) {
+            updateParams.put("extratags", extraTags);
+        }
+        if (extraLinks != null) {
+            int i = 1;
+            for (Link link : extraLinks) {
+                updateParams.put("extralink" + i, ParamsMerger.linkString(link));
+                i++;
+            }
+        }
 
-        api.setAuthKey(authKey.getAuthkey());
-        api.setPrivateAuthKey(authKey.getPrivatekey());
-        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
-        
-        return work.getCode().equals(api.evalXml(result, "/workregistry/code"));
+        String workCode = workRegisterCall(work, updateParams);
+        return work.getCode().equals(workCode);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1148,5 +1226,85 @@ public class SafeCreativeAPIWrapper {
         }
     }
 
+    /**
+     * Calls work.register for register and updating works
+     *
+     * @param work register/update parameters
+     * @param params already defined parameters, containing profile, extra fields, and/or file uploading parameters
+     * @return registered work code
+     * @throws ApiException
+     */
+    private String workRegisterCall(Work work, Map<String, String> params) throws ApiException {
+        setApiUrl();
+        checkAuthKey(authKey);
+
+        params.put("component", "work.register");
+        params.put("authkey", authKey.getAuthkey());
+        params = ParamsMerger.mergeWork(params, work);
+
+        api.setAuthKey(authKey.getAuthkey());
+        api.setPrivateAuthKey(authKey.getPrivatekey());
+        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
+
+        return api.evalXml(result, "/workregistry/code");
+    }
+
+    /**
+     * Uploads a file for register or update a work
+     * 
+     * @param file file to upload
+     * @param fileName filename to use for upload file
+     * @param byPost true - upload file using POST, false - upload by API
+     * @return upload ticket or null if fails
+     * @throws ApiException
+     */
+    private String uploadFile(File file, String fileName, boolean byPost) throws ApiException {
+        if(file == null) {
+            return null;
+        } else {
+            // Look up
+            Map<String, String> params = api.createParams("component", "work.upload.lookup");
+            params.put("authkey", api.getAuthKey());
+            params.put("filename", fileName == null ? file.getName() : fileName);
+
+            if (byPost) {
+                params.put("bypost", "true");
+            }
+            String response = api.callSigned(params, api.getPrivateAuthKey(), true, false);
+            checkError(response);
+
+            String uploadURL = api.evalXml(response, "/workuploadlookup/uploadurl");
+            log.debug("Upload URL: {}", uploadURL);
+            String uploadID = api.evalXml(response, "/workuploadlookup/uploadid");
+            log.debug("Upload id: {}", uploadID);
+
+            // Upload
+            String uploadTicket = null;
+            RegisterWork registerer = new RegisterWork(api);
+
+            api.setBaseUrl(uploadURL);
+            if (byPost) {
+                ////////////////////////////////////////////////////////////////////
+                //POST Upload:
+                log.info("registerWork upload by post file: {}", file);
+                params = api.createParams("uploadid", uploadID);
+                uploadTicket = registerer.postFile(uploadURL, params, file);
+                log.info("Successfully uploaded file: {}", file);
+            } else {
+                ////////////////////////////////////////////////////////////////////
+                //API Upload:
+                try {
+                    log.info("registerWork upload by API file: {}", file);
+                    uploadTicket = registerer.uploadFile(uploadURL, uploadID, file, Digest.getHexDigest(file, Digest.SHA1));
+                    log.info("Successfully uploaded file: {}", file);
+                }
+                catch (Exception ex) {
+                    throw new ApiException(ex);
+                }
+            }
+            log.debug("uploadTicket {}", uploadTicket);
+            return uploadTicket;
+        }
+    }
 
 }

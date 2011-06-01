@@ -203,7 +203,7 @@ public class RegisterWork {
 
 
 
-    private String postFile(String uri, Map<String, String> params, final File file) {
+    public String postFile(String uri, Map<String, String> params, final File file) {
         try {
             log.debug(String.format("api request by post: \n%s/%s\n",
                     uri, file.getName()));
@@ -246,7 +246,7 @@ public class RegisterWork {
         }
     }
 
-    private String uploadFile(String uri, String uploadID, final File file, String checksum) throws Exception {
+    public String uploadFile(String uri, String uploadID, final File file, String checksum) throws Exception {
         String response;
         Map<String, String> params;
 

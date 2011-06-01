@@ -44,9 +44,17 @@ public class ParamsMerger {
      */
     public static Map<String, String> mergeWork(Map<String, String> params, Work work) {
 
-
-        if (work.getTitle() != null) {
-            params.put("title", work.getTitle());
+        // add editable fields only if in pre-register
+        if (work.getState() == Work.WorkState.PRE_REGISTERED) {
+            if (work.getTitle() != null) {
+                params.put("title", work.getTitle());
+            }
+            if (work.getUserAlias() != null) {
+                params.put("alias", work.getUserAlias());
+            }
+        }
+        if (work.getCode() != null) {
+            params.put("code", work.getCode());
         }
         if (work.getExcerpt() != null) {
             params.put("excerpt", work.getExcerpt());
@@ -71,9 +79,6 @@ public class ParamsMerger {
         }
         if (work.isUseAlias() != null) {
             params.put("registrypublic", work.isUseAlias() ? "1" : "0");
-        }
-        if (work.getUserAlias() != null) {
-            params.put("alias", work.getUserAlias());
         }
         if (work.isUserAuthor() != null) {
             params.put("userauthor", work.isUserAuthor() ? "1" : "0");
