@@ -46,7 +46,8 @@ public class SafeCreativeAPITestProperties {
     private final static String BASE_URL        =  "baseUrl";
     private final static String BASE_SEARCH_URL =  "baseSearchUrl";
     private final static String PARTNER         =  "partner";
-    private final static String USER_CODE       =  "usercode";
+    private final static String USER_CODE       =  "userCode";
+    private final static String UPLOAD_FILE     =  "uploadFile";
     
     private Properties properties;
 
@@ -85,8 +86,13 @@ public class SafeCreativeAPITestProperties {
         return Boolean.valueOf(getProperty(PARTNER));
     }
 
-    public String getUerCode() {
+    public String getUserCode() {
         return getProperty(USER_CODE);
+    }
+
+    public File getUploadFile() {
+        String home = System.getProperty("user.home");
+        return new File(new File(home), getProperty(UPLOAD_FILE));
     }
 
     private String getProperty(String name) {

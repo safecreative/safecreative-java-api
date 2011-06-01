@@ -204,7 +204,7 @@ public class SafeCreativeAPI {
     }
 
     public String callSigned(Map<String, String> params, boolean ztime, boolean noncekey) {
-        return callSigned(params, ztime, noncekey,true);
+        return callSigned(params, ztime, noncekey,false);
     }
 
     public String callSigned(Map<String, String> params, boolean ztime, boolean noncekey, boolean addLocale) {
@@ -212,7 +212,7 @@ public class SafeCreativeAPI {
     }
 
     public String callSigned(Map<String, String> params, String privateKey, boolean ztime, boolean noncekey) {
-        return callSigned(params, privateKey,ztime, noncekey,true);
+        return callSigned(params, privateKey,ztime, noncekey,false);
     }
 
     public String callSigned(Map<String, String> params, String privateKey, boolean ztime, boolean noncekey,boolean addLocale) {

@@ -221,6 +221,10 @@ public class SafeCreativeAPIWrapper {
         AuthKeyState state = new AuthKeyState();
         state.setAuthorized(authorized);
         state.setCode(usercode);
+        if (state.isAuthorized()) {
+            AuthkeyLevel level = AuthkeyLevel.valueOf(api.evalXml(result, "/authkeystate/level").toUpperCase());
+            state.setLevel(level);
+        }
         return state;
     }
 
@@ -744,7 +748,9 @@ public class SafeCreativeAPIWrapper {
         String checkSum = Digest.toHex(digest);
         log.info("File {} checksum: {}", file, checkSum);
         RegisterWork registerWork = new RegisterWork(api);
-        registerWork.setProfile(profile.getCode());
+        if (profile != null) {
+            registerWork.setProfile(profile.getCode());
+        }
         registerWork.setUploadProgressListener(uploadProgressListener);
         api.setAuthKey(authKey.getAuthkey());
         api.setPrivateAuthKey(authKey.getPrivatekey());

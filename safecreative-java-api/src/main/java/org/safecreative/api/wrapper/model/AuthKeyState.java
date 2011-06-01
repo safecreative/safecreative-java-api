@@ -24,6 +24,8 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
+
 /**
  * Represents an authorization key state
  *
@@ -34,6 +36,7 @@ public class AuthKeyState {
 
     private String code;
     private String authorized;
+    private AuthkeyLevel level;
 
     public void setAuthorized(String authorized) {
         this.authorized = authorized;
@@ -50,6 +53,14 @@ public class AuthKeyState {
     
     public String getCode() {
         return code;
+    }
+
+    public AuthkeyLevel getLevel() {
+        return level;
+    }
+
+    public void setLevel(AuthkeyLevel level) {
+        this.level = level;
     }
 
     @Override

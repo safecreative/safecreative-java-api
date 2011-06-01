@@ -25,6 +25,7 @@
 package org.safecreative.api.wrapper;
 
 import com.thoughtworks.xstream.XStream;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -384,7 +385,7 @@ public class SafeCreativeAPIWrapperTest {
     @Test
     public void testGetUser() throws Exception {
         System.out.println("getUser");
-        User result = instance.getUser(testProperties.getUerCode());
+        User result = instance.getUser(testProperties.getUserCode());
         assertNotNull(result);
         //assertFalse(result.isEmpty());
         System.out.println("Result: "+ result);
@@ -404,7 +405,7 @@ public class SafeCreativeAPIWrapperTest {
         
         UserQuota result = instance.getUserQuota();
         assertNotNull(result);
-        assertEquals(testProperties.getUerCode(), result.getUserCode());
+        assertEquals(testProperties.getUserCode(), result.getUserCode());
         System.out.println("Result: " + result);
     }
 
@@ -557,6 +558,8 @@ public class SafeCreativeAPIWrapperTest {
         instance.setLocale(Locale.ENGLISH);
         try {
             testCheckAuth_AuthKey();
+            setUp();
+            testWorkRegister();
         } catch (ApiException ex) {
             fail(ex.toString());
         }
@@ -567,4 +570,91 @@ public class SafeCreativeAPIWrapperTest {
         System.out.println("Result: "+ result);
     }
 
+    /**
+     * Test of workDelete method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testWorkDelete() throws Exception {
+        System.out.println("workDelete");
+
+        // check keys
+        AuthKeyState state = instance.checkAuth(instance.getAuthKey());
+        assumeTrue(state.isAuthorized());
+        assumeTrue(state.getLevel() == AuthkeyLevel.MANAGE);
+
+	    File file = testProperties.getUploadFile();
+	    assumeTrue(file.exists());
+	    String workCode;
+
+        try {
+            workCode = instance.workRegister("Test registered file", file, null, null);
+            System.out.println("Registered work code: " + workCode);
+            Work work = instance.getWorkPrivate(workCode);
+            assumeNotNull(work);
+            assertTrue(instance.workDelete(workCode));
+            assertFalse(instance.getWorkList().getList().contains(work));
+        } catch (ApiException ex) {}
+
+
+
+    }
+
+    /**
+     * Test of workRegister method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testWorkRegister() throws Exception {
+        System.out.println("workRegister");
+
+        // check keys
+        AuthKeyState state = instance.checkAuth(instance.getAuthKey());
+        assumeTrue(state.isAuthorized());
+        assumeTrue(state.getLevel() == AuthkeyLevel.ADD || state.getLevel() == AuthkeyLevel.MANAGE);
+
+	    File file = testProperties.getUploadFile();
+	    assumeTrue(file.exists());
+	    String workCode;
+
+        workCode = instance.workRegister("Test registered work", file, null, null);
+        System.out.println("Registered work code: " + workCode);
+        assertNotNull(instance.getWorkPrivate(workCode));
+
+        // try to delete work
+        try {
+            instance.workDelete(workCode);
+        } catch (ApiException ex) {}
+    }
+
+    /**
+     * Test of workUpdate method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testWorkUpdate() throws Exception {
+        System.out.println("workUpdate");
+
+        // check keys
+        AuthKeyState state = instance.checkAuth(instance.getAuthKey());
+        assumeTrue(state.isAuthorized());
+        assumeTrue(state.getLevel() == AuthkeyLevel.ADD || state.getLevel() == AuthkeyLevel.MANAGE);
+
+	    File file = testProperties.getUploadFile();
+	    assumeTrue(file.exists());
+	    String workCode;
+
+        workCode = instance.workRegister("Test registered work", file, null, null);
+        System.out.println("Registered work code: " + workCode);
+
+        String newTitle = "the new title";
+        Work work = new Work();
+        work.setCode(workCode);
+        work.setTitle(newTitle);
+
+        instance.workUpdate(work);
+        assertEquals(instance.getWorkPrivate(workCode).getTitle(), newTitle);
+
+        // try to delete work
+        try {
+            instance.workDelete(workCode);
+        } catch (ApiException ex) {}
+    }
 }
