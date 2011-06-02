@@ -44,8 +44,8 @@ public class ParamsMerger {
      */
     public static Map<String, String> mergeWork(Map<String, String> params, Work work) {
 
-        // add editable fields only if in pre-register
-        if (work.getState() == Work.WorkState.PRE_REGISTERED) {
+        // add editable fields only if in pre-register or not defined
+        if (work.getState() == null || work.getState() == Work.WorkState.PRE_REGISTERED) {
             if (work.getTitle() != null) {
                 params.put("title", work.getTitle());
             }

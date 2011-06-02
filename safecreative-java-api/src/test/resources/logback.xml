@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>safecreative-api.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                safecreative-api.%d{yyyy-MM-dd}.log.zip
+            </FileNamePattern>
+            <!-- Max log history in days -->
+            <MaxHistory>1</MaxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} [%logger{32}] %-5level %msg %n </pattern>
+            %-4relative [%thread] %-5level %logger{32} - %msg%n
+        </layout>
+    </appender>
+
+    <appender name="con" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{HH:mm:ss.SSS} %-5level %msg %n </pattern>
+        </layout>
+    </appender>
+
+
+    <logger name="org.safecreative.api" level="${sc.api.debug:-INFO}" additivity="false">
+        <appender-ref ref="file" />
+    </logger>
+
+
+    <root>
+        <level value="${sc.api.root.debug:-DEBUG}" />
+        <appender-ref ref="con" />
+        <appender-ref ref="file" />
+    </root>
+
+</configuration>

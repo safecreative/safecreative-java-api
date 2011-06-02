@@ -25,15 +25,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.safecreative.api.wrapper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.ApiException;
@@ -57,7 +53,6 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
-import java.util.HashMap;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
@@ -167,6 +162,8 @@ public class SafeCreativeAPIWrapper {
      */
     public void setAuthKey(AuthKey authKey) {
         this.authKey = authKey;
+        api.setAuthKey(authKey.getAuthkey());
+        api.setPrivateAuthKey(authKey.getPrivatekey());
     }
 
     /**
@@ -264,6 +261,7 @@ public class SafeCreativeAPIWrapper {
         authKey.setAuthkey(auth);
         authKey.setPrivatekey(authPrivate);
         authKey.setManageUrl(api.getManageAuthkeyUrl(auth, authPrivate, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));
+        setAuthKey(authKey);
         return authKey;
     }
 
@@ -712,8 +710,11 @@ public class SafeCreativeAPIWrapper {
     // Registration methods
     ////////////////////////////////////////////////////////////////////////////
 
+    // by file
+
     /**
      * Registers a file using a registration profile
+     * Uploads work by file
      *
      * @param title Work's title
      * @param file File to register
@@ -730,6 +731,7 @@ public class SafeCreativeAPIWrapper {
 
     /**
      * Registers a file using a registration profile and/or a work object containing the registration parameters
+     * Uploads work by file
      *
      * @param file File to register
      * @param profile Registration profile
@@ -738,39 +740,36 @@ public class SafeCreativeAPIWrapper {
      * @return Work's registration code
      * @throws ApiException
      */
-    public String workRegister(File file,Profile profile,Work customValues,
+    public String workRegister(File file,Profile profile,Work work,
             UploadProgressListener uploadProgressListener) throws ApiException {
-        setApiUrl();
-        checkAuthKey(authKey);
-        byte[] digest;
-        log.debug("Calculating file {} {} checksum", file, Digest.SHA1);
-        try {
-            digest = Digest.getBytesDigest(new FileInputStream(file), Digest.SHA1);
-        } catch (Exception ex) {
-            throw new ApiException(ex);
+        Map<String, String> params = api.createParams();
+
+        // call uploadFile
+        String ticket = uploadFile(file, file.getName(), true, uploadProgressListener);
+        if (ticket != null) {
+            params.put("uploadticket", ticket);
         }
-        String checkSum = Digest.toHex(digest);
-        log.info("File {} checksum: {}", file, checkSum);
-        RegisterWork registerWork = new RegisterWork(api);
-        if (profile != null) {
-            registerWork.setProfile(profile.getCode());
-        }
-        registerWork.setUploadProgressListener(uploadProgressListener);
-        api.setAuthKey(authKey.getAuthkey());
-        api.setPrivateAuthKey(authKey.getPrivatekey());
-        String workCode = null;
-        try {
-            workCode = registerWork.registerWork(file.getName(), file, customValues, checkSum);
-        } catch (Exception e) {
-            if (SafeCreativeAPI.NOT_AUTHORIZED_ERROR.equals(e.getMessage())) {
-                log.warn("Not authorized to update/register {}", e);
-                throw new ApiException(SafeCreativeAPI.NOT_AUTHORIZED_ERROR,e.getLocalizedMessage());
-            }
-            throw new ApiException(e);
-        }
-        return workCode;
+
+        // call common register
+        return workRegister(params, work, profile);
     }
 
+
+    // by url
+
+    /**
+     * Registers a file using a registration profile
+     * Uploads work by URL
+     *
+     * @param title Work's title
+     * @param url URL of file
+     * @param profile Registration profile
+     * @param fileName name of file
+     * @param fileSize size of file
+     * @param checkSum checksum of file
+     * @return Work's registration code
+     * @throws ApiException
+     */
     public String workRegister(String title,URL url,Profile profile,long fileSize,String checkSum ) throws ApiException {
         return workRegister(title,url,profile,url.getFile(),fileSize,checkSum);
     }
@@ -780,27 +779,40 @@ public class SafeCreativeAPIWrapper {
         work.setTitle(title);
         return workRegister(url,profile,work,url.getFile(),fileSize,checkSum);
     }
-    public String workRegister(URL url,Profile profile,Work customValues,
+    
+    /**
+     * Registers a file using a registration profile and/or a work object containing the registration parameters
+     * Uploads work by URL
+     *
+     * @param file File to register
+     * @param profile Registration profile
+     * @param customValues work containing register parameters to override those of defined profile
+     * @param uploadProgressListener Upload progress listener
+     * @return Work's registration code
+     * @throws ApiException
+     */
+    public String workRegister(URL url,Profile profile,Work work,
             String fileName,long fileSize,String checkSum ) throws ApiException {
-        setApiUrl();
-        checkAuthKey(authKey);
-        if(profile == null || !StringUtils.isNumeric(profile.getCode())) {
-            throw new IllegalArgumentException("bad profile");
-        }        
-        Map params = api.createParams("component", "work.register"); // REFACTORING extract to uploading by URL method, return params
-        params.put("authkey", authKey.getAuthkey());
-        params.put("profile",profile.getCode());
+        Map<String, String> params = api.createParams();
+
+        // set parameters
         params.put("url",url.toString());
         params.put("filename",fileName);
         params.put("size",String.valueOf(fileSize));
         params.put("checksum",checkSum);
 
-        params = ParamsMerger.mergeWork(params, customValues);
+        // call common register
+        return workRegister(params, work, profile);
+    }
 
-        api.setAuthKey(authKey.getAuthkey());
-        api.setPrivateAuthKey(authKey.getPrivatekey());
-        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
-        return api.evalXml(result, "/workregistry/code");
+    // common
+    private String workRegister(Map<String, String> registerParams, Work work, Profile profile) throws ApiException {
+        // proccess extra fields
+        if (profile != null) {
+            registerParams.put("profile", profile.getCode());
+        }
+
+        return workRegisterCall(work, registerParams);
     }
 
 
@@ -815,19 +827,18 @@ public class SafeCreativeAPIWrapper {
      * @return true on success
      * @throws ApiException
      */
-    public boolean workUpdate(File file, Work work) throws ApiException {
-        return workUpdate(file, work, null, null);
+    public boolean workUpdate(File file, Work work, UploadProgressListener uploadListener) throws ApiException {
+        return workUpdate(file, work, null, null, uploadListener);
     }
 
-    public boolean workUpdate(File file, Work work,
-            String extraTags, List<Link> extraLinks) throws ApiException {
-        
+    public boolean workUpdate(File file, Work work, String extraTags, List<Link> extraLinks,
+            UploadProgressListener uploadListener) throws ApiException {
         Map<String, String> params = api.createParams();
         
         // call uploadFile
-        String ticket = uploadFile(file, file.getName(), true);
+        String ticket = uploadFile(file, file.getName(), true, uploadListener);
         if (ticket != null) {
-            params.put("ticket", ticket);
+            params.put("uploadticket", ticket);
         }
 
         // call common update
@@ -1119,10 +1130,9 @@ public class SafeCreativeAPIWrapper {
                 String errorCode = api.getErrorCode(response);
                 String errorMessage = api.getErrorMessage(response);
                 throw new ApiException(errorCode, errorMessage);
+            } catch (ApiException ex) {
+                throw ex;
             } catch (Exception ex) {
-                if (ex instanceof ApiException) {
-                    throw (ApiException) ex;
-                }
                 throw new ApiException(ex);
             }
         }
@@ -1242,9 +1252,7 @@ public class SafeCreativeAPIWrapper {
         params.put("authkey", authKey.getAuthkey());
         params = ParamsMerger.mergeWork(params, work);
 
-        api.setAuthKey(authKey.getAuthkey());
-        api.setPrivateAuthKey(authKey.getPrivatekey());
-        String result = callSigned(api.getPrivateAuthKey(), true, true, false, params);
+        String result = callSigned(authKey.getPrivatekey(), true, true, false, params);
 
         return api.evalXml(result, "/workregistry/code");
     }
@@ -1258,19 +1266,20 @@ public class SafeCreativeAPIWrapper {
      * @return upload ticket or null if fails
      * @throws ApiException
      */
-    private String uploadFile(File file, String fileName, boolean byPost) throws ApiException {
+    private String uploadFile(File file, String fileName, boolean byPost,
+            UploadProgressListener uploadListener) throws ApiException {
         if(file == null) {
             return null;
         } else {
             // Look up
             Map<String, String> params = api.createParams("component", "work.upload.lookup");
-            params.put("authkey", api.getAuthKey());
+            params.put("authkey", authKey.getAuthkey());
             params.put("filename", fileName == null ? file.getName() : fileName);
 
             if (byPost) {
                 params.put("bypost", "true");
             }
-            String response = api.callSigned(params, api.getPrivateAuthKey(), true, false);
+            String response = api.callSigned(params, authKey.getPrivatekey(), true, false);
             checkError(response);
 
             String uploadURL = api.evalXml(response, "/workuploadlookup/uploadurl");
@@ -1281,6 +1290,7 @@ public class SafeCreativeAPIWrapper {
             // Upload
             String uploadTicket = null;
             RegisterWork registerer = new RegisterWork(api);
+            registerer.setUploadProgressListener(uploadListener);
 
             api.setBaseUrl(uploadURL);
             if (byPost) {
