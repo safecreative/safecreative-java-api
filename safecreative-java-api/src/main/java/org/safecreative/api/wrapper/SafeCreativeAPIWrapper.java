@@ -532,6 +532,15 @@ public class SafeCreativeAPIWrapper {
         return readListPage(result, License.class, new LicenseConverter());
     }
 
+    /**
+     * Calling this method updates the static list of License.Feature
+     * enumeration values with locale-specific data.
+     * There is no need to store thre returned list, as it can be retrieved
+     * from License.Feature.values().
+     *
+     * @return list of license features
+     * @throws ApiException
+     */
     @SuppressWarnings("unchecked")
     public List<License.Feature> getLicenseFeatures() throws ApiException {
         setApiUrl();
