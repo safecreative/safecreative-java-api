@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
+import org.safecreative.api.wrapper.converters.LicenseFeatureConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.Link;
@@ -529,6 +530,22 @@ public class SafeCreativeAPIWrapper {
         checkAuthKey(authKey);
         String result = callComponentSigned("user.licenses",authKey,true,false,true,"page",page);
         return readListPage(result, License.class, new LicenseConverter());
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<License.Feature> getLicenseFeatures() throws ApiException {
+        setApiUrl();
+        String result = callComponent("license.features");
+        XStream xs = new XStream();
+
+        // alias for license features
+        xs.aliasField("worktypes", Work.TypeGroup.class, "workTypes");
+        xs.alias("worktype", Work.Type.class);
+        xs.registerConverter(new LicenseFeatureConverter());
+
+        List<License.Feature> features = readList(result, "features", "feature", License.Feature.class, xs);
+        log.debug("License features {}", features);
+        return features;
     }
 
     @SuppressWarnings("unchecked")

@@ -229,10 +229,34 @@ public class SafeCreativeAPIWrapperTest {
      */
     @Test
     public void testGetLicenses() throws Exception {
-        System.out.println("getCountries");
+        System.out.println("getLicenses");
         List<License> result = instance.getLicenses().getList();
         assertNotNull(result);
         assertFalse(result.isEmpty());
+        System.out.println("Result: "+ result);
+    }
+
+    /**
+     * Test of getLicenseFeatures method, of class SafeCreativeAPIWrapper.
+     */
+    @Test
+    public void testGetLicenseFeatures() throws Exception {
+        System.out.println("getLicenseFeatures");
+        List<License.Feature> result = instance.getLicenseFeatures();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertNotNull(result.get(0).getCode());
+        assertNotNull(result.get(0).getShortName());
+        
+        boolean someIsTrue = false;
+        for (License.FeatureValue value : License.FeatureValue.values()) {
+            if (result.get(0).getUseValues().get(value)) {
+                someIsTrue = true;
+            }
+        }
+
+        // has read some values
+        assertTrue(someIsTrue);
         System.out.println("Result: "+ result);
     }
 

@@ -26,6 +26,7 @@ package org.safecreative.api.wrapper.model;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,9 +37,93 @@ import java.util.Map;
  * @author jguillo@safecreative.org
  */
 public class License extends CodeableEntity {
+    
     public enum Feature {
-        RECOGNITION,DERIVATIONS,DISTRIBUTION,COMMERCIAL,TIMELIMITED
+        RECOGNITION,
+        DERIVATIONS,
+        DISTRIBUTION,
+        COMMERCIAL,
+        TIMELIMITED;
+
+        /**
+         * Class used for store locale-specific values
+         */
+        private final class FeatureObject extends CodeableEntity {
+            // relation of usable FeatureValues for this Feature
+            private EnumMap<FeatureValue, Boolean> useValues =
+                    new EnumMap<FeatureValue, Boolean>(FeatureValue.class);
+            private String shortName;
+
+            private FeatureObject() {
+                // default to false
+                resetUseValues();
+            }
+
+            public String getShortName() {
+                return shortName;
+            }
+
+            public void setShortName(String shortName) {
+                this.shortName = shortName;
+            }
+
+            public EnumMap<FeatureValue, Boolean> getUseValues() {
+                return useValues;
+            }
+
+            /**
+             * Sets all use values to false
+             */
+            public void resetUseValues() {
+                for (FeatureValue value : FeatureValue.values()) {
+                    useValues.put(value, Boolean.FALSE);
+                }
+            }
+        }
+
+        private FeatureObject object = new FeatureObject();
+
+        public String getCode() {
+            return object.getCode();
+        }
+
+        public void setCode(String code) {
+            object.setCode(code);
+        }
+
+        public String getName() {
+            return object.getName();
+        }
+
+        public void setName(String name) {
+            object.setName(name);
+        }
+
+        public String getShortName() {
+            return object.getShortName();
+        }
+
+        public void setShortName(String shortName) {
+            object.setShortName(shortName);
+        }
+
+        public EnumMap<FeatureValue, Boolean> getUseValues() {
+            return object.getUseValues();
+        }
+
+        /**
+         * Sets all use values to false
+         */
+        public void resetUseValues() {
+            object.resetUseValues();
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "[code:" + getCode() + ",name:" + getName() + "]";
+        }
     }
+    
 	public enum FeatureValue {
 		NOT_APPLICABLE, YES, YES_WITH_RESTRICTIONS, NO, INHERITANCE
 	}
