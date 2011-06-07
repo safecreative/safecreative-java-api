@@ -761,7 +761,7 @@ public class SafeCreativeAPIWrapper {
      *
      * @param file File to register
      * @param profile Registration profile
-     * @param customValues work containing register parameters to override those of defined profile
+     * @param work work containing register parameters to override those of defined profile
      * @param uploadProgressListener Upload progress listener
      * @return Work's registration code
      * @throws ApiException
@@ -772,6 +772,29 @@ public class SafeCreativeAPIWrapper {
 
         // call uploadFile
         String ticket = uploadFile(file, file.getName(), true, uploadProgressListener);
+        if (ticket != null) {
+            params.put("uploadticket", ticket);
+        }
+
+        // call common register
+        return workRegister(params, work, profile);
+    }
+
+    // by ticket
+    
+    /**
+     * Registers a file using a registration profile and/or a work object containing the registration parameters
+     * Uses an already uploaded file
+     *
+     * @param ticket upload ticket of uploaded file to use
+     * @param profile Registration profile
+     * @param work work containing register parameters to override those of defined profile
+     * @return Work's registration code
+     * @throws ApiException
+     */
+    private String workRegister(String ticket, Work work, Profile profile) throws ApiException {
+        Map<String, String> params = api.createParams();
+
         if (ticket != null) {
             params.put("uploadticket", ticket);
         }
@@ -812,7 +835,7 @@ public class SafeCreativeAPIWrapper {
      *
      * @param file File to register
      * @param profile Registration profile
-     * @param customValues work containing register parameters to override those of defined profile
+     * @param work work containing register parameters to override those of defined profile
      * @param uploadProgressListener Upload progress listener
      * @return Work's registration code
      * @throws ApiException
@@ -841,6 +864,7 @@ public class SafeCreativeAPIWrapper {
         return workRegisterCall(work, registerParams);
     }
 
+    // by file
 
     /**
      * Updates a file using a work object containing the registration parameters.
@@ -870,6 +894,37 @@ public class SafeCreativeAPIWrapper {
         // call common update
         return workUpdate(params, work, extraTags, extraLinks);
     }
+
+    // by ticket
+
+    /**
+     * Updates a file using a work object containing the registration parameters.
+     * Uses an already uploaded file
+     *
+     * @param ticket upload ticket of uploaded file to use
+     * @param work work containing register parameters to override those of defined profile
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
+     * @return true on success
+     * @throws ApiException
+     */
+    public boolean workUpdate(String ticket, Work work) throws ApiException {
+        return workUpdate(ticket, work, null, null);
+    }
+
+    private boolean workUpdate(String ticket, Work work, String extraTags,
+            List<Link> extraLinks) throws ApiException {
+        Map<String, String> params = api.createParams();
+
+        if (ticket != null) {
+            params.put("uploadticket", ticket);
+        }
+
+        // call common update
+        return workUpdate(params, work, extraTags, extraLinks);
+    }
+
+    // by url
 
     /**
      * Updates a file using a work object containing the registration parameters.
@@ -1292,7 +1347,7 @@ public class SafeCreativeAPIWrapper {
      * @return upload ticket or null if fails
      * @throws ApiException
      */
-    private String uploadFile(File file, String fileName, boolean byPost,
+    public String uploadFile(File file, String fileName, boolean byPost,
             UploadProgressListener uploadListener) throws ApiException {
         if(file == null) {
             return null;
