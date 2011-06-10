@@ -163,8 +163,13 @@ public class SafeCreativeAPIWrapper {
      */
     public void setAuthKey(AuthKey authKey) {
         this.authKey = authKey;
-        api.setAuthKey(authKey.getAuthkey());
-        api.setPrivateAuthKey(authKey.getPrivatekey());
+        if (authKey != null) {
+            api.setAuthKey(authKey.getAuthkey());
+            api.setPrivateAuthKey(authKey.getPrivatekey());
+        } else {
+            api.setAuthKey(null);
+            api.setPrivateAuthKey(null);
+        }
     }
 
     /**
@@ -792,7 +797,7 @@ public class SafeCreativeAPIWrapper {
      * @return Work's registration code
      * @throws ApiException
      */
-    private String workRegister(String ticket, Work work, Profile profile) throws ApiException {
+    public String workRegister(String ticket, Work work, Profile profile) throws ApiException {
         Map<String, String> params = api.createParams();
 
         if (ticket != null) {
@@ -912,7 +917,7 @@ public class SafeCreativeAPIWrapper {
         return workUpdate(ticket, work, null, null);
     }
 
-    private boolean workUpdate(String ticket, Work work, String extraTags,
+    public boolean workUpdate(String ticket, Work work, String extraTags,
             List<Link> extraLinks) throws ApiException {
         Map<String, String> params = api.createParams();
 
