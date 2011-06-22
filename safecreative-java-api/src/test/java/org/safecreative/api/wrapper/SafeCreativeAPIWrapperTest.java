@@ -28,6 +28,7 @@ import com.thoughtworks.xstream.XStream;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +48,7 @@ import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.DownloadInfo;
 import org.safecreative.api.wrapper.model.License;
+import org.safecreative.api.wrapper.model.LicenseFeatureObject;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.UserQuota;
@@ -242,16 +244,19 @@ public class SafeCreativeAPIWrapperTest {
     @Test
     public void testGetLicenseFeatures() throws Exception {
         System.out.println("getLicenseFeatures");
-        List<License.Feature> result = instance.getLicenseFeatures();
+        EnumMap<License.Feature, LicenseFeatureObject> result = instance.getLicenseFeatures();
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertNotNull(result.get(0).getCode());
-        assertNotNull(result.get(0).getShortName());
+
+        License.Feature feature = License.Feature.COMMERCIAL;
+        assertNotNull(result.get(feature).getCode());
+        assertNotNull(result.get(feature).getShortName());
         
         boolean someIsTrue = false;
         for (License.FeatureValue value : License.FeatureValue.values()) {
-            if (result.get(0).getUseValues().get(value)) {
+            if (result.get(feature).getUseValues().get(value)) {
                 someIsTrue = true;
+                break;
             }
         }
 

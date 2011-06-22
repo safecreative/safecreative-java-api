@@ -28,6 +28,7 @@ package org.safecreative.api.wrapper.converters;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import org.safecreative.api.wrapper.model.License;
+import org.safecreative.api.wrapper.model.LicenseFeatureObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,18 +41,19 @@ public class LicenseFeatureConverter extends AbstractModelConverter {
     private static Logger log = LoggerFactory.getLogger(LicenseConverter.class);
     
     public boolean canConvert(Class type) {
-        return License.Feature.class.equals(type);
+        return LicenseFeatureObject.class.equals(type);
     }
 
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         if(!reader.hasMoreChildren()) {
             return null;
         }
-        License.Feature feature;
+        LicenseFeatureObject feature;
 
         reader.moveDown();
         String code = reader.getValue();
-        feature = License.Feature.valueOf(code.toUpperCase());
+        feature =
+                new LicenseFeatureObject(License.Feature.valueOf(code.toUpperCase()));
         feature.setCode(code);
         reader.moveUp();
 
@@ -65,8 +67,6 @@ public class LicenseFeatureConverter extends AbstractModelConverter {
 
         reader.moveDown();
 
-        // reset usage to false
-        feature.resetUseValues();
 
         String valueStr;
         License.FeatureValue value;

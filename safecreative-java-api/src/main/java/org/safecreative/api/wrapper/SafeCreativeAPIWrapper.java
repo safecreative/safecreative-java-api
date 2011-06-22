@@ -53,10 +53,12 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
+import java.util.EnumMap;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.LicenseFeatureConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.LicenseFeatureObject;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserQuota;
@@ -538,28 +540,31 @@ public class SafeCreativeAPIWrapper {
     }
 
     /**
-     * Calling this method updates the static list of License.Feature
-     * enumeration values with locale-specific data.
-     * There is no need to store thre returned list, as it can be retrieved
-     * from License.Feature.values().
+     * Get a map of the license features.
      *
-     * @return list of license features
+     * @return Map of license features.
      * @throws ApiException
      */
     @SuppressWarnings("unchecked")
-    public List<License.Feature> getLicenseFeatures() throws ApiException {
+    public EnumMap<License.Feature, LicenseFeatureObject> getLicenseFeatures() throws ApiException {
         setApiUrl();
         String result = callComponent("license.features");
         XStream xs = new XStream();
 
         // alias for license features
-        xs.aliasField("worktypes", Work.TypeGroup.class, "workTypes");
-        xs.alias("worktype", Work.Type.class);
         xs.registerConverter(new LicenseFeatureConverter());
 
-        List<License.Feature> features = readList(result, "features", "feature", License.Feature.class, xs);
+        List<LicenseFeatureObject> features = readList(result, "features", "feature", LicenseFeatureObject.class, xs);
         log.debug("License features {}", features);
-        return features;
+
+        // generate map
+        EnumMap<License.Feature, LicenseFeatureObject> featuresMap =
+                new EnumMap<License.Feature, LicenseFeatureObject>(License.Feature.class);
+        for (LicenseFeatureObject feature : features) {
+            featuresMap.put(feature.getFeature(), feature);
+        }
+
+        return featuresMap;
     }
 
     @SuppressWarnings("unchecked")
