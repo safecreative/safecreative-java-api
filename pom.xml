@@ -4,7 +4,7 @@
     <groupId>org.safecreative.api</groupId>
     <artifactId>safecreative-java-api</artifactId>
     <packaging>pom</packaging>
-    <version>0.5.0</version>
+    <version>0.7.0</version>
     <name>Safe Creative Java API Project</name>
     <description>Safe Creative Java API Project</description>
     <url>http://code.google.com/p/safecreative-java-api</url>
@@ -65,6 +65,14 @@
             <organizationUrl>http://www.safecreative.org</organizationUrl>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <id>vcalderon</id>
+            <name>Victor Calderón</name>
+            <email>vcalderon@safecreative.org</email>
+            <organization>Safe Creative</organization>
+            <organizationUrl>http://www.safecreative.org</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>		
     </developers>
     <modules>
         <module>safecreative-java-api</module>
