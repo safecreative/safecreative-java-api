@@ -268,8 +268,7 @@ public class SafeCreativeAPIWrapper {
         authKey = new AuthKey();
         authKey.setAuthkey(auth);
         authKey.setPrivatekey(authPrivate);
-        authKey.setManageUrl(api.getManageAuthkeyUrl(auth, authPrivate, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));
-        setAuthKey(authKey);
+        authKey.setManageUrl(api.getManageAuthkeyUrl(auth, authPrivate, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));        
         return authKey;
     }
 
@@ -1009,18 +1008,6 @@ public class SafeCreativeAPIWrapper {
     ////////////////////////////////////////////////////////////////////////////
     // SEARCH methods
     ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Search works by search field.
-     *
-     * @param fieldValues Variable list of pairs of search field,value
-     * @return First page list of found works
-     * @throws ApiException
-     * @see SearchMethod
-     */
-    public ListPage<Work> searchWorksByFields(Object...fieldValues) throws ApiException {
-        return searchWorksByFields(1,fieldValues);
-    }
 
     /**
      * Search works by search field.

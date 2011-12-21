@@ -15,7 +15,7 @@ public class LicenseFeatureObject extends CodeableEntity {
 
     public LicenseFeatureObject(License.Feature feature) {
         this.feature = feature;
-
+		setName(feature.name());
         // default to false
         resetUseValues();
     }
@@ -31,6 +31,10 @@ public class LicenseFeatureObject extends CodeableEntity {
     public Feature getFeature() {
         return feature;
     }
+	
+	public boolean hasValue(License.FeatureValue value) {
+		return useValues.get(value).booleanValue();
+	}
 
     public EnumMap<License.FeatureValue, Boolean> getUseValues() {
         return useValues;

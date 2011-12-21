@@ -52,8 +52,7 @@ public class LicenseFeatureConverter extends AbstractModelConverter {
 
         reader.moveDown();
         String code = reader.getValue();
-        feature =
-                new LicenseFeatureObject(License.Feature.valueOf(code.toUpperCase()));
+        feature = new LicenseFeatureObject(License.Feature.valueOf(code.toUpperCase()));
         feature.setCode(code);
         reader.moveUp();
 

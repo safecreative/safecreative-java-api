@@ -70,6 +70,10 @@ public class SafeCreativeAPIWrapperTest {
         instance.setBaseSearchUrl(testProperties.getBaseSearchUrl());
         try {
             instance.setAuthKey(testProperties.getAuthKey(),testProperties.getAuthPrivateKey());
+			AuthKeyState authKeyState = instance.checkAuth(instance.getAuthKey());
+			if(!authKeyState.isAuthorized() || !AuthkeyLevel.MANAGE.equals(authKeyState.getLevel())) {
+				throw new RuntimeException("Not authorized or not enought auth level");
+			}
         }catch(Exception ex) {
             AuthKey authKey = instance.createAuth(AuthkeyLevel.MANAGE);
             System.out.println(
@@ -254,7 +258,7 @@ public class SafeCreativeAPIWrapperTest {
         
         boolean someIsTrue = false;
         for (License.FeatureValue value : License.FeatureValue.values()) {
-            if (result.get(feature).getUseValues().get(value)) {
+            if (result.get(feature).hasValue(value)) {
                 someIsTrue = true;
                 break;
             }
@@ -385,7 +389,7 @@ public class SafeCreativeAPIWrapperTest {
     public void testWorkDownload() throws Exception {
         System.out.println("getWorkDownload");
         //Find any public downloadable works        
-        ListPage<Work> results = instance.searchWorksByFields(
+        ListPage<Work> results = instance.searchWorksByFields(1,
                 SearchMethod.DOWNLOADABLE,true
         );
         assertNotNull(results);
@@ -459,7 +463,7 @@ public class SafeCreativeAPIWrapperTest {
     @SuppressWarnings("unchecked")
     public void testSearchWorksByFields() throws Exception {
         System.out.println("searchWorksByFields");
-        ListPage<Work> results = instance.searchWorksByFields(
+        ListPage<Work> results = instance.searchWorksByFields(1,
                 SearchMethod.WORK_TYPE,Work.Type.PHOTO,
                 SearchMethod.DOWNLOADABLE,true
         );
