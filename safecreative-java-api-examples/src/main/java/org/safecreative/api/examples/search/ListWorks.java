@@ -52,7 +52,7 @@ public class ListWorks {
             System.out.println("Usage ListWorks ["+codes+"]");
             System.exit(1);
         }
-        ListPage<Work> works =  api.searchWorksByFields(
+        ListPage<Work> works =  api.searchWorksByFields(1,//First page
                 SearchMethod.WORK_TYPE,workType,
                 SearchMethod.DOWNLOADABLE,true
         );

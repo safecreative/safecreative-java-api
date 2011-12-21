@@ -52,8 +52,9 @@ public class SearchWorkTypes {
 	    System.out.println("Searching workType: " + searchType);
 	    
 	    ListPage<Work> result;
-	    result = api.searchWorksByFields(SearchMethod.WORK_TYPE, searchType);
-
+	    result = api.searchWorksByFields(1,//First page
+				SearchMethod.WORK_TYPE, searchType
+		);
 	    System.out.println(result.getRecordTotal() + " works found");
 	    System.out.println();
 	    

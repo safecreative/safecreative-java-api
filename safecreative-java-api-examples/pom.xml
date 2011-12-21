@@ -54,6 +54,14 @@
             <organizationUrl>http://www.safecreative.org</organizationUrl>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <id>vcalderon</id>
+            <name>Victor Calderón</name>
+            <email>vcalderon@safecreative.org</email>
+            <organization>Safe Creative</organization>
+            <organizationUrl>http://www.safecreative.org</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>			
     </developers>
     <build>
         <resources>
