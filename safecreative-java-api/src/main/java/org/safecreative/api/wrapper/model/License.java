@@ -36,6 +36,12 @@ import java.util.Map;
  * @author jguillo@safecreative.org
  */
 public class License extends CodeableEntity {
+	/**
+	 * Common license codes:
+	 */
+	public static final String COPYRIGHT      =   "copyright";
+		
+	
     public enum Feature {
         RECOGNITION,DERIVATIONS,DISTRIBUTION,COMMERCIAL,TIMELIMITED
     }
@@ -48,6 +54,24 @@ public class License extends CodeableEntity {
     private URL url;
     private Country jurisdiction;
     private Map<Feature,FeatureValue> features;
+
+
+	/**
+	 * Constructor with given code
+	 * @param code 
+	 */
+	public License(String code) {
+		super(code);
+	}       
+
+	/**
+	 * Create a new instance from code
+	 * @param code
+	 * @return new License instance initialized with code
+	 */
+	public static License fromCode(String code) {
+		return new License(code);
+	}	
 
     /**
      * @return the url

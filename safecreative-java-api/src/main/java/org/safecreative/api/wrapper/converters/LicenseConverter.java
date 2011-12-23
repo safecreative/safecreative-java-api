@@ -49,9 +49,8 @@ public class LicenseConverter extends AbstractModelConverter {
         if(!reader.hasMoreChildren()) {            
             return null;
         }
-        License license = new License();
         reader.moveDown();
-        license.setCode(reader.getValue());
+        License license = License.fromCode(reader.getValue());
         reader.moveUp();
         reader.moveDown();
         license.setName(reader.getValue());
