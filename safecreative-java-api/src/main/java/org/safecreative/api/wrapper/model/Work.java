@@ -98,7 +98,7 @@ public class Work {
         public static final String PHOTO        =   "photo";
 
 		/**
-		 * Constructor with givenn code
+		 * Constructor with given code
 		 * @param code 
 		 */
 		public Type(String code) {
