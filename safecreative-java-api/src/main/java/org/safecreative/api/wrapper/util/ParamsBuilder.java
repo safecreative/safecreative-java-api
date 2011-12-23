@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011 Safe Creative (http://www.safecreative.org)
+Copyright (c) 2010-2012 Safe Creative (http://www.safecreative.org)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -31,18 +31,19 @@ import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.Work;
 
 /**
- * Class to merge the parameters from a profile to an existing API parameters set
+ * Class to build api call parameters
  *
+ * @author mpolo@safecreative.org
  * @author vcalderon@safecreative.org
  */
-public class ParamsMerger {
+public class ParamsBuilder {
 
     /**
      * @param params existing parameter set
      * @param work work from with extract parameters
      * @return existing parameter set with 'work' parameters
      */
-    public static Map<String, String> mergeWork(Map<String, String> params, Work work) {
+    public static Map<String, String> buildWorkParams(Map<String, String> params, Work work) {
 
         // add editable fields only if in pre-register or not defined
         if (work.getState() == null || work.getState() == Work.WorkState.PRE_REGISTERED) {
@@ -91,21 +92,20 @@ public class ParamsMerger {
         }
         if (work.getLinks() != null) {
             int i = 1;
-            for (Link link : work.getLinks()) {
-                i++;
-                params.put("link" + String.valueOf(i), linkString(link));
+            for (Link link : work.getLinks()) {                
+                params.put("link" + i++, linkString(link));
             }
         }
         if (work.getRelations(Work.RelationType.DERIVATION).size() > 0) {
-            String relatedString = workString(work.getRelations(Work.RelationType.DERIVATION));
+            String relatedString = toCSV(work.getRelations(Work.RelationType.DERIVATION));
             params.put("derivationof", relatedString);
         }
         if (work.getRelations(Work.RelationType.COMPOSITION).size() > 0) {
-            String relatedString = workString(work.getRelations(Work.RelationType.COMPOSITION));
+            String relatedString = toCSV(work.getRelations(Work.RelationType.COMPOSITION));
             params.put("compositionof", relatedString);
         }
         if (work.getRelations(Work.RelationType.VERSION).size() > 0) {
-            String relatedString = workString(work.getRelations(Work.RelationType.VERSION));
+            String relatedString = toCSV(work.getRelations(Work.RelationType.VERSION));
             params.put("versionof", relatedString);
         }
         
@@ -117,14 +117,14 @@ public class ParamsMerger {
      * @return String of link formated for API register
      */
     public static String linkString(Link link) {
-        return link.getUrl() + "|" + link.getName() + "|" + link.getType().toString();
+        return link.getUrl() + "|" + link.getName() + "|" + link.getType();
     }
 
     /**
      * @param works list of works to convert, must not be null
      * @return comma-separated string of works's codes of works in 'works'
      */
-    private static String workString(List<Work> works) {
+    private static String toCSV(List<Work> works) {
         boolean first = true;
         String string = "";
         for (Work work : works) {

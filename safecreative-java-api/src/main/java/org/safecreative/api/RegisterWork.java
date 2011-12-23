@@ -25,30 +25,29 @@
 package org.safecreative.api;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.safecreative.api.SafeCreativeAPI.*;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.FilePartSource;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.util.Base64;
 import org.safecreative.api.util.IOHelper;
-import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.Work;
-import org.safecreative.api.wrapper.util.ParamsMerger;
+import org.safecreative.api.wrapper.util.ParamsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,11 +68,19 @@ public class RegisterWork {
     private HttpClient client;
     private boolean postUpload = true;
 
-    public RegisterWork(SafeCreativeAPI api) {
+	/**
+	 * Constructor
+	 * @param api
+	 */
+	public RegisterWork(SafeCreativeAPI api) {
         this.api = api;
     }
 
-    public void setUploadProgressListener(UploadProgressListener uploadProgressListener) {
+	/**
+	 * 
+	 * @param uploadProgressListener
+	 */
+	public void setUploadProgressListener(UploadProgressListener uploadProgressListener) {
         this.uploadProgressListener = uploadProgressListener;
     }
 
@@ -121,18 +128,57 @@ public class RegisterWork {
         return postUpload;
     }
 
-
-    /*public String registerWork(String title, String fileName, File workFile, String checksum) throws Exception {
-        return registerWork(title, fileName, workFile, null, checksum);
-    }*/
+	/**	
+	 * @param workFile File to register
+	 * @param customValues Work containing register parameters to override those of defined profile,
+	 * optional if license is defined	 
+	 * @param checksum 
+	 * @return registration code
+	 * @throws Exception  
+     */
+    public String registerWork(File workFile,Work work, String checksum) throws Exception {
+		return registerWork(workFile.getName(), workFile, work, checksum);
+	}
+		
+	/**
+	 * @param fileName File name
+	 * @param workFile File to register
+	 * @param customValues Work containing register parameters to override those of defined profile,
+	 * optional if license is defined	 
+	 * @param checksum 
+	 * @return registration code
+	 * @throws Exception  
+     */
+    public String registerWork(String fileName, File workFile,Work work, String checksum) throws Exception {
+		return registerWork(fileName,new FilePartSource(fileName,workFile),work,checksum);
+	}
+	
+	/**
+	 * @param fileName File name
+	 * @param workFile byte array to register
+	 * @param customValues Work containing register parameters to override those of defined profile,
+	 * optional if license is defined	 
+	 * @param checksum 
+	 * @return registration code
+	 * @throws Exception  
+     */
+    public String registerWork(String fileName, byte[] workFile,Work work, String checksum) throws Exception {
+		return registerWork(fileName,new ByteArrayPartSource(fileName,workFile),work,checksum);
+	}	
 
     /**
-     * @param title title of the register work, used only if customValues is null
-     * @param customValues work containing register parameters to override those of defined profile,
-     * optional if license is defined
+	 * @param fileName File name
+	 * @param workFile PartSource data to register
+	 * @param work Work containing register parameters to override those of defined profile,
+	 * optional if license is defined	 
+	 * @param checksum 
+	 * @return registration code
+	 * @throws Exception  
      */
-    public String registerWork(String fileName, File workFile,
-            Work customValues, String checksum) throws Exception {
+    public String registerWork(String fileName, PartSource workFile,Work work, String checksum) throws Exception {
+		if (StringUtils.isEmpty(getProfile()) && work == null) { // ERROR
+            throw new IllegalArgumentException("No profile or parameters defined");
+        }		
         String baseUrl = api.getBaseUrl();
         ////////////////////////////////////////////////////////////////////
         //Look up:
@@ -141,7 +187,10 @@ public class RegisterWork {
 
         params.put("authkey", api.getAuthKey());
         if(workFile != null) {
-            params.put("filename", fileName == null ? workFile.getName() : fileName);
+			String name = fileName == null ? workFile.getFileName() : fileName;
+			if(name != null) {
+				params.put("filename", name);
+			}
         }
         if (postUpload) {
             params.put("bypost", "true");
@@ -154,8 +203,7 @@ public class RegisterWork {
         String uploadID = api.evalXml(response, "/workuploadlookup/uploadid");
         log.debug("Upload id: {}", uploadID);
         String uploadTicket = null;
-        if(workFile != null) {
-            api.setBaseUrl(uploadURL);
+        if(workFile != null) {            			
             if (postUpload) {
                 ////////////////////////////////////////////////////////////////////
                 //POST Upload:
@@ -184,16 +232,13 @@ public class RegisterWork {
         if (StringUtils.isNotBlank(code)) {
             params.put("code", getCode());
         }
-        if (StringUtils.isEmpty(profile) && customValues == null) { // ERROR
-            throw new IllegalArgumentException("No profile or parameters defined");
-        } else {
-            if (!StringUtils.isEmpty(profile)) {
-                params.put("profile", getProfile());
-            }
-            if (customValues != null) {
-                params = ParamsMerger.mergeWork(params, customValues);
-            }
-        }
+		
+		if (!StringUtils.isEmpty(getProfile())) {
+			params.put("profile", getProfile());
+		}
+		if (work != null) {
+			params = ParamsBuilder.buildWorkParams(params, work);
+		}
 
         String result = api.callSigned(params, api.getPrivateAuthKey(), true, true);
         checkError(params, result);
@@ -201,16 +246,22 @@ public class RegisterWork {
         return api.evalXml(result, "/workregistry/code");
     }
 
-
-
-    public String postFile(String uri, Map<String, String> params, final File file) {
+	
+	/**
+	 * Post data using an instance of <code>PartSource</code>
+	 * @param uploadUrl
+	 * @param params
+	 * @param file <code>PartSource</code> to upload
+	 * @return uploadticket
+	 */
+    public String postFile(String uploadUrl, Map<String, String> params, final PartSource file) {
+		PostMethod post = null;
         try {
-            log.debug(String.format("api request by post: \n%s/%s\n",
-                    uri, file.getName()));
+            log.debug(String.format("api request by post: \n%s/%s\n",uploadUrl, file.getFileName()));
             if (client == null) {
                 client = new HttpClient();
             }
-            PostMethod post = new PostMethod(uri);
+            post = new PostMethod(uploadUrl);
             Part[] parts = new Part[params.size() + 1];
             int i = 0;
             for (Map.Entry<String, String> param : params.entrySet()) {
@@ -224,7 +275,7 @@ public class RegisterWork {
                     if(uploadProgressListener == null) {
                         super.sendData(out);
                     } else {
-                        super.sendData(new PostUploadProgressListenerOutputStream(out,uploadProgressListener,file.length()));
+                        super.sendData(new PostUploadProgressListenerOutputStream(out,uploadProgressListener,file.getLength()));
                     }
                 }
 
@@ -240,16 +291,42 @@ public class RegisterWork {
 
         } catch (RuntimeException e) {
             throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {            
             throw new RuntimeException(e);
-        }
+        } finally {
+			if(post != null) {
+				post.releaseConnection();
+			}
+		}
     }
 
-    public String uploadFile(String uri, String uploadID, final File file, String checksum) throws Exception {
+	
+	/**
+	 * Uploads a file
+	 * @param uploadURL
+	 * @param uploadID
+	 * @param file File to upload
+	 * @param checksum
+	 * @return uploadticket
+	 * @throws Exception
+	 */
+	public String uploadFile(String uploadURL, String uploadID, final File file, String checksum) throws Exception {
+		return uploadFile(uploadURL, uploadID, new FilePartSource(file), checksum);
+	}	
+	
+	/**
+	 * Uploads a file
+	 * @param uploadURL
+	 * @param uploadID
+	 * @param file <code>PartSource</code> to upload
+	 * @param checksum
+	 * @return uploadticket
+	 * @throws Exception
+	 */
+	public String uploadFile(String uploadURL, String uploadID, final PartSource file, String checksum) throws Exception {
         String response;
         Map<String, String> params;
-
+		api.setBaseUrl(uploadURL);
         params = api.createParams("component", "work.upload.begin");
         params.put("authkey", api.getAuthKey());
         params.put("uploadid", uploadID);
@@ -269,13 +346,13 @@ public class RegisterWork {
         int percent = 0;
         byte[] chunkBuffer = new byte[chunkSize];
         byte[] data;
-        long uploadSize = file.length();
+        long uploadSize = file.getLength();
         InputStream is = null;
         if (uploadProgressListener != null) {
             uploadProgressListener.uploadProgress(percent, offset, uploadSize);
         }
         try {
-            is = new FileInputStream(file);
+            is = file.createInputStream();
             while (offset < uploadSize) {
                 readed = is.read(chunkBuffer);
                 if (readed <= 0) {

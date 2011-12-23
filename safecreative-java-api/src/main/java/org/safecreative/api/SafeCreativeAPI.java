@@ -251,6 +251,7 @@ public class SafeCreativeAPI {
     public String call(String params) {
         String uri = baseUrl + API_ENDPOINT;
         OutputStream os = null;
+		String response = null;
         try {
             log.debug(String.format("api request: \n%s?%s\n", uri, params));
             URL url = new URL(uri);
@@ -260,17 +261,15 @@ public class SafeCreativeAPI {
             conn.setUseCaches(false);
             os = conn.getOutputStream();
             os.write(params.getBytes(DEFAULT_ENCODING));
-            String response = readString(conn.getInputStream());
+            response = readString(conn.getInputStream());
             log.debug(String.format("api response:\n %s\n", response));
 			if(isError(response) && INVALID_TIME_ERROR.equals(getErrorCode(response))) {
 				log.warn("Client time needs resyncing");
 				timeOffset = null;
 			}
             return response;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException(ApiException.wrap(e,uri+"?"+params,response));
         } finally {
             IOHelper.closeQuietly(os);
         }

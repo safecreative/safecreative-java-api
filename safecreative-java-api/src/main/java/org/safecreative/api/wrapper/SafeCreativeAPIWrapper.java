@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 package org.safecreative.api.wrapper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,9 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import java.util.EnumMap;
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
+import org.apache.commons.httpclient.methods.multipart.FilePartSource;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.LicenseFeatureConverter;
 import org.safecreative.api.wrapper.converters.UserConverter;
@@ -62,7 +66,7 @@ import org.safecreative.api.wrapper.model.LicenseFeatureObject;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.UserQuota;
-import org.safecreative.api.wrapper.util.ParamsMerger;
+import org.safecreative.api.wrapper.util.ParamsBuilder;
 
 /**
  * SafeCreativeAPI main wrapper
@@ -756,9 +760,9 @@ public class SafeCreativeAPIWrapper {
      * @param profile Registration profile
      * @param uploadProgressListener Upload progress listener
      * @return Work's registration code
-     * @throws ApiException
+     * @throws ApiException,FileNotFoundException
      */
-    public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException {
+    public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException, FileNotFoundException {
         Work work = new Work();
         work.setTitle(title);
         return workRegister(file, profile, work, uploadProgressListener);
@@ -773,10 +777,10 @@ public class SafeCreativeAPIWrapper {
      * @param work work containing register parameters to override those of defined profile
      * @param uploadProgressListener Upload progress listener
      * @return Work's registration code
-     * @throws ApiException
+     * @throws ApiException,FileNotFoundException
      */
     public String workRegister(File file,Profile profile,Work work,
-            UploadProgressListener uploadProgressListener) throws ApiException {
+            UploadProgressListener uploadProgressListener) throws ApiException, FileNotFoundException {
         Map<String, String> params = api.createParams();
 
         // call uploadFile
@@ -842,10 +846,9 @@ public class SafeCreativeAPIWrapper {
      * Registers a file using a registration profile and/or a work object containing the registration parameters
      * Uploads work by URL
      *
-     * @param file File to register
+     * @param url URL to register
      * @param profile Registration profile
      * @param work work containing register parameters to override those of defined profile
-     * @param uploadProgressListener Upload progress listener
      * @return Work's registration code
      * @throws ApiException
      */
@@ -881,21 +884,32 @@ public class SafeCreativeAPIWrapper {
      *
      * @param file File to upload
      * @param work work containing register parameters used to update work
-     * @param extraTags tags to add to the existing tags, if null dont use extratags
-     * @param extraLinks links to add to the existing links, if null dont use extralinks
+	 * @param uploadProgressListener Upload progress listener
      * @return true on success
-     * @throws ApiException
+     * @throws ApiException,FileNotFoundException
      */
-    public boolean workUpdate(File file, Work work, UploadProgressListener uploadListener) throws ApiException {
+    public boolean workUpdate(File file, Work work, UploadProgressListener uploadListener) throws ApiException, FileNotFoundException {
         return workUpdate(file, work, null, null, uploadListener);
     }
 
+    /**
+     * Updates a file using a work object containing the registration parameters.
+     * Uploads a new version of work by file
+     *
+     * @param file File to upload
+     * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks	
+	 * @param uploadProgressListener Upload progress listener
+     * @return true on success
+     * @throws ApiException,FileNotFoundException
+     */	
     public boolean workUpdate(File file, Work work, String extraTags, List<Link> extraLinks,
-            UploadProgressListener uploadListener) throws ApiException {
+            UploadProgressListener uploadProgressListener) throws ApiException, FileNotFoundException {
         Map<String, String> params = api.createParams();
         
         // call uploadFile
-        String ticket = uploadFile(file, file.getName(), true, uploadListener);
+        String ticket = uploadFile(file, file.getName(), true, uploadProgressListener);
         if (ticket != null) {
             params.put("uploadticket", ticket);
         }
@@ -944,8 +958,6 @@ public class SafeCreativeAPIWrapper {
      * @param fileSize size of file
      * @param checkSum checksum of file
      * @param work work containing register parameters used to update work
-     * @param extraTags tags to add to the existing tags, if null dont use extratags
-     * @param extraLinks links to add to the existing links, if null dont use extralinks
      * @return true on success
      * @throws ApiException
      */
@@ -953,6 +965,20 @@ public class SafeCreativeAPIWrapper {
         return workUpdate(url, fileName, fileSize, checkSum, work, null, null);
     }
     
+    /**
+     * Updates a file using a work object containing the registration parameters.
+     * Uploads a new version of work by URL
+     *
+     * @param url URL of file
+     * @param fileName name of file
+     * @param fileSize size of file
+     * @param checkSum checksum of file
+     * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
+     * @return true on success
+     * @throws ApiException
+     */	
     public boolean workUpdate(URL url, String fileName, long fileSize,
             String checkSum, Work work, String extraTags, List<Link> extraLinks) throws ApiException {
         Map<String, String> params = api.createParams();
@@ -971,8 +997,6 @@ public class SafeCreativeAPIWrapper {
      * Updates a file using a work object containing the registration parameters.
      *
      * @param work work containing register parameters used to update work
-     * @param extraTags tags to add to the existing tags, if null dont use extratags
-     * @param extraLinks links to add to the existing links, if null dont use extralinks
      * @return true on success
      * @throws ApiException
      */
@@ -980,6 +1004,15 @@ public class SafeCreativeAPIWrapper {
         return workUpdate(work, null, null);
     }
 
+    /**
+     * Updates a file using a work object containing the registration parameters.
+     *
+     * @param work work containing register parameters used to update work
+     * @param extraTags tags to add to the existing tags, if null dont use extratags
+     * @param extraLinks links to add to the existing links, if null dont use extralinks
+     * @return true on success
+     * @throws ApiException
+     */	
     public boolean workUpdate(Work work, String extraTags, List<Link> extraLinks) throws ApiException {
         Map<String, String> params = api.createParams();
 
@@ -996,7 +1029,7 @@ public class SafeCreativeAPIWrapper {
         if (extraLinks != null) {
             int i = 1;
             for (Link link : extraLinks) {
-                updateParams.put("extralink" + i, ParamsMerger.linkString(link));
+                updateParams.put("extralink" + i, ParamsBuilder.linkString(link));
                 i++;
             }
         }
@@ -1146,11 +1179,7 @@ public class SafeCreativeAPIWrapper {
         try {
             result = api.call(params);
         } catch (Exception ex) {
-            if (ex instanceof ApiException) {
-                throw (ApiException) ex;
-            }
-            //Wrap            
-            throw new ApiException(ex);
+            throw ApiException.wrap(ex);
         }
         checkError(result);
         return result;
@@ -1178,12 +1207,8 @@ public class SafeCreativeAPIWrapper {
         String result = null;
         try {
             result = api.callSigned(params, privateKey, ztime, noncekey,addLocale);
-        } catch (Exception ex) {
-            if (ex instanceof ApiException) {
-                throw (ApiException) ex;
-            }
-            //Wrap            
-            throw new ApiException(ex);
+        } catch (Exception ex) {           
+            throw ApiException.wrap(ex);
         }
         checkError(result);
         return result;
@@ -1198,7 +1223,7 @@ public class SafeCreativeAPIWrapper {
             String state = api.getResponseState(response);
             return expected.equals(state);
         } catch (Exception ex) {
-            throw new ApiException(ex);
+            throw ApiException.wrap(ex);
         }
     }
 
@@ -1211,7 +1236,7 @@ public class SafeCreativeAPIWrapper {
             } catch (ApiException ex) {
                 throw ex;
             } catch (Exception ex) {
-                throw new ApiException(ex);
+                throw new ApiException(ex,null,response);
             }
         }
     }
@@ -1328,7 +1353,7 @@ public class SafeCreativeAPIWrapper {
 
         params.put("component", "work.register");
         params.put("authkey", authKey.getAuthkey());
-        params = ParamsMerger.mergeWork(params, work);
+        params = ParamsBuilder.buildWorkParams(params, work);
 
         String result = callSigned(authKey.getPrivatekey(), true, true, false, params);
 
@@ -1341,19 +1366,59 @@ public class SafeCreativeAPIWrapper {
      * @param file file to upload
      * @param fileName filename to use for upload file
      * @param byPost true - upload file using POST, false - upload by API
+	 * @param uploadListener Upload progress listener to notify if not <code>null</code>* 
+     * @return upload ticket or null if fails
+     * @throws ApiException,FileNotFoundException
+     */
+    public String uploadFile(File file, String fileName, boolean byPost,UploadProgressListener uploadListener) throws ApiException, FileNotFoundException {
+		return uploadFileSource(new FilePartSource(fileName, file), byPost, uploadListener);
+	}
+
+	
+    /**
+     * Uploads a data buffer for register or update a work via post
+     * 
+     * @param data Byte array of data to upload
+     * @param fileName filename to use for upload file
      * @return upload ticket or null if fails
      * @throws ApiException
      */
-    public String uploadFile(File file, String fileName, boolean byPost,
-            UploadProgressListener uploadListener) throws ApiException {
-        if(file == null) {
+    public String uploadBytes(byte[] data, String fileName) throws ApiException {
+		return uploadBytes(data, fileName, true,null);
+	}
+	
+    /**
+     * Uploads a data buffer for register or update a work
+     * 
+     * @param data Byte array of data to upload
+     * @param fileName filename to use for upload file
+     * @param byPost true - upload file using POST, false - upload by API
+	 * @param uploadListener Upload progress listener to notify if not <code>null</code>
+     * @return upload ticket or null if fails
+     * @throws ApiException
+     */
+    public String uploadBytes(byte[] data, String fileName, boolean byPost,UploadProgressListener uploadListener) throws ApiException {
+		return uploadFileSource(new ByteArrayPartSource(fileName, data), byPost, uploadListener);
+	}	
+	
+    /**
+     * Uploads a file part source for register or update a work
+     * 
+     * @param fileSource <code>PartSource</code> to upload 
+     * @param byPost true - upload file using POST, false - upload by API
+	 * @param uploadListener Upload progress listener to notify if not <code>null</code>* 
+	 * @param checkSum Optional SHA-1 checksum if available, otherwise it will be calculated again for the file part source
+     * @return upload ticket or null if fails
+     * @throws ApiException
+     */
+    public String uploadFileSource(PartSource fileSource, boolean byPost,UploadProgressListener uploadListener,String... checkSum) throws ApiException {
+        if(fileSource == null) {
             return null;
         } else {
             // Look up
             Map<String, String> params = api.createParams("component", "work.upload.lookup");
             params.put("authkey", authKey.getAuthkey());
-            params.put("filename", fileName == null ? file.getName() : fileName);
-
+            params.put("filename", fileSource.getFileName());
             if (byPost) {
                 params.put("bypost", "true");
             }
@@ -1374,20 +1439,30 @@ public class SafeCreativeAPIWrapper {
             if (byPost) {
                 ////////////////////////////////////////////////////////////////////
                 //POST Upload:
-                log.info("registerWork upload by post file: {}", file);
+                log.info("registerWork upload by post file: {}", fileSource.getFileName());
                 params = api.createParams("uploadid", uploadID);
-                uploadTicket = registerer.postFile(uploadURL, params, file);
-                log.info("Successfully uploaded file: {}", file);
+                uploadTicket = registerer.postFile(uploadURL, params, fileSource);
+                log.info("Successfully uploaded file: {}", fileSource);
             } else {
                 ////////////////////////////////////////////////////////////////////
                 //API Upload:
                 try {
-                    log.info("registerWork upload by API file: {}", file);
-                    uploadTicket = registerer.uploadFile(uploadURL, uploadID, file, Digest.getHexDigest(file, Digest.SHA1));
-                    log.info("Successfully uploaded file: {}", file);
+                    log.info("registerWork upload by API file: {}", fileSource.getFileName());
+					String sha1CheckSum = null;
+					if(checkSum != null && checkSum.length == 1) {
+						sha1CheckSum = checkSum[0];
+					}
+					if(StringUtils.isBlank(sha1CheckSum)) {
+						log.info("Building SHA-1 checksum");
+						sha1CheckSum = Digest.getHexDigest(fileSource.createInputStream(), Digest.SHA1);
+					}
+                    uploadTicket = registerer.uploadFile(
+							uploadURL, uploadID, fileSource, sha1CheckSum							
+					);
+                    log.info("Successfully uploaded file: {}", fileSource.getFileName());
                 }
                 catch (Exception ex) {
-                    throw new ApiException(ex);
+                    throw ApiException.wrap(ex);
                 }
             }
             log.debug("uploadTicket {}", uploadTicket);

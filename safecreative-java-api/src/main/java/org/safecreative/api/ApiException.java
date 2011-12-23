@@ -34,6 +34,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ApiException extends Exception {
     private String errorCode;
+	private String requestUrl;
+	private String response;
 
     /**
      * Constructs an instance of <code>ApiException</code> with the specified detail message.
@@ -56,9 +58,12 @@ public class ApiException extends Exception {
     /**
      * Constructs an instance of <code>ApiException</code> with the specified cause.
      * @param cause the cause.
+	 * @param requestUrl  The request url that caused this exception if available
+	 * @param response The response that caused this exception if available
      */
-    public ApiException(Throwable cause) {
+    public ApiException(Throwable cause,String requestUrl,String response) {
         super(cause);
+		this.requestUrl = requestUrl;
     }
 
     /**
@@ -69,6 +74,36 @@ public class ApiException extends Exception {
         return errorCode;
     }
 
+	/**
+	 * The request url that caused this exception if available
+	 * @return request url
+	 */
+	public String getRequestUrl() {
+		return requestUrl;
+	}
+
+	/**
+	 * The response that caused this exception if available
+	 * @return 
+	 */
+	public String getResponse() {
+		return response;
+	}
+
+	/**
+	 * @param requestUrl the requestUrl to set
+	 */
+	protected void setRequestUrl(String requestUrl) {
+		this.requestUrl = requestUrl;
+	}
+
+	/**
+	 * @param response the response to set
+	 */
+	protected void setResponse(String response) {
+		this.response = response;
+	}
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -76,9 +111,29 @@ public class ApiException extends Exception {
         if(getErrorCode() != null && !getErrorCode().equals(getMessage())) {
             sb.append(" Error code: ").append(getErrorCode());
         }
+        if(getRequestUrl() != null) {
+            sb.append(" Request Url: ").append(getRequestUrl());
+        }
+        if(StringUtils.isNotBlank(getResponse())) {
+            sb.append(" Response: ").append(getResponse());
+        }		
         if(getCause() != null) {
             sb.append(" Cause: ").append(getCause().toString());
         }
         return sb.toString();
     }
+	
+	public static ApiException wrap(Throwable cause) {		
+		return wrap(cause,null,null);
+	}
+	
+	public static ApiException wrap(Throwable cause,String requestUrl,String response) {		
+		ApiException wrapped;
+		if (cause instanceof ApiException) {
+			wrapped = (ApiException) cause;
+        } else {
+			wrapped =  new ApiException(cause, requestUrl, response);
+		}
+		return wrapped;
+	}
 }

@@ -40,6 +40,24 @@ public class Link {
     private Type type;
     private URL url;
 
+	/**
+	 * Default constructor
+	 */
+	public Link() {
+	}
+
+	/**
+	 * Full constructor
+	 * @param name
+	 * @param type
+	 * @param url 
+	 */
+	public Link(String name, Type type, URL url) {
+		this.name = name;
+		this.type = type;
+		this.url = url;
+	}	
+	
     /**
      * @return the name
      */

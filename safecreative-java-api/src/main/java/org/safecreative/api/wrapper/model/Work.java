@@ -24,6 +24,7 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -132,6 +133,22 @@ public class Work {
             this.workTypes = workTypes;
         }
     }
+
+	/**
+	 * Default constructor
+	 */
+	public Work() {
+	}
+
+	/**
+	 * Constructor with given code
+	 * @param code 
+	 */	
+	public Work(String code)  {
+		this.code = code;
+	}
+	
+	
 
     /**
      * @return the code
@@ -287,11 +304,39 @@ public class Work {
         this.thumbnail = thumbnail;
     }
 
+	/**
+	 * Adds a link
+	 * @param name Name of link
+	 * @param type Type of link
+	 * @param url Url of link
+	 */
+	public void addLink(String name, Link.Type type, String url) throws MalformedURLException {
+		addLink(name, type, new URL(url));
+	}
+
+	
+	/**
+	 * Adds a link
+	 * @param name Name of link
+	 * @param type Type of link
+	 * @param url <code>URL</code> of link
+	 */
+	public void addLink(String name, Link.Type type, URL url) {
+		addLink(new Link(name, type, url));
+	}
+	
+	/**
+	 * Add a link
+	 */
+	public void addLink(Link link) {
+		getLinks().add(link);
+	}
+
     /**
      * @return the links
      */
     public List<Link> getLinks() {
-        return links == null ? links = Collections.emptyList() : links;
+        return links == null ? links = new LinkedList<Link>() : links;
     }
 
     /**
