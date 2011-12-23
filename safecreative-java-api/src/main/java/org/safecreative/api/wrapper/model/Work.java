@@ -95,8 +95,24 @@ public class Work {
         public static final String AUDIO        =   "audio";
         public static final String VIDEO        =   "video";
         public static final String DRAWING      =   "drawing";
-        public static final String PHOTO        =   "photo";        
-        
+        public static final String PHOTO        =   "photo";
+
+		/**
+		 * Constructor with givenn code
+		 * @param code 
+		 */
+		public Type(String code) {
+			super(code);
+		}       
+		
+		/**
+		 * Create a new instance from code
+		 * @param code
+		 * @return new Type instance initialized with code
+		 */
+		public static Type fromCode(String code) {
+			return new Type(code);
+		}
     }
 
     public static class TypeGroup extends CodeableEntity {

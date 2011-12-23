@@ -34,6 +34,20 @@ public abstract class CodeableEntity implements Comparable<CodeableEntity> {
     private String code;
     private String name;
 
+	/**
+	 * Default constructor
+	 */
+	public CodeableEntity() {
+	}
+
+	/**
+	 * Code constructor
+	 * @param code 
+	 */
+	public CodeableEntity(String code) {
+		this.code = code;		
+	}
+
     /**
      * @return the code
      */

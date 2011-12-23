@@ -181,10 +181,9 @@ public class WorkConverter extends AbstractModelConverter {
             work.setAllowLicensing(Boolean.valueOf(reader.getValue()));
             processedNode = true;
         }else
-        if (node.equals("worktype")) {
-            Work.Type type = new Work.Type();
+        if (node.equals("worktype")) {            
             reader.moveDown();
-            type.setCode(reader.getValue());
+			Work.Type type = Work.Type.fromCode(reader.getValue());            
             reader.moveUp();
             reader.moveDown();
             type.setName(reader.getValue());
