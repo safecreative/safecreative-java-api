@@ -886,7 +886,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     // common
-    private String workRegister(Map<String, String> registerParams, Work work, Profile profile) throws ApiException {
+    public String workRegister(Map<String, String> registerParams, Work work, Profile profile) throws ApiException {
         // proccess extra fields
         if (profile != null) {
             registerParams.put("profile", profile.getCode());
