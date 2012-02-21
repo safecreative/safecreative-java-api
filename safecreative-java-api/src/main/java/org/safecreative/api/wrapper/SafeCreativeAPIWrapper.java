@@ -749,6 +749,29 @@ public class SafeCreativeAPIWrapper {
     // Registration methods
     ////////////////////////////////////////////////////////////////////////////
 
+	// by text
+	public String workRegister(String title,String content,Profile profile,List<String> tags,Link...links) throws ApiException {
+		Map<String, String> params = api.createParams();
+		params.put("text", content);
+		if(tags != null) {
+			StringBuilder sb = new StringBuilder();
+			boolean hasMore = false;
+			for(String tag:tags) {
+				if(hasMore) {
+					sb.append(',');
+				}
+				sb.append(tag.trim());
+				hasMore = true;
+			}
+			params.put("tags", sb.toString());
+		}
+		int linkCounter = 1;
+		for(Link link : links) {
+			params.put("link"+linkCounter++,ParamsBuilder.linkString(link));
+		}
+		return workRegister(params, createWork(title), profile);
+	}
+	
     // by file
 
     /**
@@ -763,9 +786,7 @@ public class SafeCreativeAPIWrapper {
      * @throws ApiException,FileNotFoundException
      */
     public String workRegister(String title,File file,Profile profile,UploadProgressListener uploadProgressListener) throws ApiException, FileNotFoundException {
-        Work work = new Work();
-        work.setTitle(title);
-        return workRegister(file, profile, work, uploadProgressListener);
+        return workRegister(file, profile, createWork(title), uploadProgressListener);
     }
 
     /**
@@ -837,9 +858,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     public String workRegister(String title,URL url,Profile profile,String fileName,long fileSize,String checkSum ) throws ApiException {
-        Work work = new Work();
-        work.setTitle(title);
-        return workRegister(url,profile,work,url.getFile(),fileSize,checkSum);
+        return workRegister(url,profile,createWork(title),url.getFile(),fileSize,checkSum);
     }
     
     /**
@@ -1469,5 +1488,11 @@ public class SafeCreativeAPIWrapper {
             return uploadTicket;
         }
     }
+
+	protected Work createWork(String title) {
+		Work work = new Work();
+		work.setTitle(title);
+		return work;
+	}
 
 }
