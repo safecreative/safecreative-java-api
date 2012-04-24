@@ -24,14 +24,10 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents a work
@@ -39,7 +35,7 @@ import java.util.Map;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class Work {
+public class Work implements Serializable{
     public enum RelationType {
 		VERSION, DERIVATION, COMPOSITION, RELATED
 	}

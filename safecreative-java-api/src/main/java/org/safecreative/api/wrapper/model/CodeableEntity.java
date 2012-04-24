@@ -24,12 +24,14 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
+
 /**
  * Defines common used entities with a code and a name value.
  *
  * @author mpolo@safecreative.org
  */
-public abstract class CodeableEntity implements Comparable<CodeableEntity> {
+public abstract class CodeableEntity implements Comparable<CodeableEntity> ,Serializable{
 
     private String code;
     private String name;

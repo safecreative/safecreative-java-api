@@ -24,9 +24,9 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
 import java.net.URL;
 
-import org.safecreative.api.wrapper.SafeCreativeAPIWrapper;
 
 /**
  * Download info.
@@ -35,7 +35,7 @@ import org.safecreative.api.wrapper.SafeCreativeAPIWrapper;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class DownloadInfo {
+public class DownloadInfo implements Serializable{
 	public enum Type { ORIGINAL, EVALUATION }
 	
     private String mimeType;

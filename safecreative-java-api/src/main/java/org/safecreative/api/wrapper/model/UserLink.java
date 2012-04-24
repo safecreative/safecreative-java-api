@@ -24,6 +24,8 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
+
 
 
 /**
@@ -33,7 +35,7 @@ package org.safecreative.api.wrapper.model;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class UserLink {
+public class UserLink implements Serializable {
     private String code;
     private String authKey;
     private String authPrivateKey;

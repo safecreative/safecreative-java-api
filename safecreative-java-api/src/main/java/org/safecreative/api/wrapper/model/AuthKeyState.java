@@ -24,6 +24,7 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
 
 /**
@@ -32,7 +33,7 @@ import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class AuthKeyState {
+public class AuthKeyState implements Serializable{
 
     private String code;
     private String authorized;

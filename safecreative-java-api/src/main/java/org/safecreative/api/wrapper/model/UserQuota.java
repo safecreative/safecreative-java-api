@@ -25,11 +25,13 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
+
 /**
  * Represents user's disk and registration quota
  * @author vcalderon@safecreative.org
  */
-public class UserQuota {
+public class UserQuota implements Serializable {
     private String userCode;
     private long diskUsage;
     private long diskQuota;

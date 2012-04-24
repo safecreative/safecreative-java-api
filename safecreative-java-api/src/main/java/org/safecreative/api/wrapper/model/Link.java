@@ -24,6 +24,7 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
 import java.net.URL;
 
 /**
@@ -32,7 +33,8 @@ import java.net.URL;
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class Link {
+public class Link implements Serializable{
+	
     public enum Type {
         INFO,DOWNLOAD
     }

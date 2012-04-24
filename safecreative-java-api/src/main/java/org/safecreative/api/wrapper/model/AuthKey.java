@@ -24,13 +24,15 @@
 */
 package org.safecreative.api.wrapper.model;
 
+import java.io.Serializable;
+
 /**
  * Represents an authorization key
  *
  * @author mpolo@safecreative.org
  * @author jguillo@safecreative.org
  */
-public class AuthKey {
+public class AuthKey implements Serializable{
 
     private String authkey;
     private String privatekey;
