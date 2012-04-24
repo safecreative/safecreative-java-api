@@ -4,7 +4,7 @@
     <groupId>org.safecreative.api</groupId>
     <artifactId>safecreative-java-api</artifactId>
     <packaging>pom</packaging>
-    <version>0.7.0</version>
+    <version>0.7.2</version>
     <name>Safe Creative Java API Project</name>
     <description>Safe Creative Java API Project</description>
     <url>http://code.google.com/p/safecreative-java-api</url>
