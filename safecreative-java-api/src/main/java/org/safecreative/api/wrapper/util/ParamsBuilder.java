@@ -48,7 +48,7 @@ public class ParamsBuilder {
 			params.put("final", "1");
 		}
         // add editable fields only if in pre-register or not defined
-        if (work.getState() == null || work.getState() == Work.WorkState.PRE_REGISTERED) {
+        if (work.getCode() == null || work.getState() == null || work.getState() == Work.WorkState.PRE_REGISTERED) {
             if (work.getTitle() != null) {
                 params.put("title", work.getTitle());
             }
