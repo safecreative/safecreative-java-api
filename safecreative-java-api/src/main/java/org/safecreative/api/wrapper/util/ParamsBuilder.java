@@ -44,7 +44,9 @@ public class ParamsBuilder {
      * @return existing parameter set with 'work' parameters
      */
     public static Map<String, String> buildWorkParams(Map<String, String> params, Work work) {
-
+		if(Work.WorkState.REGISTERED.equals(work.getState())) {
+			params.put("final", "1");
+		}
         // add editable fields only if in pre-register or not defined
         if (work.getState() == null || work.getState() == Work.WorkState.PRE_REGISTERED) {
             if (work.getTitle() != null) {
@@ -79,13 +81,13 @@ public class ParamsBuilder {
             params.put("language", work.getLanguage().getCode());
         }
         if (work.isUseAlias() != null) {
-            params.put("registrypublic", work.isUseAlias() ? "1" : "0");
+            params.put("usealias", work.isUseAlias() ? "1" : "0");
         }
         if (work.isUserAuthor() != null) {
             params.put("userauthor", work.isUserAuthor() ? "1" : "0");
         }
         if (work.isUserRights() != null) {
-            params.put("userauthor", work.isUserRights() ? "1" : "0");
+            params.put("userrights", work.isUserRights() ? "1" : "0");
         }
         if (work.getObservations() != null) {
             params.put("obs", work.getObservations());
