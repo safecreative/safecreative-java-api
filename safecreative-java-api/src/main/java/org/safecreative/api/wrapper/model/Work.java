@@ -27,7 +27,17 @@ package org.safecreative.api.wrapper.model;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.safecreative.api.wrapper.model.CodeableEntity;
+import org.safecreative.api.wrapper.model.License;
+import org.safecreative.api.wrapper.model.Link;
+import org.safecreative.api.wrapper.model.Metadata;
+import org.safecreative.api.wrapper.model.User;
 
 /**
  * Represents a work
@@ -59,6 +69,7 @@ public class Work implements Serializable{
     private List<User> rightHolders;
     private List<User> informers;
     private Map<RelationType,List<Work>> relationMap;
+    private Metadata metadata;
     private License license;
     private URL humanUrl;
     private URL apiUrl;
@@ -410,6 +421,23 @@ public class Work implements Serializable{
     }
 
     /**
+	 * @return the metadata
+	 */
+	public Metadata getMetadata() {
+		if(metadata == null) {
+			metadata = new Metadata();
+		}
+		return metadata;
+	}
+
+	/**
+	 * @param metadata the metadata to set
+	 */
+	public void setMetadata(Metadata metadata) {
+		this.metadata = metadata;
+	}
+
+	/**
      * @return the license
      */
     public License getLicense() {

@@ -28,6 +28,8 @@ package org.safecreative.api.wrapper.util;
 import java.util.List;
 import java.util.Map;
 import org.safecreative.api.wrapper.model.Link;
+import org.safecreative.api.wrapper.model.Metadata;
+import org.safecreative.api.wrapper.model.Metadata.Entry;
 import org.safecreative.api.wrapper.model.Work;
 
 /**
@@ -110,11 +112,26 @@ public class ParamsBuilder {
             String relatedString = toCSV(work.getRelations(Work.RelationType.VERSION));
             params.put("versionof", relatedString);
         }
-        
+        if (!work.getMetadata().isEmpty()) {
+            int i = 1;
+            for (List<Metadata.Entry> entries : work.getMetadata()) {
+            	for(Metadata.Entry entry:entries) {
+            		params.put("meta" + i++, metadataString(entry));
+            	}
+            }
+        }
         return params;
     }
 
-    /**
+	/**
+     * @param entry Metadata entry to convert, must be not null
+     * @return String of metadata formated for API register
+     */    
+    public static String metadataString(Entry entry) { 
+		return entry.getKey() + "|" + entry.getValue();
+	}
+
+	/**
      * @param link Link to convert, must be not null
      * @return String of link formated for API register
      */
