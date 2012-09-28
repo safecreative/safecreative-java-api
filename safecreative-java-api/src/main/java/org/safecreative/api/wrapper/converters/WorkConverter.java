@@ -26,11 +26,13 @@ package org.safecreative.api.wrapper.converters;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Link;
+import org.safecreative.api.wrapper.model.Metadata;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.Work;
 import org.safecreative.api.wrapper.model.Work.RelationType;
@@ -231,6 +233,25 @@ public class WorkConverter extends AbstractModelConverter {
         if (node.equals("useralias")) {
             work.setUserAlias(reader.getValue());
             processedNode = true;
+        } else 
+        if (node.equals("metadata")) {
+        	Metadata metadata = work.getMetadata();
+        	Iterator<String> attributeNames = reader.getAttributeNames();
+        	while(attributeNames.hasNext()) {
+        		String namespaceDeclaration = attributeNames.next();
+        		if(namespaceDeclaration.startsWith("xmlns:")) {
+        			String  namespace= namespaceDeclaration.substring(6);
+        			metadata.addNamespace(namespace,reader.getAttribute(namespaceDeclaration));
+        		}
+        	} 
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                node = reader.getNodeName();
+                String [] namespaceParts = node.split(":");
+                metadata.add(namespaceParts[0],namespaceParts[1],reader.getValue());
+                reader.moveUp();
+            }
+        	processedNode = true;
         }
         return processedNode;
     }

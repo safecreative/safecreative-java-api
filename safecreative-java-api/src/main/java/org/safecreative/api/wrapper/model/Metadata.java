@@ -25,6 +25,7 @@
 package org.safecreative.api.wrapper.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -105,9 +106,22 @@ public class Metadata implements Serializable,Iterable<List<Metadata.Entry>> {
 	}
 		
 	private Map<String,List<Entry>> entryMap;
+	private Map<String,String> namespaceMap;
 	
 	public Metadata() {	
 		entryMap = new LinkedHashMap<String, List<Entry>>();
+	}
+	
+	public Metadata addNamespace(String namespace, String uri) {
+		if(namespaceMap == null) {
+			namespaceMap = new HashMap<String,String>();
+		}
+		namespaceMap.put(namespace, uri);
+		return this;
+	}
+	
+	public String getNamespaceUri(String namespace) {
+		return namespaceMap == null ? null : namespaceMap.get(namespace);
 	}
 	
     /**
@@ -150,5 +164,6 @@ public class Metadata implements Serializable,Iterable<List<Metadata.Entry>> {
 
 	public Iterator<List<Entry>> iterator() {
 		return entryMap.values().iterator();
-	}	
+	}
+
 }
