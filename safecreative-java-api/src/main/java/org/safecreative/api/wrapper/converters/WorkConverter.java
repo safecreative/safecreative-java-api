@@ -246,8 +246,8 @@ public class WorkConverter extends AbstractModelConverter {
         	} 
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
-                node = reader.getNodeName();
-                String [] namespaceParts = node.split(":");
+                String propertyNS = reader.getAttribute("property");
+                String [] namespaceParts = propertyNS.split(":");
                 metadata.add(namespaceParts[0],namespaceParts[1],reader.getValue());
                 reader.moveUp();
             }

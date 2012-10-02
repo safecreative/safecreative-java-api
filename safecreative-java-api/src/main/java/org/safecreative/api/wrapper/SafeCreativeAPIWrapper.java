@@ -24,49 +24,47 @@ OTHER DEALINGS IN THE SOFTWARE.
  */
 package org.safecreative.api.wrapper;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.Converter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
+import org.apache.commons.httpclient.methods.multipart.FilePartSource;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 import org.apache.commons.lang.StringUtils;
 import org.safecreative.api.ApiException;
 import org.safecreative.api.RegisterWork;
 import org.safecreative.api.SafeCreativeAPI;
-import org.safecreative.api.UploadProgressListener;
 import org.safecreative.api.SafeCreativeAPI.AuthkeyLevel;
+import org.safecreative.api.UploadProgressListener;
 import org.safecreative.api.util.Digest;
+import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
 import org.safecreative.api.wrapper.converters.LicenseConverter;
+import org.safecreative.api.wrapper.converters.LicenseFeatureConverter;
 import org.safecreative.api.wrapper.converters.ListPageConverter;
+import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.converters.WorkConverter;
 import org.safecreative.api.wrapper.model.AuthKey;
 import org.safecreative.api.wrapper.model.AuthKeyState;
 import org.safecreative.api.wrapper.model.Country;
-import org.safecreative.api.wrapper.model.License;
-import org.safecreative.api.wrapper.model.Profile;
-import org.safecreative.api.wrapper.model.UserLink;
-import org.safecreative.api.wrapper.model.Work;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.Converter;
-import java.util.EnumMap;
-import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
-import org.apache.commons.httpclient.methods.multipart.FilePartSource;
-import org.apache.commons.httpclient.methods.multipart.PartSource;
-import org.safecreative.api.wrapper.converters.DownloadInfoConverter;
-import org.safecreative.api.wrapper.converters.LicenseFeatureConverter;
-import org.safecreative.api.wrapper.converters.UserConverter;
 import org.safecreative.api.wrapper.model.DownloadInfo;
+import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.LicenseFeatureObject;
 import org.safecreative.api.wrapper.model.Link;
+import org.safecreative.api.wrapper.model.Profile;
 import org.safecreative.api.wrapper.model.User;
+import org.safecreative.api.wrapper.model.UserLink;
 import org.safecreative.api.wrapper.model.UserQuota;
+import org.safecreative.api.wrapper.model.Work;
 import org.safecreative.api.wrapper.util.ParamsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SafeCreativeAPI main wrapper
@@ -331,7 +329,7 @@ public class SafeCreativeAPIWrapper {
             throw ex;
         }
 
-        XStream xs = new XStream();
+        XStream xs = createXStream();
         xs.alias("userquota", UserQuota.class);
         xs.aliasField("usercode", UserQuota.class, "userCode");
 
@@ -398,7 +396,7 @@ public class SafeCreativeAPIWrapper {
         String result = api.callSigned(params, true, false, false);
         checkError(result);
         log.debug("user.link result:\n{}", result);
-        XStream xs = new XStream();
+        XStream xs = createXStream();
         xs.aliasField("usercode", UserLink.class, "code");
         xs.aliasField("authkey", UserLink.class, "authKey");
         xs.aliasField("privatekey", UserLink.class, "authPrivateKey");
@@ -552,7 +550,7 @@ public class SafeCreativeAPIWrapper {
     public EnumMap<License.Feature, LicenseFeatureObject> getLicenseFeatures() throws ApiException {
         setApiUrl();
         String result = callComponent("license.features");
-        XStream xs = new XStream();
+        XStream xs = createXStream();
 
         // alias for license features
         xs.registerConverter(new LicenseFeatureConverter());
@@ -583,7 +581,7 @@ public class SafeCreativeAPIWrapper {
     public List<Work.TypeGroup> getWorkTypesTree() throws ApiException {
         setApiUrl();
         String result = callComponent("work.types.tree");
-        XStream xs = new XStream();
+        XStream xs = createXStream();
 
         // alias for worktype
         xs.aliasField("worktypes", Work.TypeGroup.class, "workTypes");
@@ -1107,7 +1105,7 @@ public class SafeCreativeAPIWrapper {
         }
         setApiSearchUrl();
         String result = callComponent("semantic.query",method.getFieldName(),value);
-        XStream xs = new XStream();
+        XStream xs = createXStream();
         xs.registerConverter(new WorkConverter());
         List<Work> results = readList(result, "works", "work", Work.class,xs);
         return results;
@@ -1278,7 +1276,7 @@ public class SafeCreativeAPIWrapper {
 
     @SuppressWarnings("unchecked")
     protected <T extends Object> ListPage<T> readListPage(String response,Class<T> clazz,Converter converter) {
-        XStream xs = new XStream();        
+        XStream xs = createXStream();        
         xs.registerConverter(new ListPageConverter<T>(clazz,converter));                
         ListPage<T> listPage = readObject(ListPage.class, response,xs);        
         return listPage;
@@ -1291,7 +1289,7 @@ public class SafeCreativeAPIWrapper {
     @SuppressWarnings("unchecked")
     private <T extends Object> List<T> readList(String response, String listElement, String element, Class<T> clazz,XStream xs) {
         if(xs == null)  {
-            xs = new XStream();
+            xs = createXStream();
         }
         xs.alias(listElement, List.class);
         xs.alias(element, clazz);
@@ -1305,7 +1303,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     private Object readObject(String response) {
-        XStream xs = new XStream();
+        XStream xs = createXStream();
         Object result = null;
         try {
             result = xs.fromXML(response);
@@ -1322,7 +1320,7 @@ public class SafeCreativeAPIWrapper {
 
     @SuppressWarnings("unchecked")
     private <T> T readObject(Class<T> clazz, String response,Converter converter) {
-        XStream xs = new XStream();
+        XStream xs = createXStream();
         if(converter != null) {
             xs.registerConverter(converter);
         }
@@ -1332,7 +1330,7 @@ public class SafeCreativeAPIWrapper {
     @SuppressWarnings("unchecked")
     <T> T readObject(Class<T> clazz, String response,XStream xs) {
         if(xs == null)  {
-            xs = new XStream();
+            xs = createXStream();
         }
         xs.alias(clazz.getSimpleName().toLowerCase(), clazz);
         T result = null;
@@ -1493,6 +1491,10 @@ public class SafeCreativeAPIWrapper {
 		Work work = new Work();
 		work.setTitle(title);
 		return work;
+	}
+
+	private XStream createXStream() {				
+		return new XStream();
 	}
 
 }
