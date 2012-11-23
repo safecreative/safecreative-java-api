@@ -35,6 +35,7 @@ import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.Metadata;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.Work;
+import org.safecreative.api.wrapper.model.Metadata.Entry;
 import org.safecreative.api.wrapper.model.Work.RelationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,10 +205,8 @@ public class WorkConverter extends AbstractModelConverter {
             work.setTypeGroup(typeGroup);
             processedNode = true;
         }else
-        if (node.equals("languagecode")) {
-            Work.Language language = new Work.Language();                        
-            language.setCode(reader.getValue());            
-            work.setLanguage(language);
+        if (node.equals("languagecode")) {            
+            work.setLanguage(Work.Language.fromCode(reader.getValue()));
             processedNode = true;
         }else
         if (node.equals("state")) {
@@ -248,7 +247,17 @@ public class WorkConverter extends AbstractModelConverter {
                 reader.moveDown();
                 String propertyNS = reader.getAttribute("property");
                 String [] namespaceParts = propertyNS.split(":");
-                metadata.add(namespaceParts[0],namespaceParts[1],reader.getValue());
+                Metadata.Entry entry = new Entry(namespaceParts[0],namespaceParts[1],reader.getValue());
+                metadata.add(entry);
+                @SuppressWarnings("unchecked")
+				Iterator<String> attributes = reader.getAttributeNames();
+                while(attributes.hasNext()) {
+            		String attrName = attributes.next();
+            		if("property".equals(attrName)) {
+            			continue;
+            		}
+            		entry.getAttributes().put(attrName, reader.getAttribute(attrName));
+                }
                 reader.moveUp();
             }
         	processedNode = true;

@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -46,7 +47,8 @@ public class Metadata implements Serializable,Iterable<List<Metadata.Entry>> {
 		private static final long serialVersionUID = 1L;
 		private String namespace;
 		private String name;
-		private String value;		
+		private String value;
+		private Map<String,Object> attributes;	
 		
 		public Entry(String namespace,String name,String value) {
 			this.namespace = namespace;
@@ -91,6 +93,23 @@ public class Metadata implements Serializable,Iterable<List<Metadata.Entry>> {
 			this.value = value;
 		}
 		
+		/**
+		 * @return the attributes
+		 */
+		public Map<String, Object> getAttributes() {
+			if(attributes == null) {
+				attributes = new TreeMap<String,Object>();
+			}
+			return attributes;
+		}
+
+		/**
+		 * @param attributes the attributes to set
+		 */
+		public void setAttributes(Map<String, Object> attributes) {
+			this.attributes = attributes;
+		}
+
 		/**
 		 * Return the namespace:name combination or this entry's name
 		 * @return key value
