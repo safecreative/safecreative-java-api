@@ -27,10 +27,15 @@ package org.safecreative.api.wrapper.util;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
+import org.safecreative.api.util.Json;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.Metadata;
 import org.safecreative.api.wrapper.model.Metadata.Entry;
 import org.safecreative.api.wrapper.model.Work;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Class to build api call parameters
@@ -38,8 +43,9 @@ import org.safecreative.api.wrapper.model.Work;
  * @author mpolo@safecreative.org
  * @author vcalderon@safecreative.org
  */
-public class ParamsBuilder {
-
+public final class ParamsBuilder {
+	private static XStream xstream;
+	
     /**
      * @param params existing parameter set
      * @param work work from with extract parameters
@@ -127,8 +133,14 @@ public class ParamsBuilder {
      * @param entry Metadata entry to convert, must be not null
      * @return String of metadata formated for API register
      */    
-    public static String metadataString(Entry entry) { 
-		return entry.getKey() + "|" + entry.getValue();
+    public static String metadataString(Entry entry) {
+    	Map<String,Object> metadataMap = new TreeMap<String,Object>();
+    	metadataMap.put("nsterm", entry.getKey());
+    	metadataMap.put("value", entry.getValue());
+    	if(!entry.getAttributes().isEmpty()) {
+    		metadataMap.put("attrs", entry.getAttributes());
+    	}
+		return Json.toJson(metadataMap);
 	}
 
 	/**
@@ -157,5 +169,4 @@ public class ParamsBuilder {
 
         return string;
     }
-
 }

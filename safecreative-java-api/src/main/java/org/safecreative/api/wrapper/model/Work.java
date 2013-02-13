@@ -85,7 +85,23 @@ public class Work implements Serializable{
     private Boolean userRights;
 
     public static class Language extends CodeableEntity {
-        
+    	/**
+		 * Constructor with given code
+		 * @param code 
+		 */
+		public Language(String code) {
+			super(code);
+		}       
+		
+    	    	
+		/**
+		 * Create a new instance from code
+		 * @param code
+		 * @return new Language instance initialized with code
+		 */
+		public static Language fromCode(String code) {
+			return new Language(code);
+		}
     }
 
     public static class Type extends CodeableEntity {
