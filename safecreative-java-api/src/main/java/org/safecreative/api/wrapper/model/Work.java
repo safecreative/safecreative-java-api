@@ -92,18 +92,46 @@ public class Work implements Serializable{
         /**
          * Common work type codes:
          */
-        public static final String ARTICLE      =   "article";
-        public static final String DOCUMENT     =   "document";
-        public static final String ARTISTIC     =   "artistic";
-        public static final String LITERATURE   =   "literature";
-        public static final String SOFTWARE     =   "software";
-        public static final String MULTIMEDIA   =   "multimedia";
+    	// LITERARY
+        public static final String ARTICLE      	=   "article";
+        public static final String NARRATIVE    	=   "narrative";
+        public static final String TECHNICAL     	=   "technical";
+        public static final String EDUCATION      	=   "education";
+        public static final String LITERARY_OTHER	=   "literature";
+        
+        // AUDIOVISUAL
+        public static final String FEATURE_FILM =   "ffilm";
+        public static final String MEDIUM_FILM	=   "mfilm";
+        public static final String SHORT_FILM 	=   "sfilm";
+        public static final String TV_FILM		=   "tvfilm";
+        public static final String SERIAL		=   "serial";
+        public static final String TELENOVELA 	=   "telenovela";
+        public static final String DOCUMENTARY 	=   "documental";
+        public static final String CARTOON      =   "cartoon";
+        public static final String ANIMATION 	=   "animation";
+        public static final String FORMAT 		=   "format";
+        public static final String SCRIPT 		=   "script";
+        public static final String VIDEO 		=   "video";
+        
+        // AUDIO
         public static final String MUSIC        =   "music";
         public static final String PODCAST      =   "podcast";
-        public static final String AUDIO        =   "audio";
-        public static final String VIDEO        =   "video";
-        public static final String DRAWING      =   "drawing";
-        public static final String PHOTO        =   "photo";
+        public static final String AUDIO_OTHER  =   "audio";
+        
+        // VISUAL ARTS
+        public static final String DRAWING      	=   "drawing";
+        public static final String PHOTO        	=   "photo";
+        public static final String DRAMA 			=   "drama";
+        public static final String MULTIMEDIA   	=   "multimedia";
+        public static final String MODEL_3D			=   "model3D";
+        public static final String SCULPTURE 		=   "sculpture";
+        public static final String ARTISTIC_OTHER 	=   "artistic";
+        
+        // PROJECTS
+        public static final String ARCHITECTURE		=   "architecture";
+        public static final String SOFTWARE     	=   "software";
+        public static final String MODEL			=   "model";
+        public static final String PROJECT_OTHER 	=   "project";
 
 		/**
 		 * Constructor with given code
