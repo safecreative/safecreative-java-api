@@ -60,6 +60,7 @@ public class SafeCreativeAPI {
     public static final String DEFAULT_ENCODING = "UTF-8";
     public static final String API_ENDPOINT = "/v2/";
     public static final String MANAGE_ENDPOINT = "/api-ui/authkey.edit?";
+    public static final String MANAGE_EMBEDDABLE_ENDPOINT = "/api-ui/auth?";
     public static final String STATE_REGISTERED = "REGISTERED";
     public static final String STATE_PRE_REGISTERED = "PRE_REGISTERED";
     public static final String NOT_AUTHORIZED_ERROR = "NotAuthorized";
@@ -138,6 +139,11 @@ public class SafeCreativeAPI {
 
     @SuppressWarnings("unchecked")
     public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level) {
+        return getManageAuthkeyUrl(authkey, privatekey, level, false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public String getManageAuthkeyUrl(String authkey, String privatekey, AuthkeyLevel level,boolean embeddable) {
         if(authkey == null) {
             throw new IllegalArgumentException("null auth key");
         }
@@ -152,7 +158,8 @@ public class SafeCreativeAPI {
         params.put("authkey", authkey);
         params.put("sharedkey", sharedKey);
         params.put("ztime", getZTime());
-        return baseUrl + MANAGE_ENDPOINT + signParams(params, privatekey);
+        String authManageEndpoint = embeddable ? MANAGE_EMBEDDABLE_ENDPOINT : MANAGE_ENDPOINT;
+        return baseUrl + authManageEndpoint + signParams(params, privatekey);
     }
 
     public String getNonceKey(String authKey) {

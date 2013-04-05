@@ -252,12 +252,25 @@ public class SafeCreativeAPIWrapper {
 
     /**
      * Create a new authorization key
-     * @param authkeyLevel api authorization access level
+     * @param authkeyLevel api authorization access level    
      * @return authorization key
      * @throws ApiException
      */
     @SuppressWarnings("unchecked")
     public AuthKey createAuth(AuthkeyLevel authkeyLevel) throws ApiException {
+        return createAuth(authkeyLevel, false);
+    }   
+    
+    /**
+     * Create a new authorization key
+     * @param authkeyLevel api authorization access level
+     * @param embeddable if <code>true</code> then allow remote key auth embeddable in popups etc.., 
+     * otherwise default full navigation
+     * @return authorization key
+     * @throws ApiException
+     */
+    @SuppressWarnings("unchecked")
+    public AuthKey createAuth(AuthkeyLevel authkeyLevel,boolean embeddable) throws ApiException {
         setApiUrl();
         Map params = api.createParams("component", "authkey.create", "sharedkey", api.getSharedKey());
         String result = api.callSigned(params, true, false, false);
@@ -270,7 +283,12 @@ public class SafeCreativeAPIWrapper {
         authKey = new AuthKey();
         authKey.setAuthkey(auth);
         authKey.setPrivatekey(authPrivate);
-        authKey.setManageUrl(api.getManageAuthkeyUrl(auth, authPrivate, authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel));        
+        String manageUrl = api.getManageAuthkeyUrl(
+                auth, authPrivate, 
+                authkeyLevel == null ? AuthkeyLevel.MANAGE : authkeyLevel,
+                embeddable
+        );
+        authKey.setManageUrl(manageUrl);        
         return authKey;
     }
 
