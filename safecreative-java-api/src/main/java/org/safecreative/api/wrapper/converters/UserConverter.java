@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.safecreative.api.wrapper.model.Country;
 import org.safecreative.api.wrapper.model.User;
+import org.safecreative.api.wrapper.model.User.AccountType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,24 +60,21 @@ public class UserConverter extends AbstractModelConverter {
             country.setName(reader.getValue());
             user.setCountry(country);
             reader.moveUp();
-        }else
-        if (node.equals("email")) {
+        } else if (node.equals("email")) {
             user.setEmail(reader.getValue());
-        }else
-        if (node.equals("human-url")) {
+        } else if (node.equals("human-url")) {
             user.setProfileUrl(readUrl(reader));
-        }else
-        if (node.equals("entrydate")) {
+        } else if (node.equals("entrydate")) {
             Date entryDate = readDate(reader);
             if(entryDate == null) {
                 throw new ConversionException("bad entrydate " + reader.getValue());
             }
             user.setEntryDate(entryDate);
-        }else
-        if (node.equals("thumbnail")) {
+        } else if (node.equals("thumbnail")) {
             user.setThumbnailUrl(readUrl(reader));
-        }
-        else {
+        } else  if (node.equals("accountType")) {
+            user.setAccountType(AccountType.valueOf(reader.getValue()));
+        } else {
         	processedNode = false;
         }
         return processedNode;

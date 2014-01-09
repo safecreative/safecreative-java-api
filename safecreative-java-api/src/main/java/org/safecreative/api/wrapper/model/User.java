@@ -36,12 +36,16 @@ import java.util.Date;
  * @author jguillo@safecreative.org
  */
 public class User extends CodeableEntity {
+	
+	public enum AccountType {
+		BASIC, PREMIUM, PROFESSIONAL, CORPORATE
+	}
     private URL profileUrl;
     private URL thumbnailUrl;
     private String email;
-    private String alias;
     private Date entryDate;
     private Country country;
+    private AccountType accountType;
 
     /**
      * @return the profileUrl
@@ -113,7 +117,16 @@ public class User extends CodeableEntity {
     public void setCountry(Country country) {
         this.country = country;
     }
+
     
+	public AccountType getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(AccountType accountType) {
+		this.accountType = accountType;
+	}
+
 	@Override
     public String toString() {
         return getClass().getSimpleName()+"[code:"+getCode()+",name:"+getName()+",profile:"+profileUrl+",thumbnail:"+thumbnailUrl+"]";
