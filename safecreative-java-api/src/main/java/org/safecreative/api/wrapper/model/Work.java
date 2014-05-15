@@ -50,7 +50,7 @@ public class Work implements Serializable{
 		VERSION, DERIVATION, COMPOSITION, RELATED
 	}
     public enum WorkState {
-		PROCESSING, PRE_REGISTERED, REGISTERED
+		PROCESSING, PRE_REGISTERED, REGISTERED, ARCHIVED
 	}
     private String code;
     private String title;
