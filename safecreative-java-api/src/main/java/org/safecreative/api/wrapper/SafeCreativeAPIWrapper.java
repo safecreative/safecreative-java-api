@@ -746,6 +746,21 @@ public class SafeCreativeAPIWrapper {
      * @throws ApiException
      */
     public DownloadInfo getWorkDownload(String code,boolean owner) throws ApiException {
+        return getWorkDownload(code, owner, true);
+    }
+
+    /**
+     * Gets a work's download info.
+     * To access this URL the work must be in REGISTERED state.
+     *
+     * @param code work's registry code
+     * @param owner <code>true</code> if user is owner else
+     * you can get the URL to download any downloadable (Registered with public
+     * access and allow download) work
+     * @return download info
+     * @throws ApiException
+     */
+    public DownloadInfo getWorkDownload(String code,boolean owner, boolean isAttachment) throws ApiException {
         setApiUrl();
         String result;
         if(owner) {
@@ -756,7 +771,7 @@ public class SafeCreativeAPIWrapper {
         } else {
             result = callComponentSigned(
                 "work.download" ,getApi().getPrivateKey(),true,false,false,
-                "sharedkey",getApi().getSharedKey(),"code",code);            
+                "sharedkey",getApi().getSharedKey(),"code",code,"isAttachment",isAttachment);            
         }        
         return readObject(DownloadInfo.class, result, new DownloadInfoConverter());
     }
