@@ -265,7 +265,7 @@ public class RegisterWork {
             Part[] parts = new Part[params.size() + 1];
             int i = 0;
             for (Map.Entry<String, String> param : params.entrySet()) {
-                parts[i++] = new StringPart(param.getKey(), param.getValue());
+                parts[i++] = new StringPart(param.getKey(), param.getValue(), SafeCreativeAPI.DEFAULT_ENCODING);
             }
             parts[i] = new FilePart("file", file, "application/octet-stream", null) {
 
