@@ -771,7 +771,7 @@ public class SafeCreativeAPIWrapper {
         } else {
             result = callComponentSigned(
                 "work.download" ,getApi().getPrivateKey(),true,false,false,
-                "sharedkey",getApi().getSharedKey(),"code",code,"isAttachment",isAttachment);            
+                "sharedkey",getApi().getSharedKey(),"code",code,"isattachment",isAttachment);            
         }        
         return readObject(DownloadInfo.class, result, new DownloadInfoConverter());
     }

@@ -267,7 +267,7 @@ public class RegisterWork {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 parts[i++] = new StringPart(param.getKey(), param.getValue(), SafeCreativeAPI.DEFAULT_ENCODING);
             }
-            parts[i] = new FilePart("file", file, "application/octet-stream", null) {
+            parts[i] = new FilePart("file", file, "application/octet-stream", SafeCreativeAPI.DEFAULT_ENCODING) {
 
                 @Override
                 protected void sendData(OutputStream out) throws IOException {
