@@ -147,6 +147,7 @@ public class Work implements Serializable{
         public static final String ARCHITECTURE		=   "architecture";
         public static final String SOFTWARE     	=   "software";
         public static final String MODEL			=   "model";
+        public static final String FASHION			=   "fashion";
         public static final String PROJECT_OTHER 	=   "project";
 
 		/**
