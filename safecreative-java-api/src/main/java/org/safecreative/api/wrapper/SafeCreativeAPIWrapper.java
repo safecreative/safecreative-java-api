@@ -1520,6 +1520,26 @@ public class SafeCreativeAPIWrapper {
         }
     }
 
+    /**
+     * Check if upload ticket status is ready
+     *
+     * @param uploadTicket
+     * @return <code>true</code> on ready update ticket
+     * @throws ApiException
+     */
+    public boolean uploadTicketStatus(String uploadTicket) throws ApiException {
+        setApiUrl();
+        checkAuthKey(authKey);
+        Map<String, String> params = api.createParams("component", "work.uploadticket.status");
+        params.put("authkey", authKey.getAuthkey());
+        params.put("uploadticket", uploadTicket);
+        String result = api.callSigned(params, authKey.getPrivatekey(), true, false);
+        checkError(result);
+        log.debug("work.uploadticket.status result:\n{}", result);
+        return checkReady(result);
+    }
+
+
 	protected Work createWork(String title) {
 		Work work = new Work();
 		work.setTitle(title);
