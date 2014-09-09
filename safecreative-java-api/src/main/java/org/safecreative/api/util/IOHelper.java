@@ -203,7 +203,6 @@ public final class IOHelper {
         try {
             closeable.close();
         } catch (IOException e) {
-            //TODO:log detailed
             log.warn("close quietly (no too much, review it please) {} IOException: {}", closeable, e);
         }
     }

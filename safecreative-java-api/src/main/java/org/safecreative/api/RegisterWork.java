@@ -271,7 +271,6 @@ public class RegisterWork {
 
                 @Override
                 protected void sendData(OutputStream out) throws IOException {
-                    //TODO notify upload progress
                     if(uploadProgressListener == null) {
                         super.sendData(out);
                     } else {

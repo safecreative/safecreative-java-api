@@ -92,7 +92,6 @@ public class Digest {
             MessageDigest digest = MessageDigest.getInstance(digestAlgorithm);
             result = digest.digest(input);
         } catch (Exception ex) {
-            //TODO log
             return null;
         }
         return result;
