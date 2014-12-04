@@ -1352,7 +1352,7 @@ public class SafeCreativeAPIWrapper {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T readObject(Class<T> clazz, String response,Converter converter) {
+    protected <T> T readObject(Class<T> clazz, String response,Converter converter) {
         XStream xs = createXStream();
         if(converter != null) {
             xs.registerConverter(converter);

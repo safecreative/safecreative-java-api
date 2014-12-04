@@ -38,7 +38,7 @@ import java.util.Date;
 public class User extends CodeableEntity {
 	
 	public enum AccountType {
-		BASIC, PREMIUM, PROFESSIONAL, CORPORATE
+		BASIC, PREMIUM, PROFESSIONAL, CORPORATE, MASTER
 	}
     private URL profileUrl;
     private URL thumbnailUrl;
