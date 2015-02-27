@@ -33,9 +33,9 @@ import java.util.List;
 import org.safecreative.api.wrapper.model.License;
 import org.safecreative.api.wrapper.model.Link;
 import org.safecreative.api.wrapper.model.Metadata;
+import org.safecreative.api.wrapper.model.Metadata.Entry;
 import org.safecreative.api.wrapper.model.User;
 import org.safecreative.api.wrapper.model.Work;
-import org.safecreative.api.wrapper.model.Metadata.Entry;
 import org.safecreative.api.wrapper.model.Work.RelationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,6 +109,10 @@ public class WorkConverter extends AbstractModelConverter {
             work.setThumbnail(readUrl(reader));
             processedNode = true;
         }else
+        if (node.equals("preview")) {
+            work.setPreview(readUrl(reader));
+            processedNode = true;
+        }else
         if (node.equals("mimetype")) {
             work.setMimeType(reader.getValue());
             processedNode = true;
@@ -166,6 +170,10 @@ public class WorkConverter extends AbstractModelConverter {
         }else
         if (node.equals("allowdownload")) {
             work.setAllowDownload(Boolean.valueOf(reader.getValue()));
+            processedNode = true;
+        }else
+        if (node.equals("allowpreview")) {
+            work.setAllowPreview(Boolean.valueOf(reader.getValue()));
             processedNode = true;
         }else
         if (node.equals("allowevaluation")) {

@@ -33,12 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.safecreative.api.wrapper.model.CodeableEntity;
-import org.safecreative.api.wrapper.model.License;
-import org.safecreative.api.wrapper.model.Link;
-import org.safecreative.api.wrapper.model.Metadata;
-import org.safecreative.api.wrapper.model.User;
-
 /**
  * Represents a work
  * 
@@ -59,11 +53,13 @@ public class Work implements Serializable{
     private String excerpt;
     private String tags;
     private Boolean allowDownload;
+    private Boolean allowPreview;
     private Boolean allowEvaluation;
     private Boolean allowSale;
     private Boolean allowLicensing;
     private Boolean registryPublic;
     private URL thumbnail;
+    private URL preview;
     private List<Link> links;
     private List<User> authors;
     private List<User> rightHolders;
@@ -301,6 +297,20 @@ public class Work implements Serializable{
     }
 
     /**
+     * @return the allowpreview
+     */
+    public Boolean isAllowPreview() {
+        return allowPreview;
+    }
+
+    /**
+     * @param allowpreview the allowpreview to set
+     */
+    public void setAllowPreview(Boolean allowPreview) {
+        this.allowPreview = allowPreview;
+    }
+
+    /**
      * @return the registryPublic
      */
     public Boolean isRegistryPublic() {
@@ -355,6 +365,20 @@ public class Work implements Serializable{
     public void setThumbnail(URL thumbnail) {
         this.thumbnail = thumbnail;
     }
+
+    /**
+     * @return the preview url
+     */
+    public URL getPreview() {
+		return preview;
+	}
+
+    /**
+     * @param preview the preview url to set
+     */
+	public void setPreview(URL preview) {
+		this.preview = preview;
+	}
 
 	/**
 	 * Adds a link
