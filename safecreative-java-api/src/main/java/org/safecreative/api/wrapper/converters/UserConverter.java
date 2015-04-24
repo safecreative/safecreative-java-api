@@ -74,6 +74,8 @@ public class UserConverter extends AbstractModelConverter {
             user.setThumbnailUrl(readUrl(reader));
         } else  if (node.equals("accountType")) {
             user.setAccountType(AccountType.valueOf(reader.getValue()));
+        } else  if (node.equals("language")) {
+            user.setLanguage(reader.getValue());
         } else {
         	processedNode = false;
         }

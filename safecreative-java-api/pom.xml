@@ -4,7 +4,7 @@
     <groupId>org.safecreative</groupId>
     <artifactId>safecreative-java-api</artifactId>
     <packaging>jar</packaging>
-    <version>0.7.16</version>
+    <version>0.7.17</version>
     <name>safecreative-java-api</name>
     <description>Safe Creative Java API</description>
     <inceptionYear>2010</inceptionYear>	

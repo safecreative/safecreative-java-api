@@ -43,6 +43,7 @@ public class User extends CodeableEntity {
     private URL profileUrl;
     private URL thumbnailUrl;
     private String email;
+    private String language;
     private Date entryDate;
     private Country country;
     private AccountType accountType;
@@ -118,13 +119,30 @@ public class User extends CodeableEntity {
         this.country = country;
     }
 
-    
+    /**
+     * @return the accountType
+     */
 	public AccountType getAccountType() {
 		return accountType;
 	}
-
+	/**
+     * @param accountType the accountType to set
+     */
 	public void setAccountType(AccountType accountType) {
 		this.accountType = accountType;
+	}
+
+	 /**
+     * @return the language
+     */
+	public String getLanguage() {
+		return language;
+	}
+	/**
+     * @param country the country to set
+     */
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
 	@Override
